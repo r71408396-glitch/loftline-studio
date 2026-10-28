@@ -1,0 +1,31 @@
+{%- comment -%}
+  Price with compare-at and "From" for products with several prices.
+  Accepts: product (or variant), class (optional)
+{%- endcomment -%}
+{%- liquid
+  assign target = variant | default: product.selected_or_first_available_variant
+  assign price = target.price
+  assign compare_at = target.compare_at_price
+  assign on_sale = false
+  if compare_at > price
+    assign on_sale = true
+  endif
+-%}
+<div class="price{% if class %} {{ class }}{% endif %}">
+  {%- if variant == blank and product.price_varies -%}
+    {%- assign price_min = product.price_min | money -%}
+    <span>{{ 'products.from_price' | t: price: price_min }}</span>
+  {%- elsif on_sale -%}
+    <span class="visually-hidden">{{ 'products.sale_price' | t }}</span>
+    <span>{{ price | money }}</span>
+    <span class="visually-hidden">{{ 'products.regular_price' | t }}</span>
+    <s class="price__compare">{{ compare_at | money }}</s>
+  {%- else -%}
+    <span>{{ price | money }}</span>
+  {%- endif -%}
+</div>
+{%- if target.unit_price_measurement -%}
+  <small class="muted">
+    {{- target.unit_price | money }} / {% if target.unit_price_measurement.reference_value != 1 %}{{ target.unit_price_measurement.reference_value }}{% endif %}{{ target.unit_price_measurement.reference_unit -}}
+  </small>
+{%- endif -%}

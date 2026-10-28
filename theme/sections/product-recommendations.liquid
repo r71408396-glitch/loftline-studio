@@ -1,0 +1,111 @@
+{%- comment -%}
+  "Frequently bought together": loads Shopify's complementary recommendations
+  (set in the Search & Discovery app) after the page, then lets the shopper add
+  this product and the picked extras in one go.
+{%- endcomment -%}
+<product-recommendations
+  class="section section--surface fbt"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ section.settings.limit }}&intent={{ section.settings.intent }}"
+>
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    {%- liquid
+      assign main_product = recommendations.intent_product | default: product
+      assign main_variant = main_product.selected_or_first_available_variant
+      assign total = main_variant.price
+      assign count = 1
+      for item in recommendations.products
+        if item.available
+          assign total = total | plus: item.price
+          assign count = count | plus: 1
+        endif
+      endfor
+    -%}
+    <div class="page-width">
+      <h2 class="h3">
+        {%- if section.settings.heading != blank -%}
+          {{ section.settings.heading | escape }}
+        {%- else -%}
+          {{ 'products.fbt_heading' | t }}
+        {%- endif -%}
+      </h2>
+      <form class="fbt__layout" data-fbt-form>
+        <ul class="fbt__list" role="list">
+          <li class="fbt__item">
+            <input type="checkbox" checked disabled data-variant-id="{{ main_variant.id }}" data-price="{{ main_variant.price }}" aria-label="{{ main_product.title | escape }}">
+            <div class="fbt__media">
+              {%- if main_product.featured_image -%}
+                {{ main_product.featured_image | image_url: width: 240 | image_tag: width: 96, height: 96, loading: 'lazy', alt: '' }}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag }}
+              {%- endif -%}
+            </div>
+            <div class="fbt__text">
+              <span class="small muted">{{ 'products.fbt_this_item' | t }}</span>
+              <span class="fbt__title">{{ main_product.title | escape }}</span>
+              <span class="small">{{ main_variant.price | money }}</span>
+            </div>
+          </li>
+          {%- for item in recommendations.products -%}
+            {%- if item.available -%}
+              {%- assign item_variant = item.selected_or_first_available_variant -%}
+              <li class="fbt__item">
+                <input
+                  type="checkbox"
+                  checked
+                  data-variant-id="{{ item_variant.id }}"
+                  data-price="{{ item_variant.price }}"
+                  aria-label="{{ 'products.fbt_select' | t: title: item.title | escape }}"
+                >
+                <a class="fbt__media" href="{{ item.url }}" tabindex="-1">
+                  {%- if item.featured_image -%}
+                    {{ item.featured_image | image_url: width: 240 | image_tag: width: 96, height: 96, loading: 'lazy', alt: '' }}
+                  {%- else -%}
+                    {{ 'product-2' | placeholder_svg_tag }}
+                  {%- endif -%}
+                </a>
+                <div class="fbt__text">
+                  <a class="fbt__title" href="{{ item.url }}">{{ item.title | escape }}</a>
+                  {%- unless item.has_only_default_variant -%}
+                    <span class="small muted">{{ item_variant.title | escape }}</span>
+                  {%- endunless -%}
+                  <span class="small">{{ item_variant.price | money }}</span>
+                </div>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+        <div class="fbt__summary panel">
+          <p class="small muted" data-fbt-count-label data-template="{{ 'products.fbt_total' | t: count: '{count}' }}">
+            {{ 'products.fbt_total' | t: count: count }}
+          </p>
+          <p class="price" data-fbt-total data-currency="{{ cart.currency.iso_code }}" data-locale="{{ request.locale.iso_code }}">{{ total | money }}</p>
+          <button type="submit" class="button button--full" data-fbt-add>{{ 'products.fbt_add' | t }}</button>
+          <p class="small status-error" role="alert" data-fbt-error hidden></p>
+        </div>
+      </form>
+    </div>
+  {%- endif -%}
+</product-recommendations>
+
+<script src="{{ 'product-recommendations.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Bought together",
+  "class": "section-product-recommendations",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "info": "Empty uses \"Frequently bought together\"" },
+    {
+      "type": "select",
+      "id": "intent",
+      "label": "Products",
+      "options": [
+        { "value": "complementary", "label": "Complementary (set in Search & Discovery)" },
+        { "value": "related", "label": "Related (automatic)" }
+      ],
+      "default": "complementary"
+    },
+    { "type": "range", "id": "limit", "label": "How many", "min": 1, "max": 4, "step": 1, "default": 2 }
+  ]
+}
+{% endschema %}

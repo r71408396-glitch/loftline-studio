@@ -1,0 +1,309 @@
+{%- comment -%}
+  Desk configurator. Size, top and frame come from two real products (the
+  frame and the top), accessories from blocks, so price, stock and currency
+  are Shopify's own. SKU format: LL-FRM-<COLOUR>, LL-TOP-<MATERIAL>-<W>-<D>,
+  top options in the order Material, Width, Depth.
+
+  Cart: "lines" adds the parts as separate lines sharing a build ID (works on
+  every plan). "bundle" adds one line of the bundle product, which the Cart
+  Transform Function expands into the parts.
+{%- endcomment -%}
+{{ 'configurator.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'configurator.js' | asset_url }}" type="module"></script>
+
+{%- liquid
+  assign frame_product = section.settings.frame_product
+  assign top_product = section.settings.top_product
+  assign bundle_product = section.settings.bundle_product
+  assign ready = true
+  if frame_product == blank or top_product == blank
+    assign ready = false
+  endif
+  assign mode = section.settings.cart_mode
+  if mode == 'bundle' and bundle_product == blank
+    assign mode = 'lines'
+  endif
+-%}
+
+<section class="section configurator" id="Configurator-{{ section.id }}" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <div class="configurator__header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {%- endif -%}
+      <h1 class="h2">{{ section.settings.heading | escape }}</h1>
+      {%- if section.settings.text != blank -%}
+        <div class="rte muted">{{ section.settings.text }}</div>
+      {%- endif -%}
+    </div>
+
+    {%- if ready -%}
+      <desk-configurator class="configurator__grid" data-viewer-src="{{ 'desk-viewer.js' | asset_url }}">
+        <div class="configurator__stage">
+          <div class="configurator__viewer" data-viewer>
+            <div class="configurator__loading" data-viewer-loading>
+              <span class="configurator__spinner" aria-hidden="true"></span>
+              <span class="small muted">{{ 'configurator.loading' | t }}</span>
+            </div>
+          </div>
+          <div class="configurator__stage-bar">
+            <div class="segmented" role="group" aria-label="{{ 'configurator.preview_height' | t }}">
+              <button type="button" class="segmented__button" data-height="0.74" aria-pressed="true">{{ 'configurator.sit' | t }}</button>
+              <button type="button" class="segmented__button" data-height="1.12" aria-pressed="false">{{ 'configurator.stand' | t }}</button>
+            </div>
+            <span class="small muted configurator__hint">{{ 'configurator.drag_hint' | t }}</span>
+            <button type="button" class="icon-button" data-reset-view aria-label="{{ 'configurator.reset_view' | t }}">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <form class="configurator__panel" data-config-form novalidate>
+          <div class="config-step">
+            <h2 class="config-step__title"><span class="config-step__number">1</span>{{ 'configurator.step_size' | t }}</h2>
+            {%- for option in top_product.options_with_values -%}
+              {%- if option.position == 2 -%}
+                {% render 'configurator-option', product: top_product, option: option, name: 'width', style: 'pill', selected: section.settings.default_width %}
+              {%- elsif option.position == 3 -%}
+                {% render 'configurator-option', product: top_product, option: option, name: 'depth', style: 'pill', selected: section.settings.default_depth %}
+              {%- endif -%}
+            {%- endfor -%}
+          </div>
+
+          <div class="config-step">
+            <h2 class="config-step__title"><span class="config-step__number">2</span>{{ 'configurator.step_top' | t }}</h2>
+            {%- assign material_option = top_product.options_with_values | where: 'position', 1 | first -%}
+            {% render 'configurator-option', product: top_product, option: material_option, name: 'material', style: 'swatch' %}
+            <fieldset class="config-group" data-config-group="edge">
+              <legend class="config-group__legend">
+                <span class="label">{{ 'configurator.edge' | t }}</span>
+                <span class="config-group__value muted small" data-config-label="edge"></span>
+              </legend>
+              <div class="config-group__values config-group__values--pill">
+                <label class="config-choice config-choice--pill">
+                  <input type="radio" name="edge" value="square" data-label="{{ 'configurator.edge_square' | t }}" checked>
+                  <span class="config-choice__text">{{ 'configurator.edge_square' | t }}</span>
+                </label>
+                <label class="config-choice config-choice--pill">
+                  <input type="radio" name="edge" value="rounded" data-label="{{ 'configurator.edge_rounded' | t }}">
+                  <span class="config-choice__text">{{ 'configurator.edge_rounded' | t }}</span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="config-step">
+            <h2 class="config-step__title"><span class="config-step__number">3</span>{{ 'configurator.step_frame' | t }}</h2>
+            {%- assign frame_option = frame_product.options_with_values | first -%}
+            {% render 'configurator-option', product: frame_product, option: frame_option, name: 'frame', style: 'swatch' %}
+          </div>
+
+          {%- if section.blocks.size > 0 -%}
+            <div class="config-step">
+              <h2 class="config-step__title"><span class="config-step__number">4</span>{{ 'configurator.step_accessories' | t }}</h2>
+              <div class="config-accessories">
+                {%- for block in section.blocks -%}
+                  {%- assign accessory = block.settings.product -%}
+                  {%- if accessory != blank -%}
+                    {%- assign accessory_variant = accessory.selected_or_first_available_variant -%}
+                    <label class="config-accessory" {{ block.shopify_attributes }}>
+                      <input
+                        type="checkbox"
+                        name="accessory"
+                        value="{{ block.id }}"
+                        {% unless accessory_variant.available %}disabled{% endunless %}
+                      >
+                      <span class="config-accessory__media">
+                        {%- if accessory.featured_image -%}
+                          {{ accessory.featured_image | image_url: width: 160 | image_tag: width: 64, height: 64, loading: 'lazy', alt: '' }}
+                        {%- endif -%}
+                      </span>
+                      <span class="config-accessory__text">
+                        <span class="config-accessory__title">{{ accessory.title | escape }}</span>
+                        {%- if block.settings.note != blank -%}
+                          <span class="small muted">{{ block.settings.note | escape }}</span>
+                        {%- endif -%}
+                      </span>
+                      <span class="config-accessory__price">
+                        {%- if accessory_variant.available -%}
+                          +{{ accessory_variant.price | money }}
+                        {%- else -%}
+                          <span class="status-error small">{{ 'products.sold_out' | t }}</span>
+                        {%- endif -%}
+                      </span>
+                    </label>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+
+          <div class="config-summary panel" data-summary>
+            <h2 class="h4">{{ 'configurator.summary' | t }}</h2>
+            <ul class="config-summary__lines" data-summary-lines role="list"></ul>
+            <p class="config-tier" data-tier hidden></p>
+            <div class="config-summary__total">
+              <span>{{ 'configurator.total' | t }}</span>
+              <span class="price" data-total></span>
+            </div>
+            {%- if section.settings.lead_time != blank -%}
+              <p class="small config-summary__lead">
+                {% render 'icon', name: 'truck' %}
+                <span>{{ section.settings.lead_time | escape }}</span>
+              </p>
+            {%- endif -%}
+            <button type="submit" class="button button--full" data-add>
+              {{ 'configurator.add_to_cart' | t }}
+            </button>
+            <p class="small status-error" role="alert" data-error hidden></p>
+            <p class="small muted" data-share-wrap>
+              <button type="button" class="link-button" data-share>{{ 'configurator.copy_link' | t }}</button>
+              <span data-share-done hidden>{{ 'configurator.link_copied' | t }}</span>
+            </p>
+          </div>
+        </form>
+
+        <div class="config-sticky" data-sticky aria-hidden="true">
+          <span class="price" data-sticky-total></span>
+          <button type="button" class="button" data-sticky-add tabindex="-1">{{ 'configurator.add_to_cart' | t }}</button>
+        </div>
+
+        {%- comment -%} Prices are in the shopper's market currency, in cents. {%- endcomment -%}
+        <script type="application/json" data-config-data>
+          {
+            "mode": {{ mode | json }},
+            "currency": {{ cart.currency.iso_code | json }},
+            "locale": {{ request.locale.iso_code | json }},
+            "bundleVariant": {% if mode == 'bundle' %}{{ bundle_product.selected_or_first_available_variant.id }}{% else %}null{% endif %},
+            "frameTitle": {{ frame_product.title | json }},
+            "topTitle": {{ top_product.title | json }},
+            "frames": [
+              {%- for variant in frame_product.variants -%}
+                {"id": {{ variant.id }}, "sku": {{ variant.sku | json }}, "price": {{ variant.price }}, "available": {{ variant.available }}}
+                {%- unless forloop.last %},{% endunless -%}
+              {%- endfor -%}
+            ],
+            "tops": [
+              {%- for variant in top_product.variants -%}
+                {"id": {{ variant.id }}, "sku": {{ variant.sku | json }}, "price": {{ variant.price }}, "available": {{ variant.available }}}
+                {%- unless forloop.last %},{% endunless -%}
+              {%- endfor -%}
+            ],
+            "accessories": {
+              {%- assign separator = '' -%}
+              {%- for block in section.blocks -%}
+                {%- if block.settings.product != blank -%}
+                  {%- assign accessory_variant = block.settings.product.selected_or_first_available_variant -%}
+                  {{ separator }}{{ block.id | json }}: {"id": {{ accessory_variant.id }}, "model": {{ block.settings.model | json }}, "title": {{ block.settings.product.title | json }}, "price": {{ accessory_variant.price }}, "available": {{ accessory_variant.available }}}
+                  {%- assign separator = ',' -%}
+                {%- endif -%}
+              {%- endfor -%}
+            },
+            "tiers": [
+              {"count": {{ settings.tier_1_count }}, "percent": {{ settings.tier_1_percent }}},
+              {"count": {{ settings.tier_2_count }}, "percent": {{ settings.tier_2_percent }}}
+            ],
+            "strings": {
+              "frame": {{ 'configurator.line_frame' | t | json }},
+              "top": {{ 'configurator.line_top' | t | json }},
+              "discount": {{ 'configurator.line_discount' | t: percent: '{percent}' | json }},
+              "tierNext": {{ 'configurator.tier_next' | t: count: '{count}', percent: '{percent}' | json }},
+              "tierReached": {{ 'configurator.tier_reached' | t: percent: '{percent}' | json }},
+              "soldOut": {{ 'products.sold_out' | t | json }},
+              "adding": {{ 'configurator.adding' | t | json }},
+              "add": {{ 'configurator.add_to_cart' | t | json }},
+              "error": {{ 'configurator.error' | t | json }},
+              "build": {{ 'configurator.build' | t | json }},
+              "size": {{ 'configurator.size' | t | json }},
+              "edge": {{ 'configurator.edge' | t | json }}
+            }
+          }
+        </script>
+      </desk-configurator>
+    {%- else -%}
+      <div class="panel empty-state">
+        <p>{{ 'configurator.setup_needed' | t }}</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Desk configurator",
+  "class": "section-configurator",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Small heading", "default": "Desk builder" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Build your desk" },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Every desk is made to order. Turn it, try sitting and standing heights, and see the price as you go.</p>"
+    },
+    { "type": "header", "content": "Products" },
+    {
+      "type": "product",
+      "id": "frame_product",
+      "label": "Frame",
+      "info": "One variant per colour. SKU: LL-FRM-BLK, LL-FRM-WHT, LL-FRM-GRA, LL-FRM-ALU"
+    },
+    {
+      "type": "product",
+      "id": "top_product",
+      "label": "Desk top",
+      "info": "Options in this order: Material, Width, Depth. SKU: LL-TOP-OAK-160-80"
+    },
+    { "type": "number", "id": "default_width", "label": "Width selected at first (cm)", "default": 160 },
+    { "type": "number", "id": "default_depth", "label": "Depth selected at first (cm)", "default": 80 },
+    { "type": "header", "content": "Cart" },
+    {
+      "type": "select",
+      "id": "cart_mode",
+      "label": "Add to cart as",
+      "options": [
+        { "value": "lines", "label": "Separate parts (all plans)" },
+        { "value": "bundle", "label": "One desk line (needs the Cart Transform Function)" }
+      ],
+      "default": "lines"
+    },
+    {
+      "type": "product",
+      "id": "bundle_product",
+      "label": "Desk bundle product",
+      "info": "Used only for \"One desk line\""
+    },
+    { "type": "header", "content": "Delivery" },
+    {
+      "type": "text",
+      "id": "lead_time",
+      "label": "Lead time text",
+      "default": "Made to order, ships in 2 to 3 weeks"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "accessory",
+      "name": "Accessory",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        {
+          "type": "select",
+          "id": "model",
+          "label": "Show in 3D as",
+          "options": [
+            { "value": "desk_pad", "label": "Desk pad" },
+            { "value": "monitor_arm", "label": "Monitor arm" },
+            { "value": "cable_tray", "label": "Cable tray" },
+            { "value": "drawer", "label": "Drawer" },
+            { "value": "none", "label": "Not shown" }
+          ],
+          "default": "none"
+        },
+        { "type": "text", "id": "note", "label": "Short note" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Desk configurator" }]
+}
+{% endschema %}

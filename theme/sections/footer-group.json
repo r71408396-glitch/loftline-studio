@@ -1,0 +1,20 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "brand": { "type": "brand", "settings": {} },
+        "shop": { "type": "menu", "settings": { "heading": "Shop", "menu": "main-menu" } },
+        "help": { "type": "menu", "settings": { "heading": "Help", "menu": "footer" } },
+        "newsletter": { "type": "newsletter", "settings": {} }
+      },
+      "block_order": ["brand", "shop", "help", "newsletter"],
+      "settings": {
+        "show_payment_icons": true
+      }
+    }
+  },
+  "order": ["footer"]
+}

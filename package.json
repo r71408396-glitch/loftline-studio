@@ -1,0 +1,17 @@
+{
+  "name": "loftline",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "check": "shopify theme check --path theme",
+    "preview": "node scripts/build.mjs --serve"
+  },
+  "devDependencies": {
+    "@shopify/cli": "^4.9.4",
+    "esbuild": "^0.28.2",
+    "liquidjs": "^10.30.0",
+    "three": "^0.186.1"
+  }
+}

@@ -1,0 +1,14 @@
+{%- comment -%} Accepts: quantity, label (what the quantity is for, for screen readers) {%- endcomment -%}
+<div class="quantity quantity--small">
+  <button type="button" class="quantity__button" data-step="-1" aria-label="{{ 'cart.decrease' | t: item: label }}">&minus;</button>
+  <input
+    class="quantity__input"
+    type="number"
+    min="0"
+    value="{{ quantity }}"
+    inputmode="numeric"
+    aria-label="{{ 'cart.quantity_for' | t: item: label }}"
+    data-quantity
+  >
+  <button type="button" class="quantity__button" data-step="1" aria-label="{{ 'cart.increase' | t: item: label }}">+</button>
+</div>

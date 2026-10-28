@@ -1,0 +1,270 @@
+{%- comment -%}
+  Cart drawer, refreshed through the Section Rendering API. Lines that share a
+  _build property (a desk added from the configurator as separate parts) are
+  shown and changed together as one desk.
+{%- endcomment -%}
+{{ 'cart-drawer.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign builds = ''
+  assign desk_count = 0
+  assign accessory_count = 0
+  for item in cart.items
+    assign build = item.properties['_build']
+    if build != blank
+      unless builds contains build
+        assign builds = builds | append: build | append: ','
+      endunless
+    endif
+    if item.properties['_role'] == 'top' or item.properties['_top'] != blank
+      assign desk_count = desk_count | plus: item.quantity
+    endif
+    if item.properties['_role'] == 'accessory' or item.product.type == 'Accessory'
+      assign accessory_count = accessory_count | plus: item.quantity
+    endif
+  endfor
+  assign build_list = builds | split: ','
+
+  assign threshold = settings.free_shipping_threshold | times: 100
+  assign show_shipping = false
+  if settings.free_shipping_threshold > 0 and cart.currency.iso_code == shop.currency
+    assign show_shipping = true
+  endif
+-%}
+
+<cart-drawer class="cart-drawer" data-count="{{ cart.item_count }}" hidden>
+  <div class="cart-drawer__overlay" data-drawer-close></div>
+  <div class="cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="CartDrawerTitle" tabindex="-1">
+    <div class="cart-drawer__head">
+      <h2 class="h3" id="CartDrawerTitle">
+        {{ 'cart.title' | t }}
+        {%- if cart.item_count > 0 %} <span class="muted">({{ cart.item_count }})</span>{% endif -%}
+      </h2>
+      <button type="button" class="icon-button" data-drawer-close aria-label="{{ 'cart.close' | t }}">
+        {% render 'icon', name: 'close' %}
+      </button>
+    </div>
+
+    <div class="cart-drawer__body" data-drawer-body>
+      {%- if cart.item_count == 0 -%}
+        <div class="empty-state">
+          <p>{{ 'cart.empty' | t }}</p>
+          <a class="button" href="{{ section.settings.empty_link | default: routes.all_products_collection_url }}">{{ 'cart.start_build' | t }}</a>
+        </div>
+      {%- else -%}
+        {%- if show_shipping -%}
+          {%- liquid
+            assign remaining = threshold | minus: cart.total_price
+            assign progress = cart.total_price | times: 100 | divided_by: threshold
+            if progress > 100
+              assign progress = 100
+            endif
+          -%}
+          <div class="cart-shipping">
+            <p class="small">
+              {%- if remaining > 0 -%}
+                {%- assign remaining_money = remaining | money -%}
+                {{ 'cart.free_shipping_remaining' | t: amount: remaining_money }}
+              {%- else -%}
+                <span class="status-success">{{ 'cart.free_shipping_reached' | t }}</span>
+              {%- endif -%}
+            </p>
+            <div class="cart-shipping__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress }}">
+              <span style="width: {{ progress }}%;"></span>
+            </div>
+          </div>
+        {%- endif -%}
+
+        {%- if desk_count > 0 -%}
+          {%- liquid
+            assign tier_percent = 0
+            assign next_count = 0
+            assign next_percent = 0
+            if accessory_count >= settings.tier_2_count and settings.tier_2_percent > 0
+              assign tier_percent = settings.tier_2_percent
+            elsif accessory_count >= settings.tier_1_count and settings.tier_1_percent > 0
+              assign tier_percent = settings.tier_1_percent
+              assign next_count = settings.tier_2_count | minus: accessory_count
+              assign next_percent = settings.tier_2_percent
+            else
+              assign next_count = settings.tier_1_count | minus: accessory_count
+              assign next_percent = settings.tier_1_percent
+            endif
+          -%}
+          <p class="cart-tier{% if next_count == 0 %} is-reached{% endif %}">
+            {%- if next_count > 0 and next_percent > 0 -%}
+              {{ 'configurator.tier_next' | t: count: next_count, percent: next_percent }}
+            {%- elsif tier_percent > 0 -%}
+              {{ 'configurator.tier_reached' | t: percent: tier_percent }}
+            {%- endif -%}
+          </p>
+        {%- endif -%}
+
+        <ul class="cart-lines" role="list">
+          {%- for build in build_list -%}
+            {%- liquid
+              assign group_total = 0
+              assign group_original = 0
+              assign group_keys = ''
+              assign group_quantity = 1
+              for item in cart.items
+                if item.properties['_build'] == build
+                  assign group_total = group_total | plus: item.final_line_price
+                  assign group_original = group_original | plus: item.original_line_price
+                  assign group_keys = group_keys | append: item.key | append: ','
+                  if item.properties['_role'] == 'top'
+                    assign group_quantity = item.quantity
+                  endif
+                endif
+              endfor
+            -%}
+            <li class="cart-build" data-keys="{{ group_keys | remove_last: ',' }}">
+              <div class="cart-build__head">
+                <div>
+                  <p class="cart-build__title">{{ 'cart.build_title' | t }}</p>
+                  <p class="small muted">{{ 'cart.build_number' | t: build: build }}</p>
+                </div>
+                <div class="price price--small">
+                  {%- if group_original > group_total -%}<s class="price__compare">{{ group_original | money }}</s>{%- endif -%}
+                  <span>{{ group_total | money }}</span>
+                </div>
+              </div>
+              <ul class="cart-build__parts" role="list">
+                {%- for item in cart.items -%}
+                  {%- if item.properties['_build'] == build -%}
+                    <li>
+                      <span>
+                        {{ item.product.title | escape }}
+                        {%- if item.properties['_role'] == 'top' -%}
+                          {%- comment -%} Size and edge come from the properties; the material is the first option. {%- endcomment -%}
+                          <span class="muted"> · {{ item.variant.option1 | escape }}</span>
+                          {%- for property in item.properties -%}
+                            {%- assign first_char = property.first | slice: 0 -%}
+                            {%- if first_char != '_' and property.last != blank and property.last != build -%}
+                              <span class="muted"> · {{ property.last | escape }}</span>
+                            {%- endif -%}
+                          {%- endfor -%}
+                        {%- elsif item.product.has_only_default_variant == false -%}
+                          <span class="muted"> · {{ item.variant.title | escape }}</span>
+                        {%- endif -%}
+                      </span>
+                      <span class="cart-build__part-price">{{ item.final_line_price | money }}</span>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+              <div class="cart-line__actions">
+                {% render 'cart-quantity', quantity: group_quantity, label: build %}
+                <button type="button" class="link-button small" data-remove>{{ 'cart.remove_build' | t }}</button>
+              </div>
+            </li>
+          {%- endfor -%}
+
+          {%- for item in cart.items -%}
+            {%- if item.properties['_build'] == blank -%}
+              <li class="cart-line" data-keys="{{ item.key }}">
+                <div class="cart-line__media">
+                  {%- if item.image -%}
+                    {{ item.image | image_url: width: 200 | image_tag: width: 80, height: 80, loading: 'lazy', alt: item.title }}
+                  {%- else -%}
+                    {{ 'product-1' | placeholder_svg_tag }}
+                  {%- endif -%}
+                </div>
+                <div class="cart-line__details">
+                  <div class="cart-line__top">
+                    <a class="cart-line__title" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+                    <div class="price price--small">
+                      {%- if item.original_line_price > item.final_line_price -%}<s class="price__compare">{{ item.original_line_price | money }}</s>{%- endif -%}
+                      <span>{{ item.final_line_price | money }}</span>
+                    </div>
+                  </div>
+                  {%- unless item.product.has_only_default_variant -%}
+                    <span class="small muted">{{ item.variant.title | escape }}</span>
+                  {%- endunless -%}
+                  {%- for property in item.properties -%}
+                    {%- assign first_char = property.first | slice: 0 -%}
+                    {%- if first_char != '_' and property.last != blank -%}
+                      <span class="small muted">{{ property.first | escape }}: {{ property.last | escape }}</span>
+                    {%- endif -%}
+                  {%- endfor -%}
+                  {%- if item.selling_plan_allocation -%}
+                    <span class="small muted">{{ item.selling_plan_allocation.selling_plan.name | escape }}</span>
+                  {%- endif -%}
+                  <div class="cart-line__actions">
+                    {% render 'cart-quantity', quantity: item.quantity, label: item.product.title %}
+                    <button type="button" class="link-button small" data-remove>{{ 'cart.remove' | t }}</button>
+                  </div>
+                </div>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+
+        {%- assign upsell = settings.cart_upsell_collection -%}
+        {%- if upsell != blank -%}
+          {%- capture upsell_items -%}
+            {%- assign shown = 0 -%}
+            {%- for product in upsell.products -%}
+              {%- assign in_cart = false -%}
+              {%- for item in cart.items -%}
+                {%- if item.product_id == product.id -%}{%- assign in_cart = true -%}{%- endif -%}
+              {%- endfor -%}
+              {%- if in_cart == false and product.available and shown < 3 -%}
+                {%- assign shown = shown | plus: 1 -%}
+                <li class="cart-upsell__item">
+                  <div class="cart-upsell__media">
+                    {%- if product.featured_image -%}
+                      {{ product.featured_image | image_url: width: 160 | image_tag: width: 56, height: 56, loading: 'lazy', alt: '' }}
+                    {%- endif -%}
+                  </div>
+                  <div class="cart-upsell__text">
+                    <span class="cart-upsell__title">{{ product.title | escape }}</span>
+                    <span class="small muted">{{ product.price | money }}</span>
+                  </div>
+                  <button type="button" class="button button--secondary cart-upsell__add" data-add-variant="{{ product.selected_or_first_available_variant.id }}">
+                    {{ 'cart.add' | t }}
+                  </button>
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+          {%- if upsell_items != blank -%}
+            <div class="cart-upsell">
+              <h3 class="h4">{{ 'cart.upsell_heading' | t }}</h3>
+              <ul class="cart-upsell__list" role="list">{{ upsell_items }}</ul>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endif -%}
+    </div>
+
+    {%- if cart.item_count > 0 -%}
+      <form class="cart-drawer__foot" action="{{ routes.cart_url }}" method="post">
+        {%- for discount in cart.cart_level_discount_applications -%}
+          <p class="cart__total small status-success">
+            <span>{{ discount.title | escape }}</span>
+            <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+          </p>
+        {%- endfor -%}
+        <p class="cart__total">
+          <span>{{ 'cart.subtotal' | t }}</span>
+          <span>{{ cart.total_price | money_with_currency }}</span>
+        </p>
+        <p class="small muted">{{ 'cart.taxes_note' | t }}</p>
+        <button type="submit" name="checkout" class="button button--full">{{ 'cart.checkout' | t }}</button>
+        <a class="small cart-drawer__view" href="{{ routes.cart_url }}">{{ 'cart.view_cart' | t }}</a>
+      </form>
+    {%- endif -%}
+    <p class="visually-hidden" role="status" data-drawer-status></p>
+  </div>
+</cart-drawer>
+
+{% schema %}
+{
+  "name": "Cart drawer",
+  "class": "section-cart-drawer",
+  "settings": [
+    { "type": "url", "id": "empty_link", "label": "Button link when the cart is empty", "info": "Usually the desk configurator page" }
+  ]
+}
+{% endschema %}

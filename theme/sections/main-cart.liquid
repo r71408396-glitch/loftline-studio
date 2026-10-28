@@ -1,0 +1,90 @@
+<section class="section">
+  <div class="page-width">
+    <h1>{{ 'cart.title' | t }}</h1>
+
+    {%- if cart.item_count > 0 -%}
+      <form class="cart__layout" action="{{ routes.cart_url }}" method="post" id="CartForm" novalidate>
+        <div>
+          <ul class="cart-items" role="list" style="list-style: none; margin: 0; padding: 0;">
+            {%- for item in cart.items -%}
+              <li class="cart-item">
+                <div class="cart-item__media">
+                  {%- if item.image -%}
+                    {{ item.image | image_url: width: 240 | image_tag: width: 96, height: 120, loading: 'lazy', alt: item.title }}
+                  {%- endif -%}
+                </div>
+                <div class="cart-item__details">
+                  <a class="cart-item__name" href="{{ item.url }}">{{ item.product.title | escape }}</a>
+                  {%- unless item.product.has_only_default_variant -%}
+                    <span class="small muted">{{ item.variant.title | escape }}</span>
+                  {%- endunless -%}
+                  {%- if item.properties.size > 0 -%}
+                    <ul class="cart-item__props">
+                      {%- for property in item.properties -%}
+                        {%- assign first_char = property.first | slice: 0 -%}
+                        {%- if property.last != blank and first_char != '_' -%}
+                          <li>{{ property.first | escape }}: {{ property.last | escape }}</li>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </ul>
+                  {%- endif -%}
+                  {%- if item.selling_plan_allocation -%}
+                    <span class="small muted">{{ item.selling_plan_allocation.selling_plan.name | escape }}</span>
+                  {%- endif -%}
+                  <div class="cart-item__actions">
+                    <div class="quantity">
+                      <label class="visually-hidden" for="Updates-{{ item.key }}">{{ 'products.quantity' | t }}</label>
+                      <input class="quantity__input" id="Updates-{{ item.key }}" type="number" name="updates[]" value="{{ item.quantity }}" min="0" inputmode="numeric">
+                    </div>
+                    <div class="price price--small">
+                      {%- if item.original_line_price != item.final_line_price -%}
+                        <s class="price__compare">{{ item.original_line_price | money }}</s>
+                      {%- endif -%}
+                      <span>{{ item.final_line_price | money }}</span>
+                    </div>
+                    <a class="small" href="{{ item.url_to_remove }}">{{ 'cart.remove' | t }}</a>
+                  </div>
+                  {%- for discount in item.line_level_discount_allocations -%}
+                    <span class="small status-success">{{ discount.discount_application.title | escape }} (&minus;{{ discount.amount | money }})</span>
+                  {%- endfor -%}
+                </div>
+              </li>
+            {%- endfor -%}
+          </ul>
+          <button class="link-button" type="submit" name="update" style="margin-top: var(--space-2);">{{ 'cart.update' | t }}</button>
+        </div>
+
+        <div class="cart__summary panel">
+          {%- for discount in cart.cart_level_discount_applications -%}
+            <p class="cart__total small status-success">
+              <span>{{ discount.title | escape }}</span>
+              <span>&minus;{{ discount.total_allocated_amount | money }}</span>
+            </p>
+          {%- endfor -%}
+          <p class="cart__total">
+            <span>{{ 'cart.subtotal' | t }}</span>
+            <span>{{ cart.total_price | money_with_currency }}</span>
+          </p>
+          <p class="small muted">{{ 'cart.taxes_note' | t }}</p>
+          <button class="button button--full" type="submit" name="checkout">{{ 'cart.checkout' | t }}</button>
+          {%- if additional_checkout_buttons -%}
+            <div>{{ content_for_additional_checkout_buttons }}</div>
+          {%- endif -%}
+        </div>
+      </form>
+    {%- else -%}
+      <div class="empty-state">
+        <p>{{ 'cart.empty' | t }}</p>
+        <a class="button" href="{{ routes.all_products_collection_url }}">{{ 'general.continue_shopping' | t }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart",
+  "class": "section-main-cart",
+  "settings": []
+}
+{% endschema %}

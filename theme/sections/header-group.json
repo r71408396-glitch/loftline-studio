@@ -1,0 +1,20 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "settings": {
+        "text": "Free delivery on desks in the US, Canada and the UK"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "menu": "main-menu",
+        "cta_label": "Build your desk"
+      }
+    }
+  },
+  "order": ["announcement", "header"]
+}

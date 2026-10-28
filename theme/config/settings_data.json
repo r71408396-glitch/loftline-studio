@@ -1,0 +1,34 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "color_accent": "#4f46e5",
+      "color_accent_hover": "#4338ca",
+      "color_tint": "#eef2ff",
+      "color_background": "#ffffff",
+      "color_surface": "#f8fafc",
+      "color_line": "#e2e8f0",
+      "color_ink": "#0b1220",
+      "color_text": "#334155",
+      "color_muted": "#64748b",
+      "color_muted_on_dark": "#94a3b8",
+      "color_success": "#15803d",
+      "color_error": "#b91c1c",
+      "type_heading_font": "syne",
+      "type_heading_tracking": -2,
+      "type_body_size": 17,
+      "page_width": 1280,
+      "radius_button": 12,
+      "radius_card": 16,
+      "card_shadow": true,
+      "logo_width": 132,
+      "cart_type": "drawer",
+      "free_shipping_threshold": 150,
+      "tier_1_count": 1,
+      "tier_1_percent": 5,
+      "tier_2_count": 3,
+      "tier_2_percent": 10,
+      "cart_upsell_collection": "accessories"
+    }
+  }
+}

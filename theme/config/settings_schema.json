@@ -1,0 +1,324 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Loftline",
+    "theme_version": "0.1.0",
+    "theme_author": "Loftline Studio",
+    "theme_documentation_url": "https://shopify.dev/docs/storefronts/themes",
+    "theme_support_url": "https://shopify.dev/docs/storefronts/themes"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Every text pair is checked against WCAG AA (4.5:1). If you change a color, keep white on Accent and Muted on Surface at 4.5:1 or above."
+      },
+      {
+        "type": "header",
+        "content": "Accent"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent",
+        "info": "Buttons (white text), links, selected configurator options, focus rings",
+        "default": "#4f46e5"
+      },
+      {
+        "type": "color",
+        "id": "color_accent_hover",
+        "label": "Accent hover",
+        "default": "#4338ca"
+      },
+      {
+        "type": "color",
+        "id": "color_tint",
+        "label": "Tint",
+        "info": "Section bands, selected option background, discount tier box",
+        "default": "#eef2ff"
+      },
+      {
+        "type": "header",
+        "content": "Surfaces"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Page background",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "Surface",
+        "info": "Cards, cart drawer, configurator panel",
+        "default": "#f8fafc"
+      },
+      {
+        "type": "color",
+        "id": "color_line",
+        "label": "Borders",
+        "default": "#e2e8f0"
+      },
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "type": "color",
+        "id": "color_ink",
+        "label": "Headings",
+        "info": "Headings, prices and the footer background",
+        "default": "#0b1220"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Body text",
+        "default": "#334155"
+      },
+      {
+        "type": "color",
+        "id": "color_muted",
+        "label": "Secondary text",
+        "default": "#64748b"
+      },
+      {
+        "type": "color",
+        "id": "color_muted_on_dark",
+        "label": "Secondary text on dark",
+        "default": "#94a3b8"
+      },
+      {
+        "type": "header",
+        "content": "Status"
+      },
+      {
+        "type": "color",
+        "id": "color_success",
+        "label": "Success",
+        "info": "In stock, delivery date confirmed",
+        "default": "#15803d"
+      },
+      {
+        "type": "color",
+        "id": "color_error",
+        "label": "Error",
+        "info": "Errors, sold out",
+        "default": "#b91c1c"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Fonts are stored in the theme as WOFF2 files, so no request goes to Google Fonts."
+      },
+      {
+        "type": "select",
+        "id": "type_heading_font",
+        "label": "Heading font",
+        "options": [
+          {
+            "value": "syne",
+            "label": "Syne"
+          },
+          {
+            "value": "instrument_sans",
+            "label": "Instrument Sans"
+          }
+        ],
+        "default": "syne"
+      },
+      {
+        "type": "range",
+        "id": "type_heading_tracking",
+        "label": "Heading letter spacing",
+        "min": -4,
+        "max": 2,
+        "step": 1,
+        "unit": "%",
+        "default": -2
+      },
+      {
+        "type": "range",
+        "id": "type_body_size",
+        "label": "Body size on desktop",
+        "min": 15,
+        "max": 19,
+        "step": 1,
+        "unit": "px",
+        "default": 17
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "range",
+        "id": "page_width",
+        "label": "Page width",
+        "min": 1000,
+        "max": 1600,
+        "step": 20,
+        "unit": "px",
+        "default": 1280
+      },
+      {
+        "type": "range",
+        "id": "radius_button",
+        "label": "Button and input corners",
+        "min": 0,
+        "max": 24,
+        "step": 2,
+        "unit": "px",
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "radius_card",
+        "label": "Card and panel corners",
+        "min": 0,
+        "max": 32,
+        "step": 2,
+        "unit": "px",
+        "default": 16
+      },
+      {
+        "type": "checkbox",
+        "id": "card_shadow",
+        "label": "Shadow on cards",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Logo and favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width",
+        "min": 60,
+        "max": 240,
+        "step": 4,
+        "unit": "px",
+        "default": 132
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "32 x 32 px PNG"
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Cart type",
+        "options": [
+          {
+            "value": "drawer",
+            "label": "Drawer"
+          },
+          {
+            "value": "page",
+            "label": "Page"
+          }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping from (in the store currency)",
+        "info": "Shown as a progress bar in the cart. Leave empty to hide it.",
+        "default": 150
+      },
+      {
+        "type": "collection",
+        "id": "cart_upsell_collection",
+        "label": "Suggestions in the cart",
+        "info": "Products from this collection that aren't in the cart yet"
+      }
+    ]
+  },
+  {
+    "name": "Accessory discount",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Tiers shown in the configurator and the cart. The discount itself comes from the Discount Function (development store) or an automatic discount with the same tiers (live store)."
+      },
+      {
+        "type": "range",
+        "id": "tier_1_count",
+        "label": "First tier: accessories with a desk",
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "tier_1_percent",
+        "label": "First tier: % off accessories",
+        "min": 0,
+        "max": 30,
+        "step": 1,
+        "default": 5
+      },
+      {
+        "type": "range",
+        "id": "tier_2_count",
+        "label": "Second tier: accessories with a desk",
+        "min": 2,
+        "max": 6,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "type": "range",
+        "id": "tier_2_percent",
+        "label": "Second tier: % off accessories",
+        "min": 0,
+        "max": 40,
+        "step": 1,
+        "default": 10
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram URL"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "YouTube URL"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest URL"
+      }
+    ]
+  }
+]

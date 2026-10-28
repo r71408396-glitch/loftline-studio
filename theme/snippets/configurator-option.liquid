@@ -1,0 +1,64 @@
+{%- comment -%}
+  One configurator choice built from a product option. Each input's value is
+  the code from the matching variant's SKU (LL-TOP-OAK-160-80: option 1 is
+  part 3, option 2 part 4, ...), so the script and the 3D viewer never depend
+  on translated option names.
+
+  Accepts:
+  - product: the product whose option is shown
+  - option: an entry of product.options_with_values
+  - name: input name (material, width, depth, frame)
+  - style: 'pill' or 'swatch'
+  - suffix: text after each label, e.g. ' cm' (optional)
+  - selected: code to pre-select (optional, else the first value)
+{%- endcomment -%}
+{%- liquid
+  assign sku_index = option.position | plus: 1
+  assign option_index = option.position | minus: 1
+  assign selected_code = selected | append: '' | downcase
+  assign has_selected = false
+  for variant in product.variants
+    assign variant_code = variant.sku | split: '-' | slice: sku_index | first | downcase
+    if variant_code == selected_code
+      assign has_selected = true
+      break
+    endif
+  endfor
+-%}
+<fieldset class="config-group" data-config-group="{{ name }}">
+  <legend class="config-group__legend">
+    <span class="label">{{ option.name | escape }}</span>
+    <span class="config-group__value muted small" data-config-label="{{ name }}"></span>
+  </legend>
+  <div class="config-group__values config-group__values--{{ style }}">
+    {%- for value in option.values -%}
+      {%- liquid
+        assign code = ''
+        for variant in product.variants
+          assign variant_value = variant.options[option_index]
+          if variant_value == value
+            assign code = variant.sku | split: '-' | slice: sku_index | first | downcase
+            break
+          endif
+        endfor
+      -%}
+      {%- if code != blank -%}
+        <label class="config-choice config-choice--{{ style }}">
+          <input
+            type="radio"
+            name="{{ name }}"
+            value="{{ code | escape }}"
+            data-label="{{ value | escape }}{{ suffix }}"
+            {% if has_selected and code == selected_code %}checked{% elsif has_selected == false and forloop.first %}checked{% endif %}
+          >
+          {%- if style == 'swatch' -%}
+            <span class="config-choice__swatch swatch--{{ name }}-{{ code | escape }}" aria-hidden="true"></span>
+            <span class="config-choice__text">{{ value | escape }}</span>
+          {%- else -%}
+            <span class="config-choice__text">{{ value | escape }}{{ suffix }}</span>
+          {%- endif -%}
+        </label>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</fieldset>

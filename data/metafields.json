@@ -1,0 +1,45 @@
+{
+  "notes": "Custom data the theme reads. The setup script (later, in the app) creates these definitions through the Admin API; values per product are in catalog.json under 'specs'.",
+  "product_metafields": [
+    { "namespace": "specs", "key": "dimensions", "type": "single_line_text_field", "name": "Dimensions", "pin": true },
+    { "namespace": "specs", "key": "height_range", "type": "single_line_text_field", "name": "Height range" },
+    { "namespace": "specs", "key": "load_capacity", "type": "weight", "name": "Load capacity" },
+    { "namespace": "specs", "key": "weight", "type": "weight", "name": "Weight" },
+    { "namespace": "specs", "key": "assembly_minutes", "type": "number_integer", "name": "Assembly time (minutes)" },
+    { "namespace": "specs", "key": "warranty_years", "type": "number_integer", "name": "Warranty (years)" },
+    { "namespace": "specs", "key": "lead_time_days", "type": "number_integer", "name": "Lead time (days)", "description": "Days to make before shipping; the delivery date service adds carrier transit days." },
+    { "namespace": "specs", "key": "material", "type": "metaobject_reference", "name": "Material", "metaobject": "material" },
+    { "namespace": "specs", "key": "care", "type": "multi_line_text_field", "name": "Care" }
+  ],
+  "metaobjects": [
+    {
+      "type": "material",
+      "name": "Material",
+      "storefront": true,
+      "fields": [
+        { "key": "name", "type": "single_line_text_field", "required": true },
+        { "key": "summary", "type": "multi_line_text_field" },
+        { "key": "origin", "type": "single_line_text_field" },
+        { "key": "care", "type": "multi_line_text_field" },
+        { "key": "swatch", "type": "color" }
+      ],
+      "entries": [
+        { "handle": "oak", "name": "Oak", "summary": "European white oak, glued from solid staves and finished with a hardwax oil.", "origin": "FSC-certified, Germany", "care": "Wipe with a damp cloth. Re-oil once a year.", "swatch": "#c9a477" },
+        { "handle": "walnut", "name": "Walnut", "summary": "American black walnut with a darker, more varied grain.", "origin": "FSC-certified, USA", "care": "Wipe with a damp cloth. Re-oil once a year.", "swatch": "#6b4a33" },
+        { "handle": "bamboo", "name": "Bamboo", "summary": "Pressed bamboo strips; harder than oak and fast-growing.", "origin": "FSC-certified, China", "care": "Wipe with a damp cloth.", "swatch": "#d8bf8f" },
+        { "handle": "white-laminate", "name": "White laminate", "summary": "Matte high-pressure laminate on a birch plywood core, edges left visible.", "origin": "Finland", "care": "Any mild cleaner.", "swatch": "#efefed" },
+        { "handle": "charcoal-linoleum", "name": "Charcoal linoleum", "summary": "Furniture linoleum made from linseed oil and wood flour; soft and warm to the touch.", "origin": "Netherlands", "care": "Damp cloth; avoid alcohol cleaners.", "swatch": "#3b3e42" }
+      ]
+    },
+    {
+      "type": "faq_item",
+      "name": "FAQ item",
+      "storefront": true,
+      "fields": [
+        { "key": "question", "type": "single_line_text_field", "required": true },
+        { "key": "answer", "type": "rich_text_field", "required": true },
+        { "key": "topic", "type": "single_line_text_field" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+<section class="section{% if section.settings.tint %} section--tint{% endif %}">
+  <div class="page-width page-width--narrow">
+    {%- if section.settings.heading != blank -%}
+      <h2>{{ section.settings.heading | escape }}</h2>
+    {%- endif -%}
+    {%- if section.settings.text != blank -%}
+      <div class="rte">{{ section.settings.text }}</div>
+    {%- endif -%}
+    {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+      <a class="button" style="margin-top: var(--space-3);" href="{{ section.settings.button_link }}">{{ section.settings.button_label | escape }}</a>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Rich text",
+  "class": "section-rich-text",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Made to order, built to last" },
+    { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Every desk is cut and assembled after you order it, then checked and shipped with everything you need to put it together in under 30 minutes.</p>" },
+    { "type": "text", "id": "button_label", "label": "Button label" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "checkbox", "id": "tint", "label": "Tinted background", "default": false }
+  ],
+  "presets": [{ "name": "Rich text" }]
+}
+{% endschema %}

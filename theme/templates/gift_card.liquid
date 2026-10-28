@@ -1,0 +1,30 @@
+{%- layout none -%}
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <title>{{ 'gift_card.title' | t: shop: shop.name }}</title>
+    {% render 'css-variables' %}
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ content_for_header }}
+  </head>
+  <body>
+    <main class="password-page">
+      <div class="password-page__inner panel">
+        <p class="site-header__logo" style="justify-content: center;">{{ shop.name }}</p>
+        <h1 class="h2" style="margin-top: var(--space-3);">{{ gift_card.initial_value | money }}</h1>
+        {%- if gift_card.expired or gift_card.enabled == false -%}
+          <p class="status-error">{{ 'gift_card.unavailable' | t }}</p>
+        {%- else -%}
+          {%- assign balance = gift_card.balance | money -%}
+          <p class="muted">{{ 'gift_card.balance' | t: balance: balance }}</p>
+          <p class="h3" style="font-variant-numeric: tabular-nums;">{{ gift_card.code | format_code }}</p>
+          <p class="small muted">{{ 'gift_card.use_at_checkout' | t }}</p>
+          <a class="button" style="margin-top: var(--space-3);" href="{{ shop.url }}">{{ 'general.continue_shopping' | t }}</a>
+        {%- endif -%}
+      </div>
+    </main>
+  </body>
+</html>

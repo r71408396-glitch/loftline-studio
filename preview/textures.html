@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Texture sheet</title>
+<style>body{margin:0;background:#fff;font:13px system-ui}img{display:block;width:100%}p{margin:4px 8px}</style></head>
+<body><div id="out"></div>
+<script type="module">
+import { DeskViewer } from '../theme/assets/desk-viewer.js';
+const holder = document.createElement('div'); holder.style.cssText='width:10px;height:10px;position:absolute;left:-99px';
+document.body.appendChild(holder);
+const v = new DeskViewer(holder);
+const keys = (new URLSearchParams(location.search).get('keys') || 'oak,walnut,bamboo').split(',');
+for (const k of keys) {
+  const c = v.materials.top(k)[0].map.image;
+  const p = document.createElement('p'); p.textContent = k; out.appendChild(p);
+  const img = document.createElement('img'); img.src = c.toDataURL(); out.appendChild(img);
+}
+</script></body></html>

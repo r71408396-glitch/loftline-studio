@@ -1,0 +1,116 @@
+{%- liquid
+  assign menu = section.settings.menu
+  assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio | round
+-%}
+<header class="site-header">
+  <div class="page-width site-header__inner">
+    <details class="menu-drawer" id="MenuDrawer">
+      <summary class="icon-button" aria-label="{{ 'accessibility.menu' | t }}">
+        {% render 'icon', name: 'menu' %}
+        {% render 'icon', name: 'close' %}
+      </summary>
+      <nav class="menu-drawer__panel" aria-label="{{ 'accessibility.menu' | t }}">
+        <ul class="menu-drawer__list">
+          {%- for link in menu.links -%}
+            <li>
+              <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+              {%- if link.links.size > 0 -%}
+                <ul class="menu-drawer__sublist">
+                  {%- for child in link.links -%}
+                    <li><a href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>{{ child.title | escape }}</a></li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+        {%- if section.settings.cta_label != blank -%}
+          <a class="button button--full" style="margin-top: var(--space-3);" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">
+            {{- section.settings.cta_label | escape -}}
+          </a>
+        {%- endif -%}
+      </nav>
+    </details>
+
+    <div class="site-header__logo">
+      <a href="{{ routes.root_url }}">
+        {%- if settings.logo != blank -%}
+          {{
+            settings.logo
+            | image_url: width: 480
+            | image_tag:
+              width: settings.logo_width,
+              height: logo_height,
+              widths: '120, 180, 240, 360, 480',
+              sizes: '240px',
+              alt: shop.name,
+              preload: true
+          }}
+        {%- else -%}
+          {{ shop.name }}
+        {%- endif -%}
+      </a>
+    </div>
+
+    <nav class="site-header__nav" aria-label="{{ 'accessibility.main_navigation' | t }}">
+      <ul class="site-header__menu">
+        {%- for link in menu.links -%}
+          <li>
+            <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="icon-button" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
+        {% render 'icon', name: 'search' %}
+      </a>
+      {%- if shop.customer_accounts_enabled -%}
+        <a class="icon-button" href="{{ routes.account_url }}" aria-label="{{ 'header.account' | t }}">
+          {% render 'icon', name: 'account' %}
+        </a>
+      {%- endif -%}
+      <a class="icon-button" href="{{ routes.cart_url }}" id="HeaderCart" data-cart-toggle>
+        {% render 'icon', name: 'cart' %}
+        <span class="visually-hidden">{{ 'header.cart' | t }}</span>
+        <span class="cart-count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>
+          <span aria-hidden="true">{{ cart.item_count }}</span>
+          <span class="visually-hidden">{{ 'accessibility.cart_count' | t: count: cart.item_count }}</span>
+        </span>
+      </a>
+      {%- if section.settings.cta_label != blank -%}
+        <a class="button site-header__cta" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">
+          {{- section.settings.cta_label | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header-wrapper",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "Button label",
+      "default": "Build your desk"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link",
+      "info": "Usually the desk configurator page"
+    }
+  ]
+}
+{% endschema %}

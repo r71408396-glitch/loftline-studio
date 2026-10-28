@@ -1,0 +1,446 @@
+{
+  "currency": "USD",
+  "notes": "Source of truth for the product setup. Prices are in USD; Markets rounds them for CAD and GBP. Used by the local preview renderer now and by the product import later. Images in data/images are rendered from the 3D model (preview/shots.html); variant_match is a SKU or, for the desk top, a material code.",
+  "products": [
+    {
+      "handle": "dual-motor-frame",
+      "title": "Dual-motor frame",
+      "role": "frame",
+      "product_type": "Desk part",
+      "description": "<p>Two quiet motors, three-stage legs and a height range of 62 to 127 cm. Holds 140 kg.</p>",
+      "options": [
+        "Colour"
+      ],
+      "variants": [
+        {
+          "options": [
+            "Black"
+          ],
+          "sku": "LL-FRM-BLK",
+          "price": 549,
+          "inventory": 40
+        },
+        {
+          "options": [
+            "White"
+          ],
+          "sku": "LL-FRM-WHT",
+          "price": 549,
+          "inventory": 32
+        },
+        {
+          "options": [
+            "Graphite"
+          ],
+          "sku": "LL-FRM-GRA",
+          "price": 549,
+          "inventory": 18
+        },
+        {
+          "options": [
+            "Aluminium"
+          ],
+          "sku": "LL-FRM-ALU",
+          "price": 599,
+          "inventory": 12
+        }
+      ],
+      "specs": {
+        "dimensions": "Fits tops 120 to 200 cm wide",
+        "height_range": "62 to 127 cm",
+        "load_capacity": {
+          "value": 140,
+          "unit": "kg"
+        },
+        "weight": {
+          "value": 34,
+          "unit": "kg"
+        },
+        "assembly_minutes": 25,
+        "warranty_years": 10,
+        "lead_time_days": 3,
+        "care": "Wipe with a dry cloth. Check the screws after the first month."
+      },
+      "images": [
+        {
+          "file": "frame-black.webp",
+          "alt": "Dual-motor frame in black",
+          "variant_match": "LL-FRM-BLK"
+        },
+        {
+          "file": "frame-white.webp",
+          "alt": "Dual-motor frame in white",
+          "variant_match": "LL-FRM-WHT"
+        },
+        {
+          "file": "frame-graphite.webp",
+          "alt": "Dual-motor frame in graphite",
+          "variant_match": "LL-FRM-GRA"
+        },
+        {
+          "file": "frame-aluminium.webp",
+          "alt": "Dual-motor frame in aluminium",
+          "variant_match": "LL-FRM-ALU"
+        },
+        {
+          "file": "frame-black-standing.webp",
+          "alt": "Black frame raised to standing height"
+        }
+      ]
+    },
+    {
+      "handle": "desk-top",
+      "title": "Desk top",
+      "role": "top",
+      "product_type": "Desk part",
+      "description": "<p>Solid wood, laminate or furniture linoleum, cut to size after you order.</p>",
+      "options": [
+        "Material",
+        "Width",
+        "Depth"
+      ],
+      "materials": [
+        {
+          "label": "Oak",
+          "code": "OAK",
+          "base": 299
+        },
+        {
+          "label": "Walnut",
+          "code": "WAL",
+          "base": 399
+        },
+        {
+          "label": "Bamboo",
+          "code": "BAM",
+          "base": 249
+        },
+        {
+          "label": "White laminate",
+          "code": "WHT",
+          "base": 149
+        },
+        {
+          "label": "Charcoal linoleum",
+          "code": "LIN",
+          "base": 279
+        }
+      ],
+      "widths": [
+        120,
+        140,
+        160,
+        180
+      ],
+      "depths": [
+        70,
+        80
+      ],
+      "price_per_20cm_width": 40,
+      "price_deep": 30,
+      "sold_out": [
+        "LL-TOP-WAL-180-80"
+      ],
+      "specs": {
+        "dimensions": "120 to 180 x 70 or 80 cm, 25 mm thick",
+        "weight": {
+          "value": 22,
+          "unit": "kg"
+        },
+        "warranty_years": 5,
+        "lead_time_days": 10
+      },
+      "images": [
+        {
+          "file": "top-oak.webp",
+          "alt": "Oak desk top on a black frame",
+          "variant_match": "OAK"
+        },
+        {
+          "file": "top-walnut.webp",
+          "alt": "Walnut desk top on a black frame",
+          "variant_match": "WAL"
+        },
+        {
+          "file": "top-bamboo.webp",
+          "alt": "Bamboo desk top on a black frame",
+          "variant_match": "BAM"
+        },
+        {
+          "file": "top-white.webp",
+          "alt": "White laminate desk top on a white frame",
+          "variant_match": "WHT"
+        },
+        {
+          "file": "top-linoleum.webp",
+          "alt": "Charcoal linoleum desk top with a birch plywood edge",
+          "variant_match": "LIN"
+        },
+        {
+          "file": "top-oak-edge.webp",
+          "alt": "Rounded edge on an oak top"
+        }
+      ]
+    },
+    {
+      "handle": "felt-desk-pad",
+      "title": "Felt desk pad",
+      "role": "accessory",
+      "model": "desk_pad",
+      "product_type": "Accessory",
+      "subscription": true,
+      "note": "Merino felt, 90 x 40 cm",
+      "options": [
+        "Colour"
+      ],
+      "variants": [
+        {
+          "options": [
+            "Graphite"
+          ],
+          "sku": "LL-ACC-PAD-GRA",
+          "price": 49,
+          "inventory": 120
+        },
+        {
+          "options": [
+            "Stone"
+          ],
+          "sku": "LL-ACC-PAD-STN",
+          "price": 49,
+          "inventory": 80
+        },
+        {
+          "options": [
+            "Ink"
+          ],
+          "sku": "LL-ACC-PAD-INK",
+          "price": 49,
+          "inventory": 0
+        }
+      ],
+      "specs": {
+        "dimensions": "90 x 40 cm, 3 mm",
+        "weight": {
+          "value": 0.4,
+          "unit": "kg"
+        },
+        "warranty_years": 1,
+        "lead_time_days": 1,
+        "care": "Brush off dust; spot clean with cold water."
+      },
+      "selling_plans": {
+        "group": "Refill",
+        "plans": [
+          {
+            "name": "Every 3 months",
+            "interval": "MONTH",
+            "count": 3,
+            "discount_percent": 10
+          },
+          {
+            "name": "Every 6 months",
+            "interval": "MONTH",
+            "count": 6,
+            "discount_percent": 10
+          },
+          {
+            "name": "Every 12 months",
+            "interval": "MONTH",
+            "count": 12,
+            "discount_percent": 10
+          }
+        ]
+      },
+      "images": [
+        {
+          "file": "desk-pad-graphite.webp",
+          "alt": "Graphite felt desk pad on an oak desk",
+          "variant_match": "LL-ACC-PAD-GRA"
+        },
+        {
+          "file": "desk-pad-stone.webp",
+          "alt": "Stone felt desk pad on an oak desk",
+          "variant_match": "LL-ACC-PAD-STN"
+        },
+        {
+          "file": "desk-pad-ink.webp",
+          "alt": "Ink felt desk pad on an oak desk",
+          "variant_match": "LL-ACC-PAD-INK"
+        }
+      ]
+    },
+    {
+      "handle": "monitor-arm",
+      "title": "Monitor arm",
+      "role": "accessory",
+      "model": "monitor_arm",
+      "product_type": "Accessory",
+      "note": "Gas spring, screens up to 32\"",
+      "options": [
+        "Title"
+      ],
+      "variants": [
+        {
+          "options": [
+            "Default Title"
+          ],
+          "sku": "LL-ACC-ARM",
+          "price": 129,
+          "inventory": 60
+        }
+      ],
+      "specs": {
+        "dimensions": "Reach 52 cm, screens up to 32\"",
+        "load_capacity": {
+          "value": 9,
+          "unit": "kg"
+        },
+        "weight": {
+          "value": 3.1,
+          "unit": "kg"
+        },
+        "assembly_minutes": 10,
+        "warranty_years": 5,
+        "lead_time_days": 1
+      },
+      "images": [
+        {
+          "file": "monitor-arm.webp",
+          "alt": "Monitor arm clamped to the back edge of the desk"
+        }
+      ]
+    },
+    {
+      "handle": "cable-tray",
+      "title": "Cable tray",
+      "role": "accessory",
+      "model": "cable_tray",
+      "product_type": "Accessory",
+      "note": "Steel, mounts under the top",
+      "options": [
+        "Title"
+      ],
+      "variants": [
+        {
+          "options": [
+            "Default Title"
+          ],
+          "sku": "LL-ACC-TRY",
+          "price": 39,
+          "inventory": 90
+        }
+      ],
+      "specs": {
+        "dimensions": "100 x 11 x 8 cm",
+        "weight": {
+          "value": 1.6,
+          "unit": "kg"
+        },
+        "assembly_minutes": 5,
+        "warranty_years": 5,
+        "lead_time_days": 1
+      },
+      "images": [
+        {
+          "file": "cable-tray.webp",
+          "alt": "Cable tray mounted under the desk top"
+        }
+      ]
+    },
+    {
+      "handle": "under-desk-drawer",
+      "title": "Under-desk drawer",
+      "role": "accessory",
+      "model": "drawer",
+      "product_type": "Accessory",
+      "note": "Slim, soft close",
+      "options": [
+        "Title"
+      ],
+      "variants": [
+        {
+          "options": [
+            "Default Title"
+          ],
+          "sku": "LL-ACC-DRW",
+          "price": 89,
+          "inventory": 45
+        }
+      ],
+      "specs": {
+        "dimensions": "42 x 32 x 7 cm",
+        "load_capacity": {
+          "value": 5,
+          "unit": "kg"
+        },
+        "weight": {
+          "value": 2.4,
+          "unit": "kg"
+        },
+        "assembly_minutes": 10,
+        "warranty_years": 5,
+        "lead_time_days": 1
+      },
+      "images": [
+        {
+          "file": "under-desk-drawer.webp",
+          "alt": "Slim drawer under the front edge of the desk"
+        }
+      ]
+    },
+    {
+      "handle": "cable-kit",
+      "title": "Cable kit",
+      "role": "accessory",
+      "model": "none",
+      "product_type": "Accessory",
+      "note": "Ties, clips and adhesive mounts",
+      "description": "<p>Reusable hook-and-loop ties, adhesive clips and spare mounts to keep cables tidy. Most people top up twice a year.</p>",
+      "options": [
+        "Title"
+      ],
+      "variants": [
+        {
+          "options": [
+            "Default Title"
+          ],
+          "sku": "LL-ACC-CBL",
+          "price": 19,
+          "inventory": 200
+        }
+      ],
+      "specs": {
+        "dimensions": "20 ties, 12 clips, 6 mounts",
+        "weight": {
+          "value": 0.2,
+          "unit": "kg"
+        },
+        "lead_time_days": 1
+      },
+      "selling_plans": {
+        "group": "Refill",
+        "plans": [
+          {
+            "name": "Every 3 months",
+            "interval": "MONTH",
+            "count": 3,
+            "discount_percent": 10
+          },
+          {
+            "name": "Every 6 months",
+            "interval": "MONTH",
+            "count": 6,
+            "discount_percent": 10
+          },
+          {
+            "name": "Every 12 months",
+            "interval": "MONTH",
+            "count": 12,
+            "discount_percent": 10
+          }
+        ]
+      }
+    }
+  ]
+}

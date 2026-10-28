@@ -1,0 +1,99 @@
+{%- comment -%}
+  Design tokens from the theme settings. Every colour and font in the store
+  reads from these variables, so one change in the theme editor updates the
+  whole store.
+{%- endcomment -%}
+{%- liquid
+  assign font_syne = "'Syne', ui-sans-serif, system-ui, sans-serif"
+  assign font_instrument = "'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+
+  assign font_heading = font_syne
+  if settings.type_heading_font == 'instrument_sans'
+    assign font_heading = font_instrument
+  endif
+
+  assign tracking = settings.type_heading_tracking | divided_by: 100.0
+  assign body_size_mobile = settings.type_body_size | minus: 1
+-%}
+<style>
+  {%- if settings.type_heading_font == 'syne' %}
+  @font-face {
+    font-family: 'Syne';
+    src: url('{{ 'syne-latin-wght-normal.woff2' | asset_url }}') format('woff2');
+    font-weight: 400 800;
+    font-style: normal;
+    font-display: swap;
+  }
+  {%- endif %}
+  @font-face {
+    font-family: 'Instrument Sans';
+    src: url('{{ 'instrument-sans-latin-wght-normal.woff2' | asset_url }}') format('woff2');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --color-accent: {{ settings.color_accent }};
+    --color-accent-hover: {{ settings.color_accent_hover }};
+    --color-tint: {{ settings.color_tint }};
+    --color-background: {{ settings.color_background }};
+    --color-surface: {{ settings.color_surface }};
+    --color-line: {{ settings.color_line }};
+    --color-ink: {{ settings.color_ink }};
+    --color-text: {{ settings.color_text }};
+    --color-muted: {{ settings.color_muted }};
+    --color-muted-on-dark: {{ settings.color_muted_on_dark }};
+    --color-success: {{ settings.color_success }};
+    --color-error: {{ settings.color_error }};
+    --color-on-accent: #ffffff;
+    --color-accent-rgb: {{ settings.color_accent.red }}, {{ settings.color_accent.green }}, {{ settings.color_accent.blue }};
+    --color-ink-rgb: {{ settings.color_ink.red }}, {{ settings.color_ink.green }}, {{ settings.color_ink.blue }};
+
+    --font-heading: {{ font_heading }};
+    --font-body: {{ font_instrument }};
+    --heading-tracking: {{ tracking }}em;
+
+    --text-h1: 3.6rem;
+    --text-h2: 3rem;
+    --text-h3: 2rem;
+    --text-h4: 1.7rem;
+    --text-body: {{ body_size_mobile }}px;
+    --text-small: 1.4rem;
+    --text-button: 1.6rem;
+    --text-price: 1.8rem;
+
+    --page-width: {{ settings.page_width }}px;
+    --gutter: 1.6rem;
+    --section-padding: 5.6rem;
+    --radius-button: {{ settings.radius_button }}px;
+    --radius-card: {{ settings.radius_card }}px;
+    --radius-pill: 999px;
+    {%- if settings.card_shadow %}
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.05), 0 12px 32px rgba(15, 23, 42, 0.08);
+    {%- else %}
+    --shadow-card: none;
+    {%- endif %}
+
+    --space-1: 0.8rem;
+    --space-2: 1.6rem;
+    --space-3: 2.4rem;
+    --space-4: 3.2rem;
+    --space-6: 4.8rem;
+    --space-8: 6.4rem;
+    --space-12: 9.6rem;
+  }
+
+  @media screen and (min-width: 990px) {
+    :root {
+      --text-h1: 5.6rem;
+      --text-h2: 4rem;
+      --text-h3: 2.4rem;
+      --text-h4: 1.8rem;
+      --text-body: {{ settings.type_body_size }}px;
+      --text-price: 2rem;
+      --gutter: 3.2rem;
+      --section-padding: 9.6rem;
+    }
+  }
+</style>

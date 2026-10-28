@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "configurator": {
+      "type": "desk-configurator",
+      "blocks": {
+        "desk-pad": { "type": "accessory", "settings": { "product": "felt-desk-pad", "model": "desk_pad", "note": "Merino felt, 90 x 40 cm" } },
+        "monitor-arm": { "type": "accessory", "settings": { "product": "monitor-arm", "model": "monitor_arm", "note": "Gas spring, screens up to 32\"" } },
+        "cable-tray": { "type": "accessory", "settings": { "product": "cable-tray", "model": "cable_tray", "note": "Steel, mounts under the top" } },
+        "drawer": { "type": "accessory", "settings": { "product": "under-desk-drawer", "model": "drawer", "note": "Slim, soft close" } }
+      },
+      "block_order": ["desk-pad", "monitor-arm", "cable-tray", "drawer"],
+      "settings": {
+        "frame_product": "dual-motor-frame",
+        "top_product": "desk-top",
+        "cart_mode": "lines"
+      }
+    }
+  },
+  "order": ["configurator"]
+}

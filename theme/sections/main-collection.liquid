@@ -1,0 +1,64 @@
+{{ 'collection.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'facets.js' | asset_url }}" type="module"></script>
+
+{%- paginate collection.products by section.settings.per_page -%}
+  <facet-page class="section collection" data-section-id="{{ section.id }}">
+    <div class="page-width">
+      <div class="collection__header">
+        <h1>{{ collection.title | escape }}</h1>
+        {%- if collection.description != blank -%}
+          <div class="rte muted">{{ collection.description }}</div>
+        {%- endif -%}
+      </div>
+
+      <div class="collection__layout{% if section.settings.show_filters == false or collection.filters.size == 0 %} collection__layout--no-filters{% endif %}" data-facets-root>
+        {%- liquid
+          assign sort_by = collection.sort_by | default: collection.default_sort_by
+          if section.settings.show_filters
+            render 'facets', results: collection, url: collection.url, sort_by: sort_by, sort_options: collection.sort_options
+          endif
+        -%}
+
+        <div class="collection__results" data-facets-results>
+          {%- if collection.products.size > 0 -%}
+            <ul class="grid grid--2 grid--3-desktop collection__grid" role="list">
+              {%- for product in collection.products -%}
+                {%- liquid
+                  assign lazy = true
+                  if forloop.index <= 3
+                    assign lazy = false
+                  endif
+                -%}
+                <li>{% render 'product-card', card_product: product, lazy: lazy, quick_add: section.settings.quick_add, sizes: '(min-width: 990px) 25vw, 50vw' %}</li>
+              {%- endfor -%}
+            </ul>
+            {% render 'pagination', paginate: paginate %}
+          {%- else -%}
+            <div class="empty-state">
+              <p>{{ 'collections.no_matches' | t }}</p>
+              <a class="button button--secondary" href="{{ collection.url }}" data-facet-link>{{ 'collections.clear_all' | t }}</a>
+            </div>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </facet-page>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection",
+  "class": "section-main-collection",
+  "settings": [
+    { "type": "range", "id": "per_page", "label": "Products per page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show filters and sorting",
+      "info": "Filters are set up in the Search & Discovery app",
+      "default": true
+    },
+    { "type": "checkbox", "id": "quick_add", "label": "Quick add on product cards", "default": true }
+  ]
+}
+{% endschema %}

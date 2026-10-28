@@ -1,0 +1,201 @@
+{
+  "general": {
+    "continue_shopping": "Continue shopping",
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{ number }}"
+    }
+  },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "menu": "Menu",
+    "main_navigation": "Main navigation",
+    "cart_count": {
+      "one": "{{ count }} item",
+      "other": "{{ count }} items"
+    },
+    "close": "Close"
+  },
+  "header": {
+    "search": "Search",
+    "account": "Account",
+    "cart": "Cart"
+  },
+  "footer": {
+    "newsletter_label": "Email address",
+    "newsletter_button": "Sign up",
+    "newsletter_success": "Thanks, you're on the list.",
+    "country": "Country or region",
+    "language": "Language",
+    "update": "Update",
+    "payment_methods": "Payment methods"
+  },
+  "sections": {
+    "announcement": {
+      "label": "Announcement"
+    },
+    "featured_collection": {
+      "placeholder_title": "Product title"
+    },
+    "hero": {
+      "poster_alt": "Loftline standing desk with an oak top, black frame, monitor arm and felt desk pad",
+      "stage_label": "3D view of the desk. Drag to turn it.",
+      "load_3d": "Turn it in 3D"
+    }
+  },
+  "products": {
+    "add_to_cart": "Add to cart",
+    "sold_out": "Sold out",
+    "sale": "Sale",
+    "sale_price": "Sale price",
+    "regular_price": "Regular price",
+    "from_price": "From {{ price }}",
+    "quantity": "Quantity",
+    "breadcrumbs": "Breadcrumbs",
+    "home": "Home",
+    "sku": "SKU {{ sku }}",
+    "zoom": "Open image zoom",
+    "purchase_options": "How to buy",
+    "one_time": "One-time purchase",
+    "save_percent": "Save {{ percent }}%",
+    "subscription_note": "Skip or cancel any time from your account.",
+    "in_stock": "In stock",
+    "out_of_stock": "Out of stock",
+    "made_to_order": "Made to order: ready to ship in about {{ days }} days",
+    "ships_fast": "Ships within 1 to 2 working days",
+    "specs": {
+      "dimensions": "Dimensions",
+      "height_range": "Height range",
+      "load_capacity": "Load capacity",
+      "weight": "Weight",
+      "assembly": "Assembly",
+      "warranty": "Warranty",
+      "care": "Care",
+      "minutes": {
+        "one": "{{ count }} minute",
+        "other": "{{ count }} minutes"
+      },
+      "years": {
+        "one": "{{ count }} year",
+        "other": "{{ count }} years"
+      }
+    },
+    "fbt_heading": "Frequently bought together",
+    "fbt_this_item": "This item",
+    "fbt_total": "Total for {{ count }} items",
+    "fbt_add": "Add selected to cart",
+    "fbt_select": "Add {{ title }}",
+    "quick_add": "Add",
+    "choose_options": "Choose options"
+  },
+  "collections": {
+    "all_title": "Collections",
+    "view_all": "View all",
+    "sort_by": "Sort by",
+    "apply": "Apply",
+    "empty": "No products here yet.",
+    "product_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "filters": "Filters",
+    "remove_filter": "Remove filter",
+    "clear_all": "Clear all",
+    "price_from": "From",
+    "price_to": "To",
+    "show_results": {
+      "one": "Show {{ count }} product",
+      "other": "Show {{ count }} products"
+    },
+    "no_matches": "No products match these filters."
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Your cart is empty.",
+    "remove": "Remove",
+    "update": "Update cart",
+    "subtotal": "Subtotal",
+    "taxes_note": "Taxes and shipping are calculated at checkout.",
+    "checkout": "Check out",
+    "close": "Close cart",
+    "start_build": "Build your desk",
+    "free_shipping_remaining": "You're {{ amount }} away from free delivery",
+    "free_shipping_reached": "Free delivery unlocked",
+    "build_title": "Custom desk",
+    "build_number": "Build {{ build }}",
+    "remove_build": "Remove desk",
+    "upsell_heading": "Finish the setup",
+    "add": "Add",
+    "view_cart": "View cart",
+    "decrease": "Decrease quantity of {{ item }}",
+    "increase": "Increase quantity of {{ item }}",
+    "quantity_for": "Quantity of {{ item }}"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search desks and parts",
+    "submit": "Search",
+    "results": {
+      "one": "{{ count }} result for \"{{ terms }}\"",
+      "other": "{{ count }} results for \"{{ terms }}\""
+    },
+    "no_results": "Nothing found for \"{{ terms }}\". Try a shorter word."
+  },
+  "blogs": {
+    "back": "Back to {{ title }}"
+  },
+  "templates": {
+    "404": {
+      "title": "Page not found",
+      "text": "The page you're looking for has moved or doesn't exist."
+    }
+  },
+  "password": {
+    "heading": "Opening soon",
+    "label": "Password",
+    "enter": "Enter",
+    "error": "That password didn't work."
+  },
+  "gift_card": {
+    "title": "Your {{ shop }} gift card",
+    "balance": "Balance: {{ balance }}",
+    "use_at_checkout": "Enter this code at checkout.",
+    "unavailable": "This gift card can no longer be used."
+  },
+  "configurator": {
+    "loading": "Loading 3D view",
+    "preview_height": "Preview height",
+    "sit": "Sit",
+    "stand": "Stand",
+    "drag_hint": "Drag to turn, scroll to zoom",
+    "reset_view": "Reset view",
+    "step_size": "Size",
+    "step_top": "Top",
+    "step_frame": "Frame",
+    "step_accessories": "Accessories",
+    "edge": "Edge",
+    "edge_square": "Square",
+    "edge_rounded": "Rounded",
+    "summary": "Your build",
+    "total": "Total",
+    "add_to_cart": "Add desk to cart",
+    "adding": "Adding",
+    "error": "Something went wrong. Please try again.",
+    "copy_link": "Copy a link to this build",
+    "link_copied": "Link copied",
+    "line_frame": "Frame",
+    "line_top": "Top",
+    "line_discount": "Accessories {{ percent }}% off",
+    "tier_next": "Add {{ count }} more accessory to save {{ percent }}% on accessories",
+    "tier_reached": "{{ percent }}% off your accessories",
+    "build": "Build",
+    "size": "Size",
+    "setup_needed": "Choose the frame and desk top products in this section's settings."
+  }
+}

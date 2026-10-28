@@ -1,0 +1,43 @@
+{%- comment -%}
+  Specs table from the product's "specs" metafields; rows without a value are left out.
+  Accepts: product, block
+{%- endcomment -%}
+{%- liquid
+  assign specs = product.metafields.specs
+  assign has_specs = false
+  if specs.dimensions != blank or specs.height_range != blank or specs.load_capacity != blank or specs.weight != blank or specs.assembly_minutes != blank or specs.warranty_years != blank
+    assign has_specs = true
+  endif
+-%}
+{%- if has_specs -%}
+  <div class="product-specs" {{ block.shopify_attributes }}>
+    {%- if block.settings.heading != blank -%}
+      <h2 class="h4">{{ block.settings.heading | escape }}</h2>
+    {%- endif -%}
+    <table class="specs-table">
+      <tbody>
+        {%- if specs.dimensions != blank -%}
+          <tr><th scope="row">{{ 'products.specs.dimensions' | t }}</th><td>{{ specs.dimensions.value | escape }}</td></tr>
+        {%- endif -%}
+        {%- if specs.height_range != blank -%}
+          <tr><th scope="row">{{ 'products.specs.height_range' | t }}</th><td>{{ specs.height_range.value | escape }}</td></tr>
+        {%- endif -%}
+        {%- if specs.load_capacity != blank -%}
+          <tr><th scope="row">{{ 'products.specs.load_capacity' | t }}</th><td>{{ specs.load_capacity | metafield_text }}</td></tr>
+        {%- endif -%}
+        {%- if specs.weight != blank -%}
+          <tr><th scope="row">{{ 'products.specs.weight' | t }}</th><td>{{ specs.weight | metafield_text }}</td></tr>
+        {%- endif -%}
+        {%- if specs.assembly_minutes != blank -%}
+          <tr><th scope="row">{{ 'products.specs.assembly' | t }}</th><td>{{ 'products.specs.minutes' | t: count: specs.assembly_minutes.value }}</td></tr>
+        {%- endif -%}
+        {%- if specs.warranty_years != blank -%}
+          <tr><th scope="row">{{ 'products.specs.warranty' | t }}</th><td>{{ 'products.specs.years' | t: count: specs.warranty_years.value }}</td></tr>
+        {%- endif -%}
+        {%- if specs.care != blank -%}
+          <tr><th scope="row">{{ 'products.specs.care' | t }}</th><td>{{ specs.care.value | escape | newline_to_br }}</td></tr>
+        {%- endif -%}
+      </tbody>
+    </table>
+  </div>
+{%- endif -%}

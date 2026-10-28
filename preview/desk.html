@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Desk viewer preview</title>
+    <style>
+      :root { color-scheme: light; }
+      body { margin: 0; font: 14px/1.4 system-ui, sans-serif; background: #ffffff; color: #334155; display: grid; grid-template-columns: 1fr 280px; height: 100vh; }
+      #stage { position: relative; background: #f8fafc; height: 100vh; overflow: hidden; }
+      aside { padding: 16px; border-left: 1px solid #e2e8f0; overflow: auto; }
+      fieldset { border: 0; padding: 0; margin: 0 0 14px; }
+      legend { font-weight: 600; color: #0b1220; margin-bottom: 6px; }
+      label { display: block; margin: 2px 0; }
+      @media (max-width: 700px) { body { grid-template-columns: 1fr; height: auto; } #stage { height: 60vh; } }
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <aside>
+      <form id="controls">
+        <fieldset><legend>Width</legend>
+          <label><input type="radio" name="width" value="1.2"> 120</label>
+          <label><input type="radio" name="width" value="1.4"> 140</label>
+          <label><input type="radio" name="width" value="1.6" checked> 160</label>
+          <label><input type="radio" name="width" value="1.8"> 180</label>
+        </fieldset>
+        <fieldset><legend>Depth</legend>
+          <label><input type="radio" name="depth" value="0.7"> 70</label>
+          <label><input type="radio" name="depth" value="0.8" checked> 80</label>
+        </fieldset>
+        <fieldset><legend>Top</legend>
+          <label><input type="radio" name="top" value="oak" checked> Oak</label>
+          <label><input type="radio" name="top" value="walnut"> Walnut</label>
+          <label><input type="radio" name="top" value="bamboo"> Bamboo</label>
+          <label><input type="radio" name="top" value="white"> White</label>
+          <label><input type="radio" name="top" value="linoleum"> Linoleum</label>
+        </fieldset>
+        <fieldset><legend>Edge</legend>
+          <label><input type="radio" name="edge" value="square" checked> Square</label>
+          <label><input type="radio" name="edge" value="rounded"> Rounded</label>
+        </fieldset>
+        <fieldset><legend>Frame</legend>
+          <label><input type="radio" name="frame" value="black" checked> Black</label>
+          <label><input type="radio" name="frame" value="white"> White</label>
+          <label><input type="radio" name="frame" value="graphite"> Graphite</label>
+          <label><input type="radio" name="frame" value="aluminium"> Aluminium</label>
+        </fieldset>
+        <fieldset><legend>Height</legend>
+          <label><input type="radio" name="height" value="0.74" checked> Sit</label>
+          <label><input type="radio" name="height" value="1.12"> Stand</label>
+        </fieldset>
+        <fieldset><legend>Accessories</legend>
+          <label><input type="checkbox" name="desk_pad"> Desk pad</label>
+          <label><input type="checkbox" name="monitor_arm"> Monitor arm</label>
+          <label><input type="checkbox" name="cable_tray"> Cable tray</label>
+          <label><input type="checkbox" name="drawer"> Drawer</label>
+        </fieldset>
+        <label><input type="checkbox" name="rotate"> Auto-rotate</label>
+      </form>
+    </aside>
+    <script type="module">
+      import { DeskViewer } from '../theme/assets/desk-viewer.js';
+      const form = document.getElementById('controls');
+      const t0 = performance.now();
+      const viewer = new DeskViewer(document.getElementById('stage'), { autoRotate: false });
+      window.viewer = viewer;
+      window.initMs = Math.round(performance.now() - t0);
+      const read = () => {
+        const data = new FormData(form);
+        return {
+          width: Number(data.get('width')),
+          depth: Number(data.get('depth')),
+          height: Number(data.get('height')),
+          top: data.get('top'),
+          edge: data.get('edge'),
+          frame: data.get('frame'),
+          accessories: Object.fromEntries(['desk_pad', 'monitor_arm', 'cable_tray', 'drawer'].map((k) => [k, data.has(k)])),
+        };
+      };
+      // ?state=<json> sets everything instantly (for screenshots).
+      const preset = new URLSearchParams(location.search).get('state');
+      viewer.set(preset ? { ...read(), ...JSON.parse(preset) } : read(), { instant: true });
+      form.addEventListener('change', (e) => {
+        if (e.target.name === 'rotate') viewer.setAutoRotate(e.target.checked);
+        else viewer.set(read());
+      });
+    </script>
+  </body>
+</html>

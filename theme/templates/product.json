@@ -1,0 +1,32 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "eyebrow": { "type": "eyebrow", "settings": {} },
+        "title": { "type": "title", "settings": {} },
+        "price": { "type": "price", "settings": {} },
+        "picker": { "type": "variant_picker", "settings": {} },
+        "buy": { "type": "buy_buttons", "settings": { "show_dynamic_checkout": true } },
+        "delivery": { "type": "delivery", "settings": {} },
+        "description": { "type": "description", "settings": {} },
+        "material": { "type": "material", "settings": {} },
+        "specs": { "type": "specs", "settings": { "heading": "Specs" } },
+        "shipping": {
+          "type": "collapsible",
+          "settings": {
+            "heading": "Delivery and returns",
+            "content": "<p>Free delivery on desks in the US, Canada and the UK. Accessories ship free over the free-delivery threshold. Return anything within 100 days; we collect desks for free.</p>"
+          }
+        }
+      },
+      "block_order": ["eyebrow", "title", "price", "picker", "buy", "delivery", "description", "material", "specs", "shipping"],
+      "settings": { "sticky_add": true }
+    },
+    "together": {
+      "type": "product-recommendations",
+      "settings": {}
+    }
+  },
+  "order": ["main", "together"]
+}

@@ -1,0 +1,201 @@
+{
+  "general": {
+    "continue_shopping": "Continuer vos achats",
+    "meta": {
+      "tags": "Étiqueté « {{ tags }} »",
+      "page": "Page {{ page }}"
+    },
+    "pagination": {
+      "label": "Pagination",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "page": "Page {{ number }}"
+    }
+  },
+  "accessibility": {
+    "skip_to_content": "Aller au contenu",
+    "menu": "Menu",
+    "main_navigation": "Navigation principale",
+    "cart_count": {
+      "one": "{{ count }} article",
+      "other": "{{ count }} articles"
+    },
+    "close": "Fermer"
+  },
+  "header": {
+    "search": "Rechercher",
+    "account": "Compte",
+    "cart": "Panier"
+  },
+  "footer": {
+    "newsletter_label": "Adresse courriel",
+    "newsletter_button": "S'inscrire",
+    "newsletter_success": "Merci, vous êtes inscrit.",
+    "country": "Pays ou région",
+    "language": "Langue",
+    "update": "Mettre à jour",
+    "payment_methods": "Moyens de paiement"
+  },
+  "sections": {
+    "announcement": {
+      "label": "Annonce"
+    },
+    "featured_collection": {
+      "placeholder_title": "Nom du produit"
+    },
+    "hero": {
+      "poster_alt": "Bureau assis-debout Loftline, plateau en chêne, piètement noir, bras d'écran et sous-main en feutre",
+      "stage_label": "Vue 3D du bureau. Faites glisser pour le tourner.",
+      "load_3d": "Voir en 3D"
+    }
+  },
+  "products": {
+    "add_to_cart": "Ajouter au panier",
+    "sold_out": "Épuisé",
+    "sale": "Solde",
+    "sale_price": "Prix réduit",
+    "regular_price": "Prix habituel",
+    "from_price": "À partir de {{ price }}",
+    "quantity": "Quantité",
+    "breadcrumbs": "Fil d'Ariane",
+    "home": "Accueil",
+    "sku": "Réf. {{ sku }}",
+    "zoom": "Agrandir l'image",
+    "purchase_options": "Mode d'achat",
+    "one_time": "Achat unique",
+    "save_percent": "Économisez {{ percent }} %",
+    "subscription_note": "Sautez ou annulez à tout moment depuis votre compte.",
+    "in_stock": "En stock",
+    "out_of_stock": "Rupture de stock",
+    "made_to_order": "Fabriqué sur commande : prêt à expédier en environ {{ days }} jours",
+    "ships_fast": "Expédié sous 1 à 2 jours ouvrables",
+    "specs": {
+      "dimensions": "Dimensions",
+      "height_range": "Plage de hauteur",
+      "load_capacity": "Charge maximale",
+      "weight": "Poids",
+      "assembly": "Montage",
+      "warranty": "Garantie",
+      "care": "Entretien",
+      "minutes": {
+        "one": "{{ count }} minute",
+        "other": "{{ count }} minutes"
+      },
+      "years": {
+        "one": "{{ count }} an",
+        "other": "{{ count }} ans"
+      }
+    },
+    "fbt_heading": "Souvent achetés ensemble",
+    "fbt_this_item": "Cet article",
+    "fbt_total": "Total pour {{ count }} articles",
+    "fbt_add": "Ajouter la sélection au panier",
+    "fbt_select": "Ajouter {{ title }}",
+    "quick_add": "Ajouter",
+    "choose_options": "Choisir les options"
+  },
+  "collections": {
+    "all_title": "Collections",
+    "view_all": "Tout voir",
+    "sort_by": "Trier par",
+    "apply": "Appliquer",
+    "empty": "Aucun produit pour l'instant.",
+    "product_count": {
+      "one": "{{ count }} produit",
+      "other": "{{ count }} produits"
+    },
+    "filters": "Filtres",
+    "remove_filter": "Retirer le filtre",
+    "clear_all": "Tout effacer",
+    "price_from": "De",
+    "price_to": "À",
+    "show_results": {
+      "one": "Voir {{ count }} produit",
+      "other": "Voir {{ count }} produits"
+    },
+    "no_matches": "Aucun produit ne correspond à ces filtres."
+  },
+  "cart": {
+    "title": "Votre panier",
+    "empty": "Votre panier est vide.",
+    "remove": "Retirer",
+    "update": "Mettre à jour le panier",
+    "subtotal": "Sous-total",
+    "taxes_note": "Les taxes et la livraison sont calculées au paiement.",
+    "checkout": "Passer à la caisse",
+    "close": "Fermer le panier",
+    "start_build": "Créer votre bureau",
+    "free_shipping_remaining": "Plus que {{ amount }} pour la livraison gratuite",
+    "free_shipping_reached": "Livraison gratuite débloquée",
+    "build_title": "Bureau sur mesure",
+    "build_number": "Configuration {{ build }}",
+    "remove_build": "Retirer le bureau",
+    "upsell_heading": "Complétez votre installation",
+    "add": "Ajouter",
+    "view_cart": "Voir le panier",
+    "decrease": "Diminuer la quantité de {{ item }}",
+    "increase": "Augmenter la quantité de {{ item }}",
+    "quantity_for": "Quantité de {{ item }}"
+  },
+  "search": {
+    "title": "Recherche",
+    "placeholder": "Rechercher bureaux et pièces",
+    "submit": "Rechercher",
+    "results": {
+      "one": "{{ count }} résultat pour « {{ terms }} »",
+      "other": "{{ count }} résultats pour « {{ terms }} »"
+    },
+    "no_results": "Aucun résultat pour « {{ terms }} ». Essayez un mot plus court."
+  },
+  "blogs": {
+    "back": "Retour à {{ title }}"
+  },
+  "templates": {
+    "404": {
+      "title": "Page introuvable",
+      "text": "La page que vous cherchez a été déplacée ou n'existe pas."
+    }
+  },
+  "password": {
+    "heading": "Ouverture prochaine",
+    "label": "Mot de passe",
+    "enter": "Entrer",
+    "error": "Ce mot de passe ne fonctionne pas."
+  },
+  "gift_card": {
+    "title": "Votre carte-cadeau {{ shop }}",
+    "balance": "Solde : {{ balance }}",
+    "use_at_checkout": "Saisissez ce code au paiement.",
+    "unavailable": "Cette carte-cadeau ne peut plus être utilisée."
+  },
+  "configurator": {
+    "loading": "Chargement de la vue 3D",
+    "preview_height": "Hauteur d'aperçu",
+    "sit": "Assis",
+    "stand": "Debout",
+    "drag_hint": "Faites glisser pour tourner, défilez pour zoomer",
+    "reset_view": "Réinitialiser la vue",
+    "step_size": "Dimensions",
+    "step_top": "Plateau",
+    "step_frame": "Piètement",
+    "step_accessories": "Accessoires",
+    "edge": "Chant",
+    "edge_square": "Droit",
+    "edge_rounded": "Arrondi",
+    "summary": "Votre bureau",
+    "total": "Total",
+    "add_to_cart": "Ajouter le bureau au panier",
+    "adding": "Ajout en cours",
+    "error": "Une erreur est survenue. Veuillez réessayer.",
+    "copy_link": "Copier le lien de cette configuration",
+    "link_copied": "Lien copié",
+    "line_frame": "Piètement",
+    "line_top": "Plateau",
+    "line_discount": "Accessoires -{{ percent }} %",
+    "tier_next": "Ajoutez encore {{ count }} accessoire pour économiser {{ percent }} % sur les accessoires",
+    "tier_reached": "{{ percent }} % de rabais sur vos accessoires",
+    "build": "Configuration",
+    "size": "Dimensions",
+    "setup_needed": "Choisissez les produits piètement et plateau dans les réglages de cette section."
+  }
+}
