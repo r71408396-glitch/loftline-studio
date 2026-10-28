@@ -1,0 +1,7 @@
+{
+  "label": "Code postal",
+  "check": "Vérifier",
+  "arrives": "Livraison du {{ from }} au {{ to }}",
+  "ships": "Expédié le {{ date }} depuis notre atelier",
+  "error": "Impossible de calculer une date. Vérifiez le code et réessayez."
+}

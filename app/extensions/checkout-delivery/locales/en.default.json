@@ -1,0 +1,11 @@
+{
+  "deliveryHeading": "Delivery",
+  "arrives": "Arrives {{from}} – {{to}}",
+  "ships": "Made to order: ships {{date}}",
+  "pickDate": "Preferred delivery day (optional)",
+  "pickDateHelp": "We'll book the carrier for this day when we can.",
+  "enterAddress": "Enter your address to see when your desk arrives.",
+  "error": "We couldn't work out a delivery date for this address.",
+  "assemblyLabel": "Add assembly at home ({{price}} per desk)",
+  "assemblyHelp": "A technician builds your desk where you want it and takes the packaging away."
+}

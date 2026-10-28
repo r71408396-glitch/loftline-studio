@@ -1,0 +1,12 @@
+{
+  "heading": {
+    "one": "Your desk is in our build queue",
+    "other": "Your desks are in our build queue"
+  },
+  "intro": "Build number {{builds}}. We email you at each step:",
+  "stepCutting": "Cutting: your top is cut and finished to size",
+  "stepAssembly": "Assembly: the frame is set to your width and tested",
+  "stepCheck": "Quality check: every part checked and packed",
+  "stepShipped": "Shipped: you get the carrier's tracking link",
+  "video": "Watch the 10-minute assembly video"
+}

@@ -1,0 +1,38 @@
+# Delivery date and assembly add-on in checkout. These targets sit in the
+# checkout steps, which Shopify only allows on Plus (and development stores).
+api_version = "2026-10"
+
+[[extensions]]
+name = "Delivery date and assembly"
+handle = "checkout-delivery"
+type = "ui_extension"
+
+[[extensions.targeting]]
+module = "./src/DeliveryDate.jsx"
+target = "purchase.checkout.shipping-option-list.render-after"
+
+[[extensions.targeting]]
+module = "./src/Assembly.jsx"
+target = "purchase.checkout.cart-line-list.render-after"
+
+[extensions.capabilities]
+api_access = true
+network_access = true
+
+# Lead time of each product in the cart, for the delivery window.
+[[extensions.metafields]]
+namespace = "specs"
+key = "lead_time_days"
+
+[extensions.settings]
+  [[extensions.settings.fields]]
+  key = "api_url"
+  type = "single_line_text_field"
+  name = "Loftline Ops URL"
+  description = "Where the delivery dates come from, e.g. https://ops.loftline.studio"
+
+  [[extensions.settings.fields]]
+  key = "assembly_variant"
+  type = "variant_reference"
+  name = "Assembly service"
+  description = "The product variant added when the customer asks for assembly"

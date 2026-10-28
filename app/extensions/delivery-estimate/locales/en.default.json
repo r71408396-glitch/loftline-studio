@@ -1,0 +1,7 @@
+{
+  "label": "ZIP or postcode",
+  "check": "Check",
+  "arrives": "Arrives {{ from }} – {{ to }}",
+  "ships": "Ships {{ date }} from our workshop",
+  "error": "We couldn't work out a date. Check the code and try again."
+}

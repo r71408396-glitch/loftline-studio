@@ -15,6 +15,12 @@ scopes = "read_products,write_products,write_cart_transforms,write_discounts,rea
 [auth]
 redirect_urls = ["https://example.com/auth/callback"]
 
+# Storefront delivery dates: /apps/loftline/* on the shop is forwarded to /proxy/* here, signed.
+[app_proxy]
+url = "https://example.com/proxy"
+subpath = "loftline"
+prefix = "apps"
+
 [webhooks]
 api_version = "2026-10"
 

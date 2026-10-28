@@ -16,6 +16,22 @@ Embedded Shopify admin app in `app/`, built on Shopify's React Router app templa
 | Product price change (Events) | Re-sends prices to the desk bundle Function so checkout never uses an old price. |
 | `app/uninstalled` | Removes sessions and settings. |
 
+## Delivery dates and extensions
+
+The delivery window is the parts' longest lead time plus carrier transit to the destination zone, counted in working days. It skips weekends and carrier holidays, with a 2 pm cut-off (`app/lib/delivery.ts`):
+
+- **US:** first digit of the ZIP, from Columbus.
+- **Canada:** first letter of the postal code, from Toronto.
+- **UK:** mainland, or Northern Ireland, the Highlands and the islands, from Birmingham.
+
+| Extension | Where | Plan |
+|---|---|---|
+| `delivery-estimate` (theme app block) | Product page: ZIP/postcode in, "Arrives Thu 19 – Fri 20 Nov" out, through the app proxy `/apps/loftline/delivery` (signed by Shopify). Remembers the code. | All plans |
+| `checkout-delivery` | Checkout, under the shipping options: delivery window for the shipping address, optional preferred delivery day (saved as the "Preferred delivery date" order attribute). Under the cart lines: assembly at home, one per desk. | Plus and development stores |
+| `thank-you-build` | Thank-you page: build numbers and what happens next, assembly video link. | All plans |
+
+Checkout extension settings (in the checkout editor) need two values: the Loftline Ops URL, and the variant of an "Assembly at home" service product, which isn't in the catalogue yet.
+
 Moving a build to a stage:
 
 1. Tags the order (`build-cutting`, `build-assembly`, ...).

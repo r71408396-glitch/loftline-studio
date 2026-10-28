@@ -1,0 +1,12 @@
+{
+  "heading": {
+    "one": "Votre bureau est dans notre file de fabrication",
+    "other": "Vos bureaux sont dans notre file de fabrication"
+  },
+  "intro": "Numéro de configuration {{builds}}. Nous vous écrivons à chaque étape :",
+  "stepCutting": "Découpe : votre plateau est coupé et fini sur mesure",
+  "stepAssembly": "Montage : le piètement est réglé à votre largeur et testé",
+  "stepCheck": "Contrôle qualité : chaque pièce vérifiée et emballée",
+  "stepShipped": "Expédition : vous recevez le lien de suivi du transporteur",
+  "video": "Voir la vidéo de montage de 10 minutes"
+}

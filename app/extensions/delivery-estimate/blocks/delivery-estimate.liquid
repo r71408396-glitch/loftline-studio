@@ -1,0 +1,60 @@
+{%- comment -%}
+  Delivery estimate for the product page. The shopper's ZIP/postcode and the
+  product's lead time (specs.lead_time_days metafield) go to the app through
+  the app proxy (/apps/loftline/delivery), which answers with a delivery window.
+{%- endcomment -%}
+{%- liquid
+  assign lead = product.metafields.specs.lead_time_days.value | default: block.settings.default_lead_days
+  assign country = localization.country.iso_code
+-%}
+<delivery-estimate
+  class="delivery-estimate"
+  data-country="{{ country }}"
+  data-lead="{{ lead }}"
+  data-locale="{{ request.locale.iso_code }}"
+  data-error="{{ 'error' | t }}"
+  data-arrives="{{ 'arrives' | t: from: '{from}', to: '{to}' }}"
+  data-ships="{{ 'ships' | t: date: '{date}' }}"
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.heading != blank -%}
+    <p class="delivery-estimate__heading">{{ block.settings.heading | escape }}</p>
+  {%- endif -%}
+  <form class="delivery-estimate__form" data-form>
+    <label class="delivery-estimate__label" for="DeliveryZip-{{ block.id }}">{{ 'label' | t }}</label>
+    <div class="delivery-estimate__row">
+      <input
+        id="DeliveryZip-{{ block.id }}"
+        class="delivery-estimate__input"
+        name="zip"
+        autocomplete="postal-code"
+        inputmode="text"
+        maxlength="10"
+        required
+      >
+      <button type="submit" class="delivery-estimate__button">{{ 'check' | t }}</button>
+    </div>
+  </form>
+  <p class="delivery-estimate__result" role="status" aria-live="polite" data-result></p>
+</delivery-estimate>
+
+{% schema %}
+{
+  "name": "Delivery estimate",
+  "target": "section",
+  "javascript": "delivery-estimate.js",
+  "stylesheet": "delivery-estimate.css",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "When will it arrive?" },
+    {
+      "type": "range",
+      "id": "default_lead_days",
+      "label": "Lead time when the product has none set (working days)",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 2
+    }
+  ]
+}
+{% endschema %}

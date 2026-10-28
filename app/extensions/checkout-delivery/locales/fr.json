@@ -1,0 +1,11 @@
+{
+  "deliveryHeading": "Livraison",
+  "arrives": "Livraison du {{from}} au {{to}}",
+  "ships": "Fabriqué sur commande : expédié le {{date}}",
+  "pickDate": "Jour de livraison souhaité (facultatif)",
+  "pickDateHelp": "Nous réservons le transporteur pour ce jour si possible.",
+  "enterAddress": "Saisissez votre adresse pour voir quand votre bureau arrive.",
+  "error": "Impossible de calculer une date de livraison pour cette adresse.",
+  "assemblyLabel": "Ajouter le montage à domicile ({{price}} par bureau)",
+  "assemblyHelp": "Un technicien monte votre bureau à l'endroit voulu et repart avec les emballages."
+}
