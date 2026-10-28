@@ -86,9 +86,15 @@
               assign tier_percent = settings.tier_1_percent
               assign next_count = settings.tier_2_count | minus: accessory_count
               assign next_percent = settings.tier_2_percent
-            else
+            elsif settings.tier_1_percent > 0
               assign next_count = settings.tier_1_count | minus: accessory_count
               assign next_percent = settings.tier_1_percent
+            else
+              comment
+                First tier switched off (live store with a single native discount)
+              endcomment
+              assign next_count = settings.tier_2_count | minus: accessory_count
+              assign next_percent = settings.tier_2_percent
             endif
           -%}
           <p class="cart-tier{% if next_count == 0 %} is-reached{% endif %}">

@@ -1,0 +1,22 @@
+# Loftline Ops: the store's own app (admin app, Functions and extensions).
+# client_id is filled in by `shopify app config link` once the app exists in the Partner Dashboard.
+client_id = ""
+name = "Loftline Ops"
+application_url = "https://example.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true
+
+[access_scopes]
+scopes = "read_products,write_products,write_cart_transforms,write_discounts,read_orders,write_orders,read_customers,write_own_subscription_contracts,read_inventory"
+
+[webhooks]
+api_version = "2026-07"
+
+[pos]
+embedded = false
+
+[auth]
+redirect_urls = ["https://example.com/auth/callback"]

@@ -6,7 +6,7 @@
       "handle": "dual-motor-frame",
       "title": "Dual-motor frame",
       "role": "frame",
-      "product_type": "Desk part",
+      "product_type": "Desk frame",
       "description": "<p>Two quiet motors, three-stage legs and a height range of 62 to 127 cm. Holds 140 kg.</p>",
       "options": [
         "Colour"
@@ -92,7 +92,7 @@
       "handle": "desk-top",
       "title": "Desk top",
       "role": "top",
-      "product_type": "Desk part",
+      "product_type": "Desk top",
       "description": "<p>Solid wood, laminate or furniture linoleum, cut to size after you order.</p>",
       "options": [
         "Material",
@@ -441,6 +441,28 @@
           }
         ]
       }
+    },
+    {
+      "handle": "custom-desk",
+      "title": "Custom desk",
+      "role": "bundle",
+      "product_type": "Desk",
+      "description": "<p>A desk built in the configurator. The cart shows it as one line; checkout and fulfilment see the frame, top and accessories as separate items.</p>",
+      "options": [
+        "Title"
+      ],
+      "variants": [
+        {
+          "options": [
+            "Default Title"
+          ],
+          "sku": "LL-DESK",
+          "price": 9999,
+          "inventory": 9999
+        }
+      ],
+      "notes": "Bundle parent for the Cart Transform Function (development store). Its own price is deliberately high: the Function prices the parts, so a desk line that was not expanded can never be cheap.",
+      "specs": {}
     }
   ]
 }

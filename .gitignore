@@ -5,3 +5,5 @@ node_modules/
 .shopify/
 *.log
 preview/out/
+app/extensions/*/dist/
+app/extensions/*/generated/

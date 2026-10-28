@@ -1,0 +1,40 @@
+{
+  "payload": {
+    "export": "cart-transform-run",
+    "target": "cart.transform.run",
+    "input": {
+      "presentmentCurrencyRate": "1.0",
+      "cartTransform": {
+        "configuration": null
+      },
+      "cart": {
+        "lines": [
+          {
+            "id": "gid://shopify/CartLine/1",
+            "quantity": 1,
+            "build": {
+              "value": "LL-7K2QD"
+            },
+            "top": {
+              "value": "101"
+            },
+            "frame": {
+              "value": "201"
+            },
+            "accessories": null,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/900",
+              "product": {
+                "productType": "Desk"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "output": {
+      "operations": []
+    }
+  }
+}

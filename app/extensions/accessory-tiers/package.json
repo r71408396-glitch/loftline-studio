@@ -1,0 +1,33 @@
+{
+  "name": "accessory-tiers",
+  "version": "0.1.0",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typegen": "npm exec -- shopify app function typegen",
+    "build": "npm exec -- shopify app function build",
+    "preview": "npm exec -- shopify app function run",
+    "test": "vitest run"
+  },
+  "codegen": {
+    "schema": "schema.graphql",
+    "documents": "src/*.graphql",
+    "generates": {
+      "./generated/api.ts": {
+        "plugins": ["typescript", "typescript-operations"]
+      }
+    },
+    "config": {
+      "omitOperationSuffix": true
+    }
+  },
+  "dependencies": {
+    "@shopify/shopify_function": "^2.0.1"
+  },
+  "devDependencies": {
+    "@shopify/shopify-function-test-helpers": "^1.0.0",
+    "graphql": "^16.11.0",
+    "vitest": "^3.2.4"
+  }
+}

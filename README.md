@@ -5,7 +5,7 @@ Shopify store: modular standing desks with a 3D configurator, sold in the US, Ca
 - `theme/`: Online Store 2.0 theme written from scratch (no Dawn code). Colours, fonts and spacing are theme settings (`theme/config/settings_schema.json`), turned into CSS variables in `theme/snippets/css-variables.liquid`.
 - `src/desk-viewer/`: the 3D desk (three.js), built in code from the configuration in metres. Procedural textures for wood, linoleum, plywood edges and powder coat; no model or image files. Bundled into `theme/assets/desk-viewer.js`.
 - `data/catalog.json`: products, SKUs and prices. Source for the local preview now and the product import later.
-- `app/` (to come): the Loftline Ops app with its Functions and extensions.
+- `app/`: the Loftline Ops app. So far: two Shopify Functions, `desk-bundle` (Cart Transform) and `accessory-tiers` (Discount). How they price and when they run: [docs/discounts-and-bundles.md](docs/discounts-and-bundles.md). The admin app comes next.
 
 ## Commands
 
@@ -30,11 +30,21 @@ Local pages (with `npm run preview` running):
 
 The local renderer imitates only the Shopify objects this theme uses. It is for layout checks; the real test is `shopify theme dev` on the development store.
 
+## Functions
+
+```bash
+cd app
+npm test                                                   # schema-checked test carts, JavaScript
+npx shopify app function build --path extensions/desk-bundle
+npx shopify app function build --path extensions/accessory-tiers
+node scripts/test-wasm.mjs                                 # same test carts through the built wasm
+```
+
 ## Product setup the theme expects
 
 - Frame product: one option (Colour), SKUs `LL-FRM-BLK`, `LL-FRM-WHT`, `LL-FRM-GRA`, `LL-FRM-ALU`.
 - Desk top product: options in the order Material, Width, Depth; SKUs `LL-TOP-<MATERIAL>-<W>-<D>`, e.g. `LL-TOP-OAK-160-80` (materials `OAK`, `WAL`, `BAM`, `WHT`, `LIN`).
-- Accessories: product type `Accessory`.
+- Product types: `Accessory`, `Desk top`, `Desk frame`, and `Desk` for the `custom-desk` bundle product. The cart, the Discount Function and the Cart Transform rely on them.
 - Specs come from `specs.*` product metafields and the `material` metaobject; definitions are in `data/metafields.json`, values in `data/catalog.json`.
 - Subscriptions (desk pad, cable kit) are selling plans; the product page shows them as purchase options.
 - "Frequently bought together" uses complementary products set in the Search & Discovery app; filters on collection pages are also set up there.

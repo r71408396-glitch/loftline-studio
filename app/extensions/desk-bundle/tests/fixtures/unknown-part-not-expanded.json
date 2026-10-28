@@ -1,0 +1,78 @@
+{
+  "payload": {
+    "export": "cart-transform-run",
+    "target": "cart.transform.run",
+    "input": {
+      "presentmentCurrencyRate": "1.0",
+      "cartTransform": {
+        "configuration": {
+          "jsonValue": {
+            "title": "Custom desk",
+            "tiers": [
+              {
+                "count": 1,
+                "percent": 5
+              },
+              {
+                "count": 3,
+                "percent": 10
+              }
+            ],
+            "components": {
+              "101": {
+                "price": "409.00",
+                "kind": "top",
+                "title": "Oak, 160 x 80 cm"
+              },
+              "201": {
+                "price": "549.00",
+                "kind": "frame",
+                "title": "Black frame"
+              },
+              "301": {
+                "price": "49.00",
+                "kind": "accessory",
+                "title": "Felt desk pad"
+              },
+              "302": {
+                "price": "129.00",
+                "kind": "accessory",
+                "title": "Monitor arm"
+              }
+            }
+          }
+        }
+      },
+      "cart": {
+        "lines": [
+          {
+            "id": "gid://shopify/CartLine/1",
+            "quantity": 1,
+            "build": {
+              "value": "LL-7K2QD"
+            },
+            "top": {
+              "value": "101"
+            },
+            "frame": {
+              "value": "201"
+            },
+            "accessories": {
+              "value": "301,999"
+            },
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "id": "gid://shopify/ProductVariant/900",
+              "product": {
+                "productType": "Desk"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "output": {
+      "operations": []
+    }
+  }
+}

@@ -1,0 +1,35 @@
+query CartTransformRunInput {
+  presentmentCurrencyRate
+  cartTransform {
+    configuration: metafield(namespace: "$app", key: "function-configuration") {
+      jsonValue
+    }
+  }
+  cart {
+    lines {
+      id
+      quantity
+      build: attribute(key: "_build") {
+        value
+      }
+      top: attribute(key: "_top") {
+        value
+      }
+      frame: attribute(key: "_frame") {
+        value
+      }
+      accessories: attribute(key: "_accessories") {
+        value
+      }
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          id
+          product {
+            productType
+          }
+        }
+      }
+    }
+  }
+}
