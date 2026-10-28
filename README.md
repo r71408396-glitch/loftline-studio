@@ -4,7 +4,7 @@ Shopify store: modular standing desks with a 3D configurator, sold in the US, Ca
 
 - `theme/`: Online Store 2.0 theme written from scratch (no Dawn code). Colours, fonts and spacing are theme settings (`theme/config/settings_schema.json`), turned into CSS variables in `theme/snippets/css-variables.liquid`.
 - `src/desk-viewer/`: the 3D desk (three.js), built in code from the configuration in metres. Procedural textures for wood, linoleum, plywood edges and powder coat; no model or image files. Bundled into `theme/assets/desk-viewer.js`.
-- `data/catalog.json`: products, SKUs and prices. Source for the local preview now and the product import later.
+- `data/`: products, SKUs, prices, photos, specs, pages and FAQ. The local preview reads it, and the store setup ([docs/store-setup.md](docs/store-setup.md)) loads it into a store in one run.
 - `app/`: Loftline Ops, the store's admin app: production queue, build sheet PDFs, configurator rules and webhooks ([docs/loftline-ops.md](docs/loftline-ops.md)), plus two Shopify Functions, `desk-bundle` (Cart Transform) and `accessory-tiers` (Discount) ([docs/discounts-and-bundles.md](docs/discounts-and-bundles.md)).
 
 ## Commands

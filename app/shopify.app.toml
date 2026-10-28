@@ -10,7 +10,7 @@ automatically_update_urls_on_dev = true
 include_config_on_deploy = true
 
 [access_scopes]
-scopes = "read_products,write_products,write_cart_transforms,write_discounts,read_orders,write_orders,read_customers,write_own_subscription_contracts,read_inventory"
+scopes = "read_products,write_products,write_cart_transforms,write_discounts,read_orders,write_orders,read_customers,write_own_subscription_contracts,write_inventory,read_locations,write_files,write_metaobject_definitions,write_metaobjects,write_online_store_pages,write_online_store_navigation,write_publications,write_purchase_options"
 
 [auth]
 redirect_urls = ["https://example.com/auth/callback"]

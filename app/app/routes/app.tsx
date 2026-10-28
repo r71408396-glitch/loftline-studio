@@ -21,6 +21,7 @@ export default function App() {
         <s-link href="/app">Overview</s-link>
         <s-link href="/app/queue">Production queue</s-link>
         <s-link href="/app/rules">Configurator rules</s-link>
+        <s-link href="/app/setup">Store setup</s-link>
       </s-app-nav>
       <Outlet />
     </AppProvider>

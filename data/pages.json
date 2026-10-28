@@ -1,0 +1,49 @@
+{
+  "notes": "Store pages and FAQ entries created by the store setup. Handles match the menus and theme links.",
+  "pages": [
+    {
+      "handle": "build",
+      "title": "Build your desk",
+      "template_suffix": "build",
+      "body": ""
+    },
+    {
+      "handle": "about",
+      "title": "How it's made",
+      "body": "<p>Every Loftline desk is made after you order it. We cut and finish the top to your size, set the frame to your width, test both motors, and pack it with everything you need.</p><h2>The top</h2><p>Solid oak, walnut and bamboo tops are glued from staves and finished with a hardwax oil. Laminate and linoleum tops use a birch plywood core, so the edge is left visible on purpose.</p><h2>The frame</h2><p>Two quiet motors, three-stage legs and a height range of 62 to 127 cm. The frame is powder coated in one of four colours and holds 140 kg.</p><h2>Delivery</h2><p>You see your delivery dates before you pay. Most desks ship within two weeks and arrive in two to five working days after that.</p>"
+    },
+    {
+      "handle": "faq",
+      "title": "Help and FAQ",
+      "body": "<p>Can't find your answer? <a href=\"/pages/contact\">Contact us</a>.</p>"
+    },
+    {
+      "handle": "warranty",
+      "title": "Warranty",
+      "body": "<p>Frames, motors and electronics: 10 years. Desk tops: 5 years. Accessories: 2 years, felt desk pads 1 year.</p><p>The warranty covers defects in materials and workmanship with normal use. To make a claim, register your desk's build number in your account or contact us with your order number.</p>"
+    },
+    {
+      "handle": "shipping",
+      "title": "Shipping and delivery",
+      "body": "<p>Desks ship free to the US, Canada and the UK. Accessories ship free over 150 in your currency.</p><p>Made-to-order desks are ready to ship in about two weeks. The product page and checkout show your delivery window for your ZIP or postcode before you pay.</p>"
+    },
+    {
+      "handle": "returns",
+      "title": "Returns",
+      "body": "<p>Live with your desk for 100 nights. If it isn't right, we collect it for free and refund you in full.</p><p>Accessories can be returned unused within 30 days.</p>"
+    },
+    {
+      "handle": "contact",
+      "title": "Contact",
+      "body": "<p>Questions about sizes, finishes or an order: email hello@loftline.studio. We answer within one working day.</p>"
+    }
+  ],
+  "faq": [
+    { "handle": "what-height", "question": "What height range do the desks have?", "answer": "From 62 to 127 cm, so it suits people from about 150 to 205 cm tall.", "topic": "Desks" },
+    { "handle": "how-long", "question": "How long does delivery take?", "answer": "Desks are made to order and ship in about two weeks; delivery takes two to five working days after that. Enter your ZIP or postcode on any product page for the exact window.", "topic": "Delivery" },
+    { "handle": "assembly", "question": "Is it hard to assemble?", "answer": "Most people need about 25 minutes and the included tools. You can also add assembly at home in checkout.", "topic": "Desks" },
+    { "handle": "change-top", "question": "Can I change the top later?", "answer": "Yes. The frame fits tops from 120 to 200 cm wide; order a new top on its own and set the cross beam to its width.", "topic": "Desks" },
+    { "handle": "subscription", "question": "How do desk pad and cable kit subscriptions work?", "answer": "Choose every 3, 6 or 12 months on the product page and save 10%. Skip or cancel any time from your account.", "topic": "Orders" },
+    { "handle": "countries", "question": "Which countries do you deliver to?", "answer": "The United States, Canada and the United Kingdom, with prices in USD, CAD and GBP.", "topic": "Delivery" }
+  ]
+}

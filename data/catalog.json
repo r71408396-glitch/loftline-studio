@@ -268,7 +268,8 @@
           "alt": "Ink felt desk pad on an oak desk",
           "variant_match": "LL-ACC-PAD-INK"
         }
-      ]
+      ],
+      "material": "merino-felt"
     },
     {
       "handle": "monitor-arm",
@@ -458,10 +459,32 @@
           ],
           "sku": "LL-DESK",
           "price": 9999,
-          "inventory": 9999
+          "inventory": null
         }
       ],
       "notes": "Bundle parent for the Cart Transform Function (development store). Its own price is deliberately high: the Function prices the parts, so a desk line that was not expanded can never be cheap.",
+      "specs": {}
+    },
+    {
+      "handle": "assembly-at-home",
+      "title": "Assembly at home",
+      "role": "service",
+      "product_type": "Service",
+      "description": "<p>A technician builds your desk where you want it and takes the packaging away. One per desk.</p>",
+      "options": [
+        "Title"
+      ],
+      "variants": [
+        {
+          "options": [
+            "Default Title"
+          ],
+          "sku": "LL-SVC-ASM",
+          "price": 99,
+          "inventory": null,
+          "requires_shipping": false
+        }
+      ],
       "specs": {}
     }
   ]
