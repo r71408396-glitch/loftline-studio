@@ -6,7 +6,17 @@ import { DeliveryError, deliveryWindow } from "../lib/delivery";
 // authenticate.public.checkout verifies it and answers the CORS preflight.
 // ?zip=43215&country=US&lead=10
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { cors } = await authenticate.public.checkout(request);
+  let cors;
+  try {
+    ({ cors } = await authenticate.public.checkout(request));
+  } catch (error) {
+    // A rejected token comes back without CORS headers, which checkout only sees as a failed fetch.
+    if (!(error instanceof Response)) throw error;
+    console.warn(`Delivery estimate: checkout request rejected (${error.status})`);
+    const headers = new Headers(error.headers);
+    headers.set("Access-Control-Allow-Origin", "*");
+    return Response.json({ error: "Unauthorized" }, { status: error.status, headers });
+  }
   const params = new URL(request.url).searchParams;
 
   try {

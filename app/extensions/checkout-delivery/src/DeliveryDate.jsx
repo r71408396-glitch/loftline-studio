@@ -35,13 +35,17 @@ function DeliveryDate() {
   const [estimate, setEstimate] = useState(null);
   const [error, setError] = useState(false);
   const chosen = shopify.attributes.value.find((a) => a.key === ATTRIBUTE)?.value ?? '';
+  const base = String(shopify.settings.value.api_url || '').replace(/\/$/, '');
+  // The target renders once per delivery group list (one-time purchases and subscriptions);
+  // show the window once, under the list that holds the desk.
+  const list = shopify.target?.value;
+  const shown = Boolean(base) && !(list && (list.groupType !== 'oneTimePurchase' || list.deliveryGroups.length === 0));
 
   useEffect(() => {
-    if (!zip || !country) return undefined;
+    if (!shown || !zip || !country) return undefined;
     let cancelled = false;
     (async () => {
       try {
-        const base = String(shopify.settings.value.api_url || 'https://ops.loftline.studio').replace(/\/$/, '');
         const token = await shopify.sessionToken.get();
         const params = new URLSearchParams({ zip, country, lead: String(lead) });
         const response = await fetch(`${base}/api/delivery?${params}`, { headers: { Authorization: `Bearer ${token}` } });
@@ -51,6 +55,7 @@ function DeliveryDate() {
         setEstimate(data);
         setError(false);
       } catch (e) {
+        console.warn('Loftline delivery estimate failed', e);
         if (!cancelled) {
           setEstimate(null);
           setError(true);
@@ -60,12 +65,14 @@ function DeliveryDate() {
     return () => {
       cancelled = true;
     };
-  }, [zip, country, lead]);
+  }, [shown, base, zip, country, lead]);
 
   const t = (key, values) => shopify.i18n.translate(key, values);
   const day = (isoDay) =>
     shopify.i18n.formatDate(new Date(`${isoDay}T12:00:00Z`), { weekday: 'short', day: 'numeric', month: 'short' });
 
+  // Without a Loftline Ops URL (an unconfigured block) there is nothing to ask.
+  if (!shown) return null;
   if (!zip || !country) return <s-text color="subdued">{t('enterAddress')}</s-text>;
   if (error) return <s-banner tone="warning">{t('error')}</s-banner>;
   if (!estimate) return <s-spinner accessibilityLabel={t('deliveryHeading')} />;
@@ -92,6 +99,7 @@ function DeliveryDate() {
           <s-date-picker
             type="single"
             value={chosen}
+            defaultView={(chosen || estimate.earliest).slice(0, 7)}
             allow={`${estimate.earliest}--${addDays(estimate.latest, 30)}`}
             disallowDays="saturday, sunday"
             onChange={onChange}
