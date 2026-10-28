@@ -3,6 +3,7 @@ api_version = "2026-07"
 [[extensions]]
 name = "t:name"
 handle = "desk-bundle"
+uid = "623b98af-4cbd-eb4a-054c-01c42e76d0b6c1701257"
 type = "function"
 description = "t:description"
 

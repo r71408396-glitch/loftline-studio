@@ -3,6 +3,7 @@ api_version = "2026-07"
 [[extensions]]
 name = "t:name"
 handle = "accessory-tiers"
+uid = "f0052ebc-728b-a31b-789a-a753832026974b587cb3"
 type = "function"
 description = "t:description"
 

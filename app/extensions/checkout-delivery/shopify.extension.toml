@@ -5,6 +5,7 @@ api_version = "2026-10"
 [[extensions]]
 name = "Delivery date and assembly"
 handle = "checkout-delivery"
+uid = "0e720854-e541-5359-d1f5-99075939379d97295270"
 type = "ui_extension"
 
 [[extensions.targeting]]
