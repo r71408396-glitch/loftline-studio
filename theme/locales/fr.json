@@ -192,7 +192,7 @@
     "line_frame": "Piètement",
     "line_top": "Plateau",
     "line_discount": "Accessoires -{{ percent }} %",
-    "tier_next": "Ajoutez encore {{ count }} accessoire pour économiser {{ percent }} % sur les accessoires",
+    "tier_next": "Ajoutez-en encore {{ count }} pour économiser {{ percent }} % sur les accessoires",
     "tier_reached": "{{ percent }} % de rabais sur vos accessoires",
     "build": "Configuration",
     "size": "Dimensions",

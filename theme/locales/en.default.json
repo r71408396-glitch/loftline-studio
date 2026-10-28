@@ -192,7 +192,7 @@
     "line_frame": "Frame",
     "line_top": "Top",
     "line_discount": "Accessories {{ percent }}% off",
-    "tier_next": "Add {{ count }} more accessory to save {{ percent }}% on accessories",
+    "tier_next": "Add {{ count }} more to save {{ percent }}% on accessories",
     "tier_reached": "{{ percent }}% off your accessories",
     "build": "Build",
     "size": "Size",
