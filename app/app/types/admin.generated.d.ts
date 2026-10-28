@@ -50,6 +50,17 @@ export type LoftlineFindTierDiscountQueryVariables = AdminTypes.Exact<{
 
 export type LoftlineFindTierDiscountQuery = { discountNode?: AdminTypes.Maybe<Pick<AdminTypes.DiscountNode, 'id'>> };
 
+export type LoftlineFindAppDiscountsQueryVariables = AdminTypes.Exact<{ [key: string]: never; }>;
+
+
+export type LoftlineFindAppDiscountsQuery = { discountNodes: { nodes: Array<(
+      Pick<AdminTypes.DiscountNode, 'id'>
+      & { discount: (
+        { __typename: 'DiscountAutomaticApp' }
+        & Pick<AdminTypes.DiscountAutomaticApp, 'title'>
+      ) | { __typename: 'DiscountAutomaticBasic' | 'DiscountAutomaticBxgy' | 'DiscountAutomaticFreeShipping' | 'DiscountCodeApp' | 'DiscountCodeBasic' | 'DiscountCodeBxgy' | 'DiscountCodeFreeShipping' } }
+    )> } };
+
 export type LoftlineSetFunctionConfigMutationVariables = AdminTypes.Exact<{
   metafields: Array<AdminTypes.MetafieldsSetInput> | AdminTypes.MetafieldsSetInput;
 }>;
@@ -211,6 +222,7 @@ interface GeneratedQueryTypes {
   "#graphql\n  query LoftlineDeskProducts($cursor: String) {\n    products(first: 50, after: $cursor, query: \"product_type:'Desk top' OR product_type:'Desk frame' OR product_type:Accessory\") {\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n      nodes {\n        id\n        title\n        productType\n        variants(first: 100) {\n          nodes {\n            id\n            sku\n            price\n            title\n          }\n        }\n      }\n    }\n  }": {return: LoftlineDeskProductsQuery, variables: LoftlineDeskProductsQueryVariables},
   "#graphql\n  query LoftlineCartTransforms {\n    cartTransforms(first: 10) {\n      nodes {\n        id\n        functionId\n      }\n    }\n  }": {return: LoftlineCartTransformsQuery, variables: LoftlineCartTransformsQueryVariables},
   "#graphql\n  query LoftlineFindTierDiscount($id: ID!) {\n    discountNode(id: $id) {\n      id\n    }\n  }": {return: LoftlineFindTierDiscountQuery, variables: LoftlineFindTierDiscountQueryVariables},
+  "#graphql\n  query LoftlineFindAppDiscounts {\n    discountNodes(first: 50) {\n      nodes {\n        id\n        discount {\n          __typename\n          ... on DiscountAutomaticApp {\n            title\n          }\n        }\n      }\n    }\n  }": {return: LoftlineFindAppDiscountsQuery, variables: LoftlineFindAppDiscountsQueryVariables},
   "#graphql\n  query LoftlineSetupLocation {\n    locations(first: 5, query: \"active:true\") {\n      nodes {\n        id\n        name\n      }\n    }\n  }": {return: LoftlineSetupLocationQuery, variables: LoftlineSetupLocationQueryVariables},
   "#graphql\n  query LoftlineSetupMetafieldDefinitions {\n    metafieldDefinitions(first: 50, ownerType: PRODUCT, namespace: \"specs\") {\n      nodes {\n        key\n      }\n    }\n  }": {return: LoftlineSetupMetafieldDefinitionsQuery, variables: LoftlineSetupMetafieldDefinitionsQueryVariables},
   "#graphql\n  query LoftlineSetupMetaobjectDefinition($type: String!) {\n    metaobjectDefinitionByType(type: $type) {\n      id\n    }\n  }": {return: LoftlineSetupMetaobjectDefinitionQuery, variables: LoftlineSetupMetaobjectDefinitionQueryVariables},

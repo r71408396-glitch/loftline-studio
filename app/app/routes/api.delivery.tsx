@@ -11,7 +11,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     ({ cors } = await authenticate.public.checkout(request));
   } catch (error) {
     // A rejected token comes back without CORS headers, which checkout only sees as a failed fetch.
-    if (!(error instanceof Response)) throw error;
+    // Other thrown responses (the 204 answer to the CORS preflight) pass through unchanged.
+    if (!(error instanceof Response) || error.status < 400) throw error;
     console.warn(`Delivery estimate: checkout request rejected (${error.status})`);
     const headers = new Headers(error.headers);
     headers.set("Access-Control-Allow-Origin", "*");

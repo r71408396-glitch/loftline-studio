@@ -10,7 +10,7 @@
         "buy": { "type": "buy_buttons", "settings": { "show_dynamic_checkout": true } },
         "delivery": { "type": "delivery", "settings": {} },
         "delivery_estimate": {
-          "type": "shopify://apps/loftline-ops/blocks/delivery-estimate/01a18325-cfe6-7554-b44a-1719b5296fd0",
+          "type": "shopify://apps/loftline-ops/blocks/delivery-estimate/01a184be-9ca1-78d3-a85a-a78834d10cda",
           "settings": { "heading": "When will it arrive?", "default_lead_days": 2 }
         },
         "description": { "type": "description", "settings": {} },

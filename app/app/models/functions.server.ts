@@ -107,6 +107,24 @@ const FIND_DISCOUNT = `#graphql
     }
   }`;
 
+// For a fresh app database (new server, reinstall): find the discount this app made before.
+const FIND_APP_DISCOUNTS = `#graphql
+  query LoftlineFindAppDiscounts {
+    discountNodes(first: 50) {
+      nodes {
+        id
+        discount {
+          __typename
+          ... on DiscountAutomaticApp {
+            title
+          }
+        }
+      }
+    }
+  }`;
+
+const DISCOUNT_TITLE = 'Desk set: accessory discount';
+
 const SET_METAFIELDS = `#graphql
   mutation LoftlineSetFunctionConfig($metafields: [MetafieldsSetInput!]!) {
     metafieldsSet(metafields: $metafields) {
@@ -155,9 +173,16 @@ export async function syncFunctions(admin: AdminApi, shop: string, tiersInput?: 
     if (!found.discountNode) discountId = null;
   }
   if (!discountId) {
+    const existing: any = await adminQuery(admin, FIND_APP_DISCOUNTS);
+    discountId =
+      existing.discountNodes.nodes.find(
+        (n: any) => n.discount?.__typename === 'DiscountAutomaticApp' && n.discount.title === DISCOUNT_TITLE,
+      )?.id ?? null;
+  }
+  if (!discountId) {
     const created: any = await adminQuery(admin, CREATE_DISCOUNT, {
       discount: {
-        title: 'Desk set: accessory discount',
+        title: DISCOUNT_TITLE,
         functionHandle: DISCOUNT_HANDLE,
         discountClasses: ['PRODUCT'],
         startsAt: new Date().toISOString(),
