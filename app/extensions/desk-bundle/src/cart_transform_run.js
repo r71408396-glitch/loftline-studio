@@ -77,16 +77,20 @@ export function cartTransformRun(input) {
     const quantities = new Map();
     for (const id of ids) quantities.set(id, (quantities.get(id) || 0) + 1);
 
+    // The order's build sheet needs the build number on every part and the
+    // edge profile on the top.
     const attributes = line.build?.value ? [{ key: '_build', value: line.build.value }] : [];
+    const edge = line.edge?.value === 'rounded' || line.edge?.value === 'square' ? line.edge.value : null;
     const expandedCartItems = [...quantities].map(([id, quantity]) => {
       const part = components[id];
+      const partAttributes = part.kind === 'top' && edge ? [...attributes, { key: '_edge', value: edge }] : attributes;
       const discount = part.kind === 'accessory' ? percent : 0;
       const unit = Number(part.price) * rate * (1 - discount / 100);
       return {
         merchandiseId: `gid://shopify/ProductVariant/${id}`,
         quantity,
         price: { adjustment: { fixedPricePerUnit: { amount: money(unit) } } },
-        attributes,
+        attributes: partAttributes,
       };
     });
 

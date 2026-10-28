@@ -51,6 +51,9 @@
             "build": {
               "value": "LL-7K2QD"
             },
+            "edge": {
+              "value": "rounded"
+            },
             "top": {
               "value": "101"
             },
@@ -72,6 +75,7 @@
             "id": "gid://shopify/CartLine/2",
             "quantity": 1,
             "build": null,
+            "edge": null,
             "top": null,
             "frame": null,
             "accessories": null,
@@ -107,6 +111,10 @@
                   {
                     "key": "_build",
                     "value": "LL-7K2QD"
+                  },
+                  {
+                    "key": "_edge",
+                    "value": "rounded"
                   }
                 ]
               },

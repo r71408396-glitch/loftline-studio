@@ -271,6 +271,7 @@ class DeskConfigurator extends HTMLElement {
             [this.strings.edge]: this.label('edge'),
             [this.strings.frame]: this.label('frame'),
             _build: build,
+            _edge: s.edge,
             _top: String(p.top.id),
             _frame: String(p.frame.id),
             _accessories: p.accessories.map((a) => a.id).join(','),
@@ -281,7 +282,7 @@ class DeskConfigurator extends HTMLElement {
       // Separate lines sharing a build ID, so the cart can group them.
       const shared = { [this.strings.build]: build, _build: build };
       items = [
-        { id: p.top.id, quantity: 1, properties: { ...shared, [this.strings.size]: size, [this.strings.edge]: this.label('edge'), _role: 'top' } },
+        { id: p.top.id, quantity: 1, properties: { ...shared, [this.strings.size]: size, [this.strings.edge]: this.label('edge'), _role: 'top', _edge: s.edge } },
         { id: p.frame.id, quantity: 1, properties: { ...shared, _role: 'frame' } },
         ...p.accessories.map((a) => ({ id: a.id, quantity: 1, properties: { ...shared, _role: 'accessory' } })),
       ];

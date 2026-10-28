@@ -12,6 +12,9 @@ query CartTransformRunInput {
       build: attribute(key: "_build") {
         value
       }
+      edge: attribute(key: "_edge") {
+        value
+      }
       top: attribute(key: "_top") {
         value
       }

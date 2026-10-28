@@ -1,0 +1,83 @@
+// Loftline Ops database (Postgres on the app server).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Shopify sessions (offline tokens), used by @shopify/shopify-app-session-storage-prisma.
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+// One configured desk on an order, moving through the production queue.
+model Build {
+  id          String       @id @default(cuid())
+  shop        String
+  orderId     String
+  orderName   String
+  buildNumber String
+  stage       String       @default("queued")
+  quantity    Int          @default(1)
+  customerEmail String?
+  sheet       Json
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  events      StageEvent[]
+
+  @@unique([shop, buildNumber])
+  @@index([shop, stage])
+}
+
+model StageEvent {
+  id        String   @id @default(cuid())
+  buildId   String
+  build     Build    @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  fromStage String
+  toStage   String
+  emailed   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Every webhook delivery, keyed by Shopify's webhook ID so retries are handled once.
+model WebhookEvent {
+  id         String   @id
+  shop       String
+  topic      String
+  status     String
+  error      String?
+  attempts   Int      @default(1)
+  receivedAt DateTime @default(now())
+
+  @@index([shop, receivedAt])
+}
+
+// Per-shop app settings: discount tiers and when the Functions were last updated.
+model ShopSettings {
+  shop             String    @id
+  tiers            Json
+  cartTransformId  String?
+  discountId       String?
+  pricesSyncedAt   DateTime?
+  pricesSyncedSize Int?
+}

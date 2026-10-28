@@ -12,11 +12,52 @@ include_config_on_deploy = true
 [access_scopes]
 scopes = "read_products,write_products,write_cart_transforms,write_discounts,read_orders,write_orders,read_customers,write_own_subscription_contracts,read_inventory"
 
+[auth]
+redirect_urls = ["https://example.com/auth/callback"]
+
 [webhooks]
-api_version = "2026-07"
+api_version = "2026-10"
+
+  # Handled by app/routes/webhooks.app.uninstalled.tsx
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = ["app/uninstalled"]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = ["app/scopes_update"]
+
+  # Order webhooks need protected customer data access (Partner Dashboard > API access).
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/orders/create"
+  topics = ["orders/create"]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/orders/updated"
+  topics = ["orders/updated"]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/inventory_levels/update"
+  topics = ["inventory_levels/update"]
+
+# Re-send prices to the desk bundle Function when a variant price changes.
+[events]
+api_version = "2026-10"
+
+  [[events.subscription]]
+  handle = "variant-price-change"
+  topic = "Product"
+  actions = ["update"]
+  triggers = ["product.variants.price"]
+  uri = "/webhooks/products/update"
+  query = """
+  query variant_price_change($productId: ID!) {
+    product(id: $productId) {
+      id
+      productType
+    }
+  }
+  """
 
 [pos]
 embedded = false
-
-[auth]
-redirect_urls = ["https://example.com/auth/callback"]
