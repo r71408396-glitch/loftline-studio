@@ -40,9 +40,9 @@
         if (!response.ok) throw new Error(data.error || this.dataset.error);
         this.result.innerHTML = '';
         const arrives = document.createElement('strong');
-        arrives.textContent = this.dataset.arrives.replace('{from}', this.format(data.earliest)).replace('{to}', this.format(data.latest));
+        arrives.textContent = this.dataset.arrives.replace('[from]', this.format(data.earliest)).replace('[to]', this.format(data.latest));
         const ships = document.createElement('span');
-        ships.textContent = this.dataset.ships.replace('{date}', this.format(data.shipsOn));
+        ships.textContent = this.dataset.ships.replace('[date]', this.format(data.shipsOn));
         this.result.append(arrives, ships);
         try {
           localStorage.setItem(STORAGE_KEY, zip.trim());

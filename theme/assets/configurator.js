@@ -146,7 +146,7 @@ class DeskConfigurator extends HTMLElement {
       const li = document.createElement('li');
       li.className = 'config-summary__line config-summary__line--discount';
       li.innerHTML = '<span></span><span class="config-summary__price"></span>';
-      li.children[0].textContent = this.strings.discount.replace('{percent}', p.reached.percent);
+      li.children[0].textContent = this.strings.discount.replace('[percent]', p.reached.percent);
       li.children[1].textContent = `−${this.format(p.discount)}`;
       list.append(li);
     }
@@ -155,12 +155,12 @@ class DeskConfigurator extends HTMLElement {
     const tier = this.querySelector('[data-tier]');
     if (p.next) {
       tier.textContent = this.strings.tierNext
-        .replace('{count}', p.next.count - p.accessories.length)
-        .replace('{percent}', p.next.percent);
+        .replace('[count]', p.next.count - p.accessories.length)
+        .replace('[percent]', p.next.percent);
       tier.hidden = false;
       tier.classList.remove('is-reached');
     } else if (p.reached) {
-      tier.textContent = this.strings.tierReached.replace('{percent}', p.reached.percent);
+      tier.textContent = this.strings.tierReached.replace('[percent]', p.reached.percent);
       tier.hidden = false;
       tier.classList.add('is-reached');
     } else {

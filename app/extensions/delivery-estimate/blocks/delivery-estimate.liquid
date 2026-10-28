@@ -13,8 +13,8 @@
   data-lead="{{ lead }}"
   data-locale="{{ request.locale.iso_code }}"
   data-error="{{ 'error' | t }}"
-  data-arrives="{{ 'arrives' | t: from: '{from}', to: '{to}' }}"
-  data-ships="{{ 'ships' | t: date: '{date}' }}"
+  data-arrives="{{ 'arrives' | t: from: '[from]', to: '[to]' }}"
+  data-ships="{{ 'ships' | t: date: '[date]' }}"
   {{ block.shopify_attributes }}
 >
   {%- if block.settings.heading != blank -%}

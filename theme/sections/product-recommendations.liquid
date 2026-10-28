@@ -75,7 +75,7 @@
           {%- endfor -%}
         </ul>
         <div class="fbt__summary panel">
-          <p class="small muted" data-fbt-count-label data-template="{{ 'products.fbt_total' | t: count: '{count}' }}">
+          <p class="small muted" data-fbt-count-label data-template="{{ 'products.fbt_total' | t: count: '[count]' }}">
             {{ 'products.fbt_total' | t: count: count }}
           </p>
           <p class="price" data-fbt-total data-currency="{{ cart.currency.iso_code }}" data-locale="{{ request.locale.iso_code }}">{{ total | money }}</p>

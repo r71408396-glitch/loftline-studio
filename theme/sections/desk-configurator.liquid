@@ -206,9 +206,9 @@
             "strings": {
               "frame": {{ 'configurator.line_frame' | t | json }},
               "top": {{ 'configurator.line_top' | t | json }},
-              "discount": {{ 'configurator.line_discount' | t: percent: '{percent}' | json }},
-              "tierNext": {{ 'configurator.tier_next' | t: count: '{count}', percent: '{percent}' | json }},
-              "tierReached": {{ 'configurator.tier_reached' | t: percent: '{percent}' | json }},
+              "discount": {{ 'configurator.line_discount' | t: percent: '[percent]' | json }},
+              "tierNext": {{ 'configurator.tier_next' | t: count: '[count]', percent: '[percent]' | json }},
+              "tierReached": {{ 'configurator.tier_reached' | t: percent: '[percent]' | json }},
               "soldOut": {{ 'products.sold_out' | t | json }},
               "adding": {{ 'configurator.adding' | t | json }},
               "add": {{ 'configurator.add_to_cart' | t | json }},

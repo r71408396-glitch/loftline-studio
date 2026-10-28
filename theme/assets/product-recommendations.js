@@ -35,7 +35,7 @@ if (!customElements.get('product-recommendations')) {
         form.addEventListener('change', () => {
           const picked = boxes();
           total.textContent = money.format(picked.reduce((sum, box) => sum + Number(box.dataset.price), 0) / 100);
-          label.textContent = label.dataset.template.replace('{count}', picked.length);
+          label.textContent = label.dataset.template.replace('[count]', picked.length);
         });
 
         form.addEventListener('submit', async (event) => {
