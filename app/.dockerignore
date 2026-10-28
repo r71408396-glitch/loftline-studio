@@ -1,3 +1,7 @@
 .cache
 build
-node_modules
+**/node_modules
+**/dist
+.shopify
+.env
+.env.*

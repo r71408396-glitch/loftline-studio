@@ -1,73 +1,60 @@
 .index {
-  align-items: center;
   display: flex;
   justify-content: center;
-  height: 100%;
-  width: 100%;
-  text-align: center;
-  padding: 1rem;
-}
-
-.heading,
-.text {
-  padding: 0;
-  margin: 0;
-}
-
-.text {
-  font-size: 1.2rem;
-  padding-bottom: 2rem;
+  min-height: 100vh;
+  padding: 4rem 1rem;
+  background: #ffffff;
+  color: #0b1220;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
 }
 
 .content {
   display: grid;
-  gap: 2rem;
+  gap: 1.25rem;
+  max-width: 60rem;
+  align-content: start;
 }
 
-.form {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin: 0 auto;
-  gap: 1rem;
+.eyebrow {
+  margin: 0;
+  color: #4f46e5;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.label {
-  display: grid;
-  gap: 0.2rem;
-  max-width: 20rem;
-  text-align: left;
-  font-size: 1rem;
+.heading {
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1.1;
 }
 
-.input {
-  padding: 0.4rem;
-}
-
-.button {
-  padding: 0.4rem;
+.text {
+  margin: 0;
+  max-width: 40rem;
+  font-size: 1.1rem;
+  color: #475569;
 }
 
 .list {
   list-style: none;
-  padding: 0;
-  padding-top: 3rem;
+  padding: 2rem 0 0;
   margin: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
-.list > li {
-  max-width: 20rem;
-  text-align: left;
+.list strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #0b1220;
 }
 
 @media only screen and (max-width: 50rem) {
   .list {
-    display: block;
-  }
-
-  .list > li {
-    padding-bottom: 1rem;
+    grid-template-columns: 1fr;
   }
 }

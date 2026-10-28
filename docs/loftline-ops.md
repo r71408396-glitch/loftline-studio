@@ -65,7 +65,16 @@ npx vite-node scripts/sample-build-sheet.ts out.pdf   # a sample build sheet
 
 ## Running it on srv1215499
 
-- Node 22, Postgres database `loftline_ops`, the app behind HTTPS at e.g. `https://ops.loftline.studio` (nginx proxy to port 3000).
-- Environment: see `app/.env.example`.
-- `npm ci && npm run setup && npm run build && npm run start`, kept running by systemd (or the template's `Dockerfile`).
-- Set `application_url` and `[auth] redirect_urls` in `shopify.app.toml` to that URL, then `npm run deploy`.
+Live at `https://ops.loftline.studio`, from `/opt/loftline-ops` on the server (files in `deploy/`):
+
+- **Containers:** `deploy/docker-compose.yml` runs the app (on `127.0.0.1:3100` only) and its own Postgres 16 (no published port, data in the `pgdata` volume). Migrations run on every start. `data/` is mounted read-only for the store setup.
+- **Apache:** `deploy/apache/ops.loftline.studio.conf` proxies the name to the app; certbot added the HTTPS copy and renews it. Needs `mod_proxy` and `mod_proxy_http`.
+- **Environment:** `deploy/.env` from `deploy/env.example` (root only). Put the client secret in with `ssh -t srv1215499 /opt/loftline-ops/deploy/set-secret.sh`.
+- **Update the app:** copy the changed files to `/opt/loftline-ops`, then `cd /opt/loftline-ops/deploy && docker compose up -d --build`.
+- **Update Shopify's side** (config, Functions, extensions): `npm run deploy` in `app/`.
+
+Things to know:
+
+- `shopify.app.toml` points at the server and `automatically_update_urls_on_dev` is off. Don't run `shopify app dev` against this app; it would point the store at a laptop tunnel. Use a separate dev app for development.
+- The checkout editor stores the two checkout blocks' "Loftline Ops URL"; change it there if the address ever changes.
+- App block IDs differ between `app dev` and a released version. After the first deploy, the delivery estimate block was added again and its new ID copied into `theme/templates/product.json`.

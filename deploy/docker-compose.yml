@@ -1,0 +1,39 @@
+# Loftline Ops on the app server: the admin app and its own Postgres.
+# Only Apache on this host can reach the app (127.0.0.1:3100); Postgres has no published port.
+# Run from this folder: docker compose up -d --build
+name: loftline-ops
+
+services:
+  app:
+    build: ../app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://loftline:${POSTGRES_PASSWORD}@db:5432/loftline_ops
+      LOFTLINE_DATA_DIR: /data
+      NODE_ENV: production
+      PORT: "3000"
+    volumes:
+      - ../data:/data:ro
+    ports:
+      - "127.0.0.1:3100:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: loftline
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: loftline_ops
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U loftline -d loftline_ops"]
+      interval: 5s
+      retries: 12
+
+volumes:
+  pgdata:
