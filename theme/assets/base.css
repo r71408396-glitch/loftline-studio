@@ -164,6 +164,55 @@ small {
   text-align: left;
 }
 
+/* ---------- FAQ ---------- */
+
+.faq-group {
+  margin-top: var(--space-4);
+}
+
+.faq-group__title {
+  margin-bottom: var(--space-1);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.faq-item summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 5.6rem;
+  color: var(--color-ink);
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.faq-item[open] summary::after {
+  content: '\2212';
+}
+
+.faq-item .rte {
+  padding-bottom: var(--space-2);
+  color: var(--color-muted);
+}
+
+.faq-footer {
+  margin-top: var(--space-4);
+}
+
 /* ---------- Focus ---------- */
 
 :focus-visible {

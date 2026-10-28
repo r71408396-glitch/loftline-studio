@@ -13,6 +13,7 @@ import type {
   MetaobjectDefinitionCreateInput,
   MetaobjectUpsertInput,
   PageCreateInput,
+  PageUpdateInput,
   StagedUploadInput,
 } from '../types/admin.types';
 
@@ -223,6 +224,21 @@ const PAGE_BY_HANDLE = `#graphql
       nodes {
         id
         handle
+        templateSuffix
+      }
+    }
+  }`;
+
+const SET_PAGE_TEMPLATE = `#graphql
+  mutation LoftlineSetupPageTemplate($id: ID!, $page: PageUpdateInput!) {
+    pageUpdate(id: $id, page: $page) {
+      page {
+        id
+      }
+      userErrors {
+        field
+        message
+        code
       }
     }
   }`;
@@ -436,7 +452,15 @@ export async function setupStore(admin: AdminApi, options: SetupOptions = {}): P
   const pageIds = new Map<string, string>();
   for (const page of content.pages) {
     const found: any = await adminQuery(admin, PAGE_BY_HANDLE, { query: `handle:${page.handle}` });
-    let id = found.pages.nodes.find((n: any) => n.handle === page.handle)?.id;
+    const existing = found.pages.nodes.find((n: any) => n.handle === page.handle);
+    let id = existing?.id;
+    if (existing && page.template_suffix && !existing.templateSuffix) {
+      // Existing pages keep their text; only a missing template is filled in.
+      const input: Plain<PageUpdateInput> = { templateSuffix: page.template_suffix };
+      const updated: any = await adminQuery(admin, SET_PAGE_TEMPLATE, { id, page: input });
+      assertNoUserErrors(updated.pageUpdate, `Setting the template of ${page.title}`);
+      log(`Page ${page.title} now uses the ${page.template_suffix} template`);
+    }
     if (!id) {
       const input: Plain<PageCreateInput> = {
         title: page.title,

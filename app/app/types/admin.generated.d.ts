@@ -167,7 +167,15 @@ export type LoftlineSetupPageQueryVariables = AdminTypes.Exact<{
 }>;
 
 
-export type LoftlineSetupPageQuery = { pages: { nodes: Array<Pick<AdminTypes.Page, 'id' | 'handle'>> } };
+export type LoftlineSetupPageQuery = { pages: { nodes: Array<Pick<AdminTypes.Page, 'id' | 'handle' | 'templateSuffix'>> } };
+
+export type LoftlineSetupPageTemplateMutationVariables = AdminTypes.Exact<{
+  id: AdminTypes.Scalars['ID']['input'];
+  page: AdminTypes.PageUpdateInput;
+}>;
+
+
+export type LoftlineSetupPageTemplateMutation = { pageUpdate?: AdminTypes.Maybe<{ page?: AdminTypes.Maybe<Pick<AdminTypes.Page, 'id'>>, userErrors: Array<Pick<AdminTypes.PageUpdateUserError, 'field' | 'message' | 'code'>> }> };
 
 export type LoftlineSetupCreatePageMutationVariables = AdminTypes.Exact<{
   page: AdminTypes.PageCreateInput;
@@ -209,7 +217,7 @@ interface GeneratedQueryTypes {
   "#graphql\n  query LoftlineSetupProduct($handle: String!) {\n    productByIdentifier(identifier: { handle: $handle }) {\n      id\n      media(first: 1) {\n        nodes {\n          id\n        }\n      }\n      sellingPlanGroups(first: 5) {\n        nodes {\n          merchantCode\n        }\n      }\n    }\n  }": {return: LoftlineSetupProductQuery, variables: LoftlineSetupProductQueryVariables},
   "#graphql\n  query LoftlineSetupCollection($handle: String!) {\n    collectionByIdentifier(identifier: { handle: $handle }) {\n      id\n    }\n  }": {return: LoftlineSetupCollectionQuery, variables: LoftlineSetupCollectionQueryVariables},
   "#graphql\n  query LoftlineSetupPublications {\n    publications(first: 20) {\n      nodes {\n        id\n        name\n      }\n    }\n  }": {return: LoftlineSetupPublicationsQuery, variables: LoftlineSetupPublicationsQueryVariables},
-  "#graphql\n  query LoftlineSetupPage($query: String!) {\n    pages(first: 1, query: $query) {\n      nodes {\n        id\n        handle\n      }\n    }\n  }": {return: LoftlineSetupPageQuery, variables: LoftlineSetupPageQueryVariables},
+  "#graphql\n  query LoftlineSetupPage($query: String!) {\n    pages(first: 1, query: $query) {\n      nodes {\n        id\n        handle\n        templateSuffix\n      }\n    }\n  }": {return: LoftlineSetupPageQuery, variables: LoftlineSetupPageQueryVariables},
   "#graphql\n  query LoftlineSetupMenus {\n    menus(first: 20) {\n      nodes {\n        id\n        handle\n      }\n    }\n  }": {return: LoftlineSetupMenusQuery, variables: LoftlineSetupMenusQueryVariables},
 }
 
@@ -226,6 +234,7 @@ interface GeneratedMutationTypes {
   "#graphql\n  mutation LoftlineSetupSellingPlans($input: SellingPlanGroupInput!, $productIds: [ID!]!) {\n    sellingPlanGroupCreate(input: $input, resources: { productIds: $productIds }) {\n      sellingPlanGroup {\n        id\n      }\n      userErrors {\n        field\n        message\n        code\n      }\n    }\n  }": {return: LoftlineSetupSellingPlansMutation, variables: LoftlineSetupSellingPlansMutationVariables},
   "#graphql\n  mutation LoftlineSetupCreateCollection($collection: CollectionCreateInput!) {\n    collectionCreate(collection: $collection) {\n      collection {\n        id\n      }\n      userErrors {\n        field\n        message\n      }\n    }\n  }": {return: LoftlineSetupCreateCollectionMutation, variables: LoftlineSetupCreateCollectionMutationVariables},
   "#graphql\n  mutation LoftlineSetupPublish($id: ID!, $publicationId: ID!) {\n    publishablePublish(id: $id, input: [{ publicationId: $publicationId }]) {\n      userErrors {\n        field\n        message\n      }\n    }\n  }": {return: LoftlineSetupPublishMutation, variables: LoftlineSetupPublishMutationVariables},
+  "#graphql\n  mutation LoftlineSetupPageTemplate($id: ID!, $page: PageUpdateInput!) {\n    pageUpdate(id: $id, page: $page) {\n      page {\n        id\n      }\n      userErrors {\n        field\n        message\n        code\n      }\n    }\n  }": {return: LoftlineSetupPageTemplateMutation, variables: LoftlineSetupPageTemplateMutationVariables},
   "#graphql\n  mutation LoftlineSetupCreatePage($page: PageCreateInput!) {\n    pageCreate(page: $page) {\n      page {\n        id\n      }\n      userErrors {\n        field\n        message\n        code\n      }\n    }\n  }": {return: LoftlineSetupCreatePageMutation, variables: LoftlineSetupCreatePageMutationVariables},
   "#graphql\n  mutation LoftlineSetupUpdateMenu($id: ID!, $title: String!, $items: [MenuItemUpdateInput!]!) {\n    menuUpdate(id: $id, title: $title, items: $items) {\n      menu {\n        id\n      }\n      userErrors {\n        field\n        message\n        code\n      }\n    }\n  }": {return: LoftlineSetupUpdateMenuMutation, variables: LoftlineSetupUpdateMenuMutationVariables},
   "#graphql\n  mutation LoftlineSetupCreateMenu($title: String!, $handle: String!, $items: [MenuItemCreateInput!]!) {\n    menuCreate(title: $title, handle: $handle, items: $items) {\n      menu {\n        id\n      }\n      userErrors {\n        field\n        message\n        code\n      }\n    }\n  }": {return: LoftlineSetupCreateMenuMutation, variables: LoftlineSetupCreateMenuMutationVariables},

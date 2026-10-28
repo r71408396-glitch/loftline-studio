@@ -15,6 +15,7 @@
     {
       "handle": "faq",
       "title": "Help and FAQ",
+      "template_suffix": "faq",
       "body": "<p>Can't find your answer? <a href=\"/pages/contact\">Contact us</a>.</p>"
     },
     {
