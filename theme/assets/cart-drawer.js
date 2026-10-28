@@ -144,6 +144,7 @@ class CartDrawer extends HTMLElement {
     document.querySelectorAll('[data-cart-count]').forEach((badge) => {
       badge.hidden = count === 0;
       badge.querySelector('[aria-hidden]').textContent = count;
+      badge.querySelector('.visually-hidden').textContent = fresh.dataset.countLabel;
     });
   }
 }

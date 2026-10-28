@@ -32,7 +32,12 @@
   endif
 -%}
 
-<cart-drawer class="cart-drawer" data-count="{{ cart.item_count }}" hidden>
+<cart-drawer
+  class="cart-drawer"
+  data-count="{{ cart.item_count }}"
+  data-count-label="{{ 'accessibility.cart_count' | t: count: cart.item_count }}"
+  hidden
+>
   <div class="cart-drawer__overlay" data-drawer-close></div>
   <div class="cart-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="CartDrawerTitle" tabindex="-1">
     <div class="cart-drawer__head">
