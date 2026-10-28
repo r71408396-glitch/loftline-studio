@@ -269,9 +269,27 @@
 }
 
 /* Shopify's dynamic checkout button, matched to the theme's buttons */
+.product-form .shopify-payment-button {
+  --shopify-accelerated-checkout-button-block-size: 4.8rem;
+  --shopify-accelerated-checkout-button-border-radius: var(--radius-button);
+}
+
 .product-form .shopify-payment-button__button {
   min-height: 4.8rem;
   border-radius: var(--radius-button);
+}
+
+/* Shown when no wallet is available: a secondary button, so Add to cart stays the one accent */
+.product-form .shopify-payment-button__button--unbranded {
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink);
+  font: 500 var(--text-button) / 1 var(--font-body);
+}
+
+.product-form .shopify-payment-button__button--unbranded:hover:not([disabled]) {
+  border-color: var(--color-ink);
+  background: var(--color-surface);
 }
 
 /* ---------- Specs, material, details ---------- */

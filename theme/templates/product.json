@@ -9,6 +9,10 @@
         "picker": { "type": "variant_picker", "settings": {} },
         "buy": { "type": "buy_buttons", "settings": { "show_dynamic_checkout": true } },
         "delivery": { "type": "delivery", "settings": {} },
+        "delivery_estimate": {
+          "type": "shopify://apps/loftline-ops/blocks/delivery-estimate/01a18325-cfe6-7554-b44a-1719b5296fd0",
+          "settings": { "heading": "When will it arrive?", "default_lead_days": 2 }
+        },
         "description": { "type": "description", "settings": {} },
         "material": { "type": "material", "settings": {} },
         "specs": { "type": "specs", "settings": { "heading": "Specs" } },
@@ -20,7 +24,7 @@
           }
         }
       },
-      "block_order": ["eyebrow", "title", "price", "picker", "buy", "delivery", "description", "material", "specs", "shipping"],
+      "block_order": ["eyebrow", "title", "price", "picker", "buy", "delivery", "delivery_estimate", "description", "material", "specs", "shipping"],
       "settings": { "sticky_add": true }
     },
     "together": {
