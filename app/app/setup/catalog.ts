@@ -110,6 +110,11 @@ export function productSetInput(product: CatalogProduct, ctx: SetupContext): Pla
   if (product.material && ctx.materialIds.has(product.material)) {
     metafields.push({ namespace: 'specs', key: 'material', type: 'metaobject_reference', value: ctx.materialIds.get(product.material)! });
   }
+  // The bundle line and the assembly service are only added by the configurator and the checkout,
+  // so they stay out of storefront search and the sitemap.
+  if (product.product_type === 'Desk' || product.product_type === 'Service') {
+    metafields.push({ namespace: 'seo', key: 'hidden', type: 'number_integer', value: '1' });
+  }
 
   return {
     handle: product.handle,

@@ -55,6 +55,13 @@ describe('catalogue to Admin API inputs', () => {
     expect(pad.metafields).toContainEqual({ namespace: 'specs', key: 'material', type: 'metaobject_reference', value: 'gid://shopify/Metaobject/9' });
   });
 
+  test('the desk bundle and the assembly service are hidden from storefront search, parts are not', () => {
+    const hidden = { namespace: 'seo', key: 'hidden', type: 'number_integer', value: '1' };
+    expect(productSetInput(product('custom-desk'), ctx(false)).metafields).toContainEqual(hidden);
+    expect(productSetInput(product('assembly-at-home'), ctx(false)).metafields).toContainEqual(hidden);
+    expect(productSetInput(product('desk-top'), ctx(false)).metafields).not.toContainEqual(hidden);
+  });
+
   test('refill subscriptions: three plans at 10% off', () => {
     const group = sellingPlanGroupInput(product('cable-kit'));
     expect(group.merchantCode).toBe('loftline-cable-kit');
