@@ -70,9 +70,29 @@ export type BuildSheet = {
   packing: { box: number; contents: string; weightKg: number | null }[];
   checks: string[];
   problems: string[];
+  // Missing on sheets saved before delivery details were added.
+  delivery?: BuildDelivery;
 };
 
-export function buildSheet(build: Build, orderName: string): BuildSheet {
+export type BuildDelivery = { assembly: boolean; preferredDate: string | null };
+
+// The assembly service the checkout adds (one per desk) and the order attribute
+// the checkout's delivery date picker writes.
+export const ASSEMBLY_SKU = 'LL-SVC-ASM';
+export const PREFERRED_DATE_ATTRIBUTE = 'Preferred delivery date';
+
+/** Delivery details per build, in the order of `builds`: assembly goes to the first desks it covers. */
+export function deliveryForBuilds(
+  builds: Build[],
+  lines: OrderLineItem[],
+  orderAttributes: { key: string; value: string | null }[],
+): BuildDelivery[] {
+  const assemblies = lines.filter((line) => line.sku === ASSEMBLY_SKU).reduce((sum, line) => sum + line.quantity, 0);
+  const preferredDate = orderAttributes.find((a) => a.key === PREFERRED_DATE_ATTRIBUTE)?.value || null;
+  return builds.map((_, i) => ({ assembly: i < assemblies, preferredDate }));
+}
+
+export function buildSheet(build: Build, orderName: string, delivery: BuildDelivery = { assembly: false, preferredDate: null }): BuildSheet {
   const problems: string[] = [];
   const topSku = parseTopSku(build.top?.sku);
   const frameCode = parseFrameSku(build.frame?.sku);
@@ -129,7 +149,8 @@ export function buildSheet(build: Build, orderName: string): BuildSheet {
     'Frame: keypad shows height, memory buttons work',
     'Screw kit and assembly guide in the frame box',
     ...(accessories.length ? ['Accessories packed and listed on the box'] : []),
+    ...(delivery.assembly ? ['Assembly at home booked with the carrier and the technician'] : []),
   ];
 
-  return { buildNumber: build.buildNumber, orderName, quantity: build.quantity, top, frame, accessories, packing, checks, problems };
+  return { buildNumber: build.buildNumber, orderName, quantity: build.quantity, top, frame, accessories, packing, checks, problems, delivery };
 }

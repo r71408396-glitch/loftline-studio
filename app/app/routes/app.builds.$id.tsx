@@ -52,12 +52,26 @@ export default function BuildPage() {
   }, [fetcher.data, shopify]);
 
   // The PDF route needs the session token App Bridge adds to fetch, so fetch it and open the file.
+  // The window opens on the click itself (a window opened after an await counts as a popup and
+  // is blocked); if it is blocked anyway, the file downloads instead.
   const openPdf = async () => {
     setPdfLoading(true);
+    const win = window.open("", "_blank");
     try {
       const response = await fetch(`/app/builds/${id}/pdf`);
-      const blob = await response.blob();
-      window.open(URL.createObjectURL(blob), "_blank");
+      if (!response.ok) throw new Error(`Build sheet failed (${response.status})`);
+      const url = URL.createObjectURL(await response.blob());
+      if (win) {
+        win.location.href = url;
+      } else {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `build-sheet-${buildNumber}.pdf`;
+        link.click();
+      }
+    } catch (error) {
+      win?.close();
+      shopify.toast.show(error instanceof Error ? error.message : "Build sheet failed", { isError: true });
     } finally {
       setPdfLoading(false);
     }
@@ -119,6 +133,14 @@ export default function BuildPage() {
               </s-list-item>
             ))}
           </s-unordered-list>
+        </s-section>
+      )}
+      {sheet.delivery && (
+        <s-section heading="Delivery">
+          <s-paragraph>
+            {sheet.delivery.assembly ? "Assembly at home booked." : "No assembly at home."} Preferred delivery day:{" "}
+            {sheet.delivery.preferredDate ?? "none chosen"}.
+          </s-paragraph>
         </s-section>
       )}
 

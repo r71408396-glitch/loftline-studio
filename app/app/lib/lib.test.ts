@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { buildBundleConfig, buildDiscountConfig, normaliseTiers, type CatalogProduct } from './price-table';
-import { buildSheet, buildsFromLineItems, type OrderLineItem } from './builds';
+import { buildSheet, buildsFromLineItems, deliveryForBuilds, type OrderLineItem } from './builds';
 import { nextStage, stageTag, tagChanges } from './stages';
 import { parseTopSku } from './skus';
 import { renderBuildSheetPdf } from './build-sheet-pdf';
@@ -96,6 +96,23 @@ describe('builds from an order', () => {
     expect(sheet.problems).toEqual(['No frame found for this build.']);
     expect(sheet.frame).toBeNull();
     expect(sheet.top?.cornerRadiusMm).toBe(6);
+  });
+
+  test('assembly goes to as many desks as were paid for, the preferred day to all', () => {
+    const builds = buildsFromLineItems(lines);
+    const withAssembly = [...lines, line(6, 'LL-SVC-ASM', 'Service', {}, 'Assembly at home')];
+    const attributes = [{ key: 'Preferred delivery date', value: '2026-11-20' }];
+    expect(deliveryForBuilds(builds, withAssembly, attributes)).toEqual([
+      { assembly: true, preferredDate: '2026-11-20' },
+      { assembly: false, preferredDate: '2026-11-20' },
+    ]);
+    expect(deliveryForBuilds(builds, lines, [])).toEqual([
+      { assembly: false, preferredDate: null },
+      { assembly: false, preferredDate: null },
+    ]);
+    const sheet = buildSheet(builds[0], '#1042', { assembly: true, preferredDate: null });
+    expect(sheet.delivery).toEqual({ assembly: true, preferredDate: null });
+    expect(sheet.checks).toContain('Assembly at home booked with the carrier and the technician');
   });
 
   test('renders a PDF', async () => {

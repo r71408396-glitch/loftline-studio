@@ -2,7 +2,7 @@
 // stages, mirroring each stage on the Shopify order (tag + metafield) and
 // telling the customer by email.
 import db from '../db.server';
-import { buildSheet, buildsFromLineItems, type BuildSheet, type OrderLineItem } from '../lib/builds';
+import { buildSheet, buildsFromLineItems, deliveryForBuilds, type BuildSheet, type OrderLineItem } from '../lib/builds';
 import { STAGE_EMAILS, STAGE_LABELS, tagChanges, type Stage } from '../lib/stages';
 import { adminQuery, assertNoUserErrors, type AdminApi } from './admin.server';
 import { sendCustomerEmail } from './email.server';
@@ -13,6 +13,7 @@ export type OrderWebhookPayload = {
   name: string;
   email?: string | null;
   contact_email?: string | null;
+  note_attributes?: { name: string; value: string | null }[];
   line_items: {
     admin_graphql_api_id: string;
     name: string;
@@ -37,9 +38,12 @@ export function lineItemsFromPayload(order: OrderWebhookPayload): OrderLineItem[
 
 /** Creates (or refreshes) a build for every configured desk on the order. Returns how many. */
 export async function upsertBuildsFromOrder(shop: string, order: OrderWebhookPayload): Promise<number> {
-  const builds = buildsFromLineItems(lineItemsFromPayload(order));
-  for (const build of builds) {
-    const sheet = buildSheet(build, order.name);
+  const lines = lineItemsFromPayload(order);
+  const builds = buildsFromLineItems(lines);
+  const attributes = (order.note_attributes ?? []).map((a) => ({ key: a.name, value: a.value }));
+  const deliveries = deliveryForBuilds(builds, lines, attributes);
+  for (const [i, build] of builds.entries()) {
+    const sheet = buildSheet(build, order.name, deliveries[i]);
     const customerEmail = order.email || order.contact_email || null;
     await db.build.upsert({
       where: { shop_buildNumber: { shop, buildNumber: build.buildNumber } },

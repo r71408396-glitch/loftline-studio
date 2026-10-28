@@ -70,6 +70,13 @@ export function renderBuildSheetPdf(sheet: BuildSheet, shopName = 'Loftline Stud
     y += 8;
   }
 
+  if (sheet.delivery) {
+    heading('Delivery');
+    row('Assembly at home', sheet.delivery.assembly ? 'Yes: technician builds the desk on site' : 'No');
+    row('Preferred delivery day', sheet.delivery.preferredDate ?? 'None chosen');
+    y += 8;
+  }
+
   heading('Packing list');
   for (const box of sheet.packing) {
     row(`Box ${box.box}`, `${box.contents}${box.weightKg ? `   ·   about ${box.weightKg} kg` : ''}`);
