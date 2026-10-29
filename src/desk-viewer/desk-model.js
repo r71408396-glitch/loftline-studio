@@ -2,18 +2,20 @@
 // the desk is centred on x and z, and the front edge faces +z.
 import {
   CanvasTexture,
+  CapsuleGeometry,
   CylinderGeometry,
   ExtrudeGeometry,
   Group,
   Mesh,
   MeshBasicMaterial,
+  MeshStandardMaterial,
   PlaneGeometry,
   Shape,
   SRGBColorSpace,
   Vector2,
 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { keypadDisplay } from './textures.js';
+import { keyboardKeys, keypadDisplay } from './textures.js';
 
 const TOP_THICKNESS = 0.025;
 const FOOT_HEIGHT = 0.04;
@@ -68,8 +70,8 @@ function slabGeometry(width, depth, thickness, cornerRadius, edgeRadius) {
     bevelEnabled: bevel > 0,
     bevelThickness: bevel,
     bevelSize: bevel,
-    bevelSegments: bevel > 0.002 ? 5 : 2,
-    curveSegments: 10,
+    bevelSegments: bevel > 0.002 ? 8 : 2,
+    curveSegments: 24,
     UVGenerator: slabUVs(-bevel, thickness - bevel),
   });
   // Extruded along +z from -bevel to thickness - bevel: lay it flat, top at y = 0.
@@ -105,8 +107,10 @@ function box(width, height, depth, radius = 0.004, segments = 3) {
 }
 
 export class DeskModel {
-  constructor(materials) {
+  constructor(materials, { shadowColor = '#0b1220', props = false } = {}) {
     this.materials = materials;
+    this.shadowColor = shadowColor;
+    this.props = props;
     this.group = new Group();
     this.parts = new Group();
     this.shadows = new Group();
@@ -169,6 +173,7 @@ export class DeskModel {
 
       const foot = this.add(footGeometry(footLength, FOOT_HEIGHT, 0.07), frame);
       foot.position.set(x, GLIDE_HEIGHT, 0);
+      foot.userData.piece = 'base';
 
       for (const z of [-footLength / 2 + 0.045, footLength / 2 - 0.045]) {
         const glide = this.add(new CylinderGeometry(0.017, 0.019, GLIDE_HEIGHT, 20), this.materials.rubber);
@@ -185,10 +190,12 @@ export class DeskModel {
         if (length < 0.006) continue;
         const stage = this.add(box(sx, length, sz, 0.008), frame);
         stage.position.set(x, y0 + length / 2, 0);
+        stage.userData.piece = 'column';
       }
 
       const bracket = this.add(box(0.055, BRACKET_HEIGHT, D - 0.12, 0.004), frame);
       bracket.position.set(x, underTop - BRACKET_HEIGHT / 2, 0);
+      bracket.userData.piece = 'bracket';
     }
 
     // Telescoping cross beam between the brackets.
@@ -196,8 +203,10 @@ export class DeskModel {
     const beamZ = -0.03;
     const outer = this.add(box(legX + 0.12, 0.036, 0.06, 0.004), frame);
     outer.position.set(-legX + (legX + 0.12) / 2, beamY, beamZ);
+    outer.userData.piece = 'beam';
     const inner = this.add(box(legX, 0.028, 0.05, 0.004), frame);
     inner.position.set(legX / 2, beamY, beamZ);
+    inner.userData.piece = 'beam';
 
     // Height keypad under the front right corner.
     const keypadX = W / 2 - Math.min(0.28, W * 0.18);
@@ -212,7 +221,41 @@ export class DeskModel {
     this.parts.add(display);
 
     this.buildAccessories(state, frame);
+    if (this.props && state.presence.desk_pad > 0.5) this.buildProps(state);
     this.buildShadows(W, D, legX, footLength, shadowTexture);
+
+    // Resting positions, for pulling the desk apart (DeskViewer.setExplode).
+    for (const child of this.parts.children) {
+      child.userData.baseY = child.position.y;
+      child.userData.baseZ = child.position.z;
+    }
+  }
+
+  // A keyboard and mouse on the desk pad, for scenes (not sold).
+  buildProps(state) {
+    const { depth: D, height: H } = state;
+    const g = new Group();
+    g.userData.part = 'props';
+    this.parts.add(g);
+    if (!this.keysMaterial) {
+      const keys = new CanvasTexture(keyboardKeys());
+      keys.colorSpace = SRGBColorSpace;
+      keys.anisotropy = 8;
+      this.keysMaterial = new MeshStandardMaterial({ map: keys, roughness: 0.7 });
+    }
+    const pd = Math.min(0.4, D - 0.22);
+    const padZ = D / 2 - pd / 2 - 0.07;
+    const keyboard = this.add(box(0.36, 0.014, 0.125, 0.005), this.materials.plastic, g);
+    keyboard.position.set(-0.06, 0.003 + 0.007, 0);
+    const keyTops = new Mesh(new PlaneGeometry(0.345, 0.11), this.keysMaterial);
+    keyTops.rotation.x = -Math.PI / 2;
+    keyTops.position.set(-0.06, 0.003 + 0.0145, 0);
+    g.add(keyTops);
+    const mouse = this.add(new CapsuleGeometry(0.03, 0.045, 6, 16), this.materials.plastic, g);
+    mouse.rotation.x = Math.PI / 2;
+    mouse.scale.set(1, 1, 0.55);
+    mouse.position.set(0.2, 0.003 + 0.016, 0.01);
+    g.position.set(0, H, padZ + 0.02);
   }
 
   keypadDisplay(height) {
@@ -310,7 +353,7 @@ export class DeskModel {
         transparent: true,
         opacity: 0.32,
         depthWrite: false,
-        color: '#0b1220',
+        color: this.shadowColor,
       });
       this.footShadowMaterial = this.shadowMaterial.clone();
       this.footShadowMaterial.opacity = 0.6;

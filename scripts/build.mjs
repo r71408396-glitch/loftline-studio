@@ -1,6 +1,7 @@
 // Bundles the theme's JavaScript into theme/assets:
 //   desk-viewer.js  3D desk viewer (three.js, tree-shaken)
 //   motion.js       GSAP animations and the 3D logo element
+//   home.js         home page hero, exploded details view and accessories row
 // Code shared between them (three.js, GSAP) and the lazily loaded 3D logo scene
 // go into chunk-*.js files next to them. Shopify serves theme assets from one
 // folder, so the relative imports between them keep working on the CDN.
@@ -22,6 +23,7 @@ const options = {
   entryPoints: {
     'desk-viewer': 'src/desk-viewer/index.js',
     motion: 'src/motion/index.js',
+    home: 'src/home/index.js',
   },
   outdir,
   bundle: true,

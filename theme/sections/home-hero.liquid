@@ -1,0 +1,276 @@
+{%- comment -%}
+  Home hero: a dark studio scene with the desk (assets/home.js, <home-hero>).
+  A poster render of the selected finish paints first; the live 3D desk takes
+  over once the page has loaded. Finish blocks are real top and frame options;
+  each one carries its choice into the desk builder through the button link.
+  Posters: assets/hero-<top>-<frame>.webp and -mobile.webp, rendered by
+  preview/renders.html for the three default finishes. Other combinations need
+  a poster there, or an image in the block.
+{%- endcomment -%}
+{%- liquid
+  assign build_url = section.settings.button_link | default: routes.all_products_collection_url
+  assign finishes = section.blocks | where: 'type', 'finish'
+  assign points = section.blocks | where: 'type', 'point'
+  assign heading_lines = section.settings.heading | newline_to_br | replace: '<br />', '<br>' | split: '<br>'
+-%}
+{{ 'home.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'home.js' | asset_url }}" type="module"></script>
+
+<home-hero class="home-hero" data-viewer-src="{{ 'desk-viewer.js' | asset_url }}">
+  {%- capture finish_inputs -%}
+    {%- for block in finishes -%}
+      {%- liquid
+        assign top = block.settings.top
+        assign frame = block.settings.frame
+        assign top_key = 'finishes.' | append: top
+        assign frame_key = 'finishes.frame_' | append: frame
+        assign top_label = top_key | t
+        assign frame_label = frame_key | t
+        assign label = top_label | append: ' / ' | append: frame_label
+        case top
+          when 'walnut'
+            assign top_code = 'wal'
+            assign top_color = '#5b3a26'
+          when 'oak'
+            assign top_code = 'oak'
+            assign top_color = '#c8a273'
+          when 'bamboo'
+            assign top_code = 'bam'
+            assign top_color = '#d7bd8c'
+          when 'white'
+            assign top_code = 'wht'
+            assign top_color = '#ecebe7'
+          else
+            assign top_code = 'lin'
+            assign top_color = '#3b3e42'
+        endcase
+        case frame
+          when 'white'
+            assign frame_code = 'wht'
+            assign frame_color = '#e9ebee'
+          when 'graphite'
+            assign frame_code = 'gra'
+            assign frame_color = '#5a5f67'
+          when 'aluminium'
+            assign frame_code = 'alu'
+            assign frame_color = '#cfd4da'
+          else
+            assign frame_code = 'blk'
+            assign frame_color = '#26282c'
+        endcase
+        assign poster_name = 'hero-' | append: top | append: '-' | append: frame
+        if block.settings.poster != blank
+          assign poster = block.settings.poster | image_url: width: 2000
+          assign poster_mobile = block.settings.poster | image_url: width: 1000
+        else
+          assign poster = poster_name | append: '.webp' | asset_url
+          assign poster_mobile = poster_name | append: '-mobile.webp' | asset_url
+        endif
+        if forloop.first
+          assign first_label = label
+          assign first_code = 'm=' | append: top_code | append: '&f=' | append: frame_code | append: '&e=rounded'
+          assign first_poster = poster
+          assign first_poster_mobile = poster_mobile
+        endif
+      -%}
+      <label class="finish-swatch" style="--swatch: {{ top_color }}; --swatch-frame: {{ frame_color }};" {{ block.shopify_attributes }}>
+        <input
+          class="visually-hidden"
+          type="radio"
+          name="HeroFinish-{{ section.id }}"
+          value="{{ top }}-{{ frame }}"
+          data-finish
+          data-top="{{ top }}"
+          data-frame="{{ frame }}"
+          data-code="m={{ top_code }}&f={{ frame_code }}&e=rounded"
+          data-label="{{ label | escape }}"
+          data-alt="{{ 'sections.home_hero.poster_alt' | t: finish: label | escape }}"
+          data-poster="{{ poster }}"
+          data-poster-mobile="{{ poster_mobile }}"
+          {% if forloop.first %}checked{% endif %}
+        >
+        <span class="finish-swatch__dot" aria-hidden="true"></span>
+        <span class="visually-hidden">{{ label }}</span>
+      </label>
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  <div class="home-hero__media" data-hero-media>
+    {%- if first_poster -%}
+      <picture>
+        <source media="(max-width: 989px)" srcset="{{ first_poster_mobile }}" width="1000" height="860" data-poster-mobile>
+        <img
+          src="{{ first_poster }}"
+          width="2000"
+          height="1200"
+          alt="{{ 'sections.home_hero.poster_alt' | t: finish: first_label }}"
+          fetchpriority="high"
+          data-poster
+        >
+      </picture>
+    {%- endif -%}
+    <div class="home-hero__stage" data-stage aria-hidden="true"></div>
+  </div>
+
+  <div class="page-width home-hero__layout">
+    <div class="home-hero__text">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="home-eyebrow" data-home-item>{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h1 class="home-hero__heading" data-home-heading>
+        {%- for line in heading_lines -%}
+          <span class="home-hero__line">{{ line | strip | escape }}</span>
+        {%- endfor -%}
+      </h1>
+      {%- if section.settings.text != blank -%}
+        <p class="home-hero__lead" data-home-item>{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+      {%- if section.settings.button_label != blank -%}
+        <a
+          class="button button--large home-hero__button"
+          href="{{ build_url }}{% if first_code %}#{{ first_code }}{% endif %}"
+          data-build-link
+          data-base="{{ build_url }}"
+          data-hero-button
+          data-home-item
+        >
+          {{- section.settings.button_label | escape }}
+          {% render 'icon', name: 'arrow-up-right' %}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if finishes.size > 0 -%}
+      <fieldset class="finish-panel" data-home-item>
+        <legend class="finish-panel__heading">{{ 'sections.home_hero.finish_heading' | t }}</legend>
+        <div class="finish-panel__swatches">{{ finish_inputs }}</div>
+        <p class="finish-panel__name" data-finish-name aria-live="polite">{{ first_label }}</p>
+        {%- if finishes.size > 1 -%}
+          <div class="finish-panel__nav">
+            <span class="finish-panel__count" data-finish-count aria-hidden="true">01 / {{ finishes.size | prepend: '0' | slice: -2, 2 }}</span>
+            <span class="finish-panel__rule" aria-hidden="true"></span>
+            <button type="button" class="finish-panel__arrow" data-finish-prev aria-label="{{ 'sections.home_hero.previous_finish' | t }}">
+              {% render 'icon', name: 'chevron-left' %}
+            </button>
+            <button type="button" class="finish-panel__arrow" data-finish-next aria-label="{{ 'sections.home_hero.next_finish' | t }}">
+              {% render 'icon', name: 'chevron-right' %}
+            </button>
+          </div>
+        {%- endif -%}
+      </fieldset>
+    {%- endif -%}
+  </div>
+
+  {%- if points.size > 0 -%}
+    <ul class="page-width home-hero__strip" role="list">
+      {%- for block in points -%}
+        <li class="home-hero__point" data-home-item {{ block.shopify_attributes }}>
+          <span class="home-hero__point-number" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <span>
+            <span class="home-hero__point-title">{{ block.settings.title | escape }}</span>
+            {%- if block.settings.text != blank -%}
+              <span class="home-hero__point-text">{{ block.settings.text | escape }}</span>
+            {%- endif -%}
+          </span>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+
+  {%- if section.settings.button_label != blank -%}
+    <div class="sticky-build" data-sticky-build inert>
+      <a
+        class="button button--full"
+        href="{{ build_url }}{% if first_code %}#{{ first_code }}{% endif %}"
+        data-build-link
+        data-base="{{ build_url }}"
+      >
+        {{- section.settings.button_label | escape }}
+        {% render 'icon', name: 'arrow-up-right' %}
+      </a>
+    </div>
+  {%- endif -%}
+</home-hero>
+
+{% schema %}
+{
+  "name": "Home hero",
+  "class": "section-home-hero",
+  "max_blocks": 7,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Small heading", "default": "Modular standing desks" },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "info": "One line per row",
+      "default": "Your space.\nElevated."
+    },
+    { "type": "text", "id": "text", "label": "Text", "default": "A desk built around the way you work." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Build your desk" },
+    { "type": "url", "id": "button_link", "label": "Button link", "info": "The desk builder page. The chosen finish is added to the link." }
+  ],
+  "blocks": [
+    {
+      "type": "finish",
+      "name": "Finish",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "top",
+          "label": "Top",
+          "options": [
+            { "value": "walnut", "label": "Walnut" },
+            { "value": "oak", "label": "Oak" },
+            { "value": "bamboo", "label": "Bamboo" },
+            { "value": "white", "label": "White laminate" },
+            { "value": "linoleum", "label": "Charcoal linoleum" }
+          ],
+          "default": "walnut"
+        },
+        {
+          "type": "select",
+          "id": "frame",
+          "label": "Frame",
+          "options": [
+            { "value": "black", "label": "Black" },
+            { "value": "white", "label": "White" },
+            { "value": "graphite", "label": "Graphite" },
+            { "value": "aluminium", "label": "Aluminium" }
+          ],
+          "default": "black"
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster",
+          "info": "Shown before the 3D desk loads. Leave empty for walnut / black, oak / white and charcoal linoleum / graphite, which have rendered posters."
+        }
+      ]
+    },
+    {
+      "type": "point",
+      "name": "Point",
+      "limit": 3,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Free delivery" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Desks ship free to the US, Canada and the UK." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home hero",
+      "blocks": [
+        { "type": "finish", "settings": { "top": "walnut", "frame": "black" } },
+        { "type": "finish", "settings": { "top": "oak", "frame": "white" } },
+        { "type": "finish", "settings": { "top": "linoleum", "frame": "graphite" } },
+        { "type": "point", "settings": { "title": "Free delivery", "text": "Desks ship free to the US, Canada and the UK." } },
+        { "type": "point", "settings": { "title": "10-year warranty", "text": "On the frame, motors and electronics." } },
+        { "type": "point", "settings": { "title": "100-night trial", "text": "If it isn't right, we collect it for free." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

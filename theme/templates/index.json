@@ -1,37 +1,45 @@
 {
   "sections": {
     "hero": {
-      "type": "hero",
+      "type": "home-hero",
       "blocks": {
-        "point-1": { "type": "point", "settings": { "text": "10-year frame warranty" } },
-        "point-2": { "type": "point", "settings": { "text": "Delivery date before you pay" } },
-        "point-3": { "type": "point", "settings": { "text": "100-night trial" } }
+        "finish-walnut": { "type": "finish", "settings": { "top": "walnut", "frame": "black" } },
+        "finish-oak": { "type": "finish", "settings": { "top": "oak", "frame": "white" } },
+        "finish-linoleum": { "type": "finish", "settings": { "top": "linoleum", "frame": "graphite" } },
+        "point-delivery": { "type": "point", "settings": { "title": "Free delivery", "text": "Desks ship free to the US, Canada and the UK." } },
+        "point-warranty": { "type": "point", "settings": { "title": "10-year warranty", "text": "On the frame, motors and electronics." } },
+        "point-trial": { "type": "point", "settings": { "title": "100-night trial", "text": "If it isn't right, we collect it for free." } }
       },
-      "block_order": ["point-1", "point-2", "point-3"],
-      "settings": {}
+      "block_order": ["finish-walnut", "finish-oak", "finish-linoleum", "point-delivery", "point-warranty", "point-trial"],
+      "settings": {
+        "button_link": "shopify://pages/build"
+      }
     },
-    "steps": {
-      "type": "how-it-works",
+    "details": {
+      "type": "home-details",
       "blocks": {
-        "step-1": { "type": "step", "settings": { "title": "Pick your size", "text": "<p>Choose a width and depth that fits your room, from 120 to 200 cm.</p>" } },
-        "step-2": { "type": "step", "settings": { "title": "Choose your finish", "text": "<p>Frame colour, top material and edge, shown live in 3D.</p>" } },
-        "step-3": { "type": "step", "settings": { "title": "Add what you need", "text": "<p>Monitor arm, cable tray, drawer, desk pad. The more you add, the more you save.</p>" } }
+        "row-size": { "type": "row", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room.", "part": "beam" } },
+        "row-finish": { "type": "row", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style.", "part": "top" } },
+        "row-addons": { "type": "row", "settings": { "title": "Add-ons", "text": "Monitor arms, cable trays, desk pads and more.", "part": "cable_tray" } }
       },
-      "block_order": ["step-1", "step-2", "step-3"],
-      "settings": {}
-    },
-    "brand": {
-      "type": "brand-mark",
-      "settings": { "button_link": "shopify://pages/build" }
+      "block_order": ["row-size", "row-finish", "row-addons"],
+      "settings": {
+        "button_link": "shopify://pages/about"
+      }
     },
     "accessories": {
-      "type": "featured-collection",
-      "settings": { "heading": "Finish the setup", "limit": 4 }
-    },
-    "promise": {
-      "type": "rich-text",
-      "settings": {}
+      "type": "home-accessories",
+      "blocks": {
+        "monitor-arm": { "type": "product", "settings": { "product": "monitor-arm", "theme_image": "editorial-monitor-arm.webp" } },
+        "desk-pad": { "type": "product", "settings": { "product": "felt-desk-pad", "theme_image": "editorial-desk-pad.webp" } },
+        "cable-tray": { "type": "product", "settings": { "product": "cable-tray", "theme_image": "editorial-cable-tray.webp" } },
+        "drawer": { "type": "product", "settings": { "product": "under-desk-drawer", "theme_image": "editorial-drawer.webp" } }
+      },
+      "block_order": ["monitor-arm", "desk-pad", "cable-tray", "drawer"],
+      "settings": {
+        "button_link": "shopify://collections/accessories"
+      }
     }
   },
-  "order": ["hero", "steps", "brand", "accessories", "promise"]
+  "order": ["hero", "details", "accessories"]
 }

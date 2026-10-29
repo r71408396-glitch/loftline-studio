@@ -47,6 +47,23 @@
       "poster_alt": "Bureau assis-debout Loftline, plateau en chêne, piètement noir, bras d'écran et sous-main en feutre",
       "stage_label": "Vue 3D du bureau. Faites glisser pour le tourner.",
       "load_3d": "Voir en 3D"
+    },
+    "home_hero": {
+      "finish_heading": "À votre goût",
+      "finish_label": "Finition",
+      "previous_finish": "Finition précédente",
+      "next_finish": "Finition suivante",
+      "poster_alt": "Bureau assis-debout Loftline, [finish], avec bras d’écran, goulotte et sous-main en feutre",
+      "stage_label": "Vue 3D du bureau"
+    },
+    "home_details": {
+      "marker": "Détail [number] : [title]",
+      "poster_alt": "Vue éclatée d’un bureau Loftline : plateau, goulotte, supports latéraux, traverse, clavier de réglage, colonnes et pieds",
+      "closeup_alt": "Gros plan sur le chant arrondi d’un plateau en noyer"
+    },
+    "home_accessories": {
+      "previous": "Précédent",
+      "next": "Suivant"
     }
   },
   "products": {
@@ -197,5 +214,16 @@
     "build": "Configuration",
     "size": "Dimensions",
     "setup_needed": "Choisissez les produits piètement et plateau dans les réglages de cette section."
+  },
+  "finishes": {
+    "walnut": "Noyer",
+    "oak": "Chêne",
+    "bamboo": "Bambou",
+    "white": "Stratifié blanc",
+    "linoleum": "Linoléum anthracite",
+    "frame_black": "Noir",
+    "frame_white": "Blanc",
+    "frame_graphite": "Graphite",
+    "frame_aluminium": "Aluminium"
   }
 }

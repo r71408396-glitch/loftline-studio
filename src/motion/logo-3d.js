@@ -2,8 +2,10 @@
 // element comes near the screen (a separate chunk, shared with the desk viewer).
 //
 // data-mode="intro"  plays the assembly once it has loaded (password page).
-// data-mode="scroll" ties the assembly to scrolling (home page brand section).
+// data-mode="scroll" ties the assembly to scrolling.
 // Both keep the floating line gently floating and tilt toward the pointer.
+// data-mode="once"   plays the assembly once when it comes into view, then
+//                    holds still (a brief brand detail in the footer).
 // With reduced motion or no WebGL the still render stays in place.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -19,7 +21,7 @@ function webglAvailable() {
 
 class Logo3D extends HTMLElement {
   connectedCallback() {
-    this.mode = this.dataset.mode === 'scroll' ? 'scroll' : 'intro';
+    this.mode = ['scroll', 'once'].includes(this.dataset.mode) ? this.dataset.mode : 'intro';
     this.stage = this.querySelector('[data-stage]');
     const motion = document.documentElement.classList.contains('motion');
     if (!this.stage || !motion || !webglAvailable()) {
@@ -101,6 +103,12 @@ class Logo3D extends HTMLElement {
           animation: gsap.fromTo(this.pose, { drift: -0.35 }, { drift: 0.35, ease: 'none' }),
         }),
       );
+    } else if (this.mode === 'once') {
+      // Renders only while the assembly plays.
+      assemble.eventCallback('onUpdate', () => this.tick());
+      this.triggers.push(ScrollTrigger.create({ trigger: this, start: 'top 90%', once: true, onEnter: () => assemble.play() }));
+      this.tick();
+      return;
     } else {
       assemble.play();
     }
@@ -126,7 +134,7 @@ class Logo3D extends HTMLElement {
 
   updateTicker() {
     gsap.ticker.remove(this.tick);
-    if (this.visible && this.pose) gsap.ticker.add(this.tick);
+    if (this.visible && this.pose && this.mode !== 'once') gsap.ticker.add(this.tick);
   }
 
   tick() {

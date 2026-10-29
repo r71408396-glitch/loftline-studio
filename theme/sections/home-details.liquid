@@ -1,0 +1,140 @@
+{%- comment -%}
+  "Every detail" section: the exploded desk (assets/home.js, <desk-details>)
+  beside numbered rows. Each row points at a real part of the desk: the cross
+  beam (size), the top (finish) or the cable tray (add-ons). The markers start
+  at their places on the render (assets/details-exploded.webp, positions from
+  preview/renders.html) and follow the 3D desk once it is live.
+{%- endcomment -%}
+{{ 'home.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'home.js' | asset_url }}" type="module"></script>
+
+<desk-details class="section home-details" data-viewer-src="{{ 'desk-viewer.js' | asset_url }}">
+  <div class="page-width home-details__grid">
+    <div class="home-details__text">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="home-eyebrow" data-reveal>{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="home-display" data-reveal>
+        {%- assign heading_lines = section.settings.heading | newline_to_br | replace: '<br />', '<br>' | split: '<br>' -%}
+        {%- for line in heading_lines -%}
+          <span class="home-display__line">{{ line | strip | escape }}</span>
+        {%- endfor -%}
+      </h2>
+      <ol class="home-details__rows" role="list">
+        {%- for block in section.blocks -%}
+          <li class="home-details__row" data-row="{{ block.id }}" data-reveal {{ block.shopify_attributes }}>
+            <span class="home-details__number" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <h3 class="home-details__title">{{ block.settings.title | escape }}</h3>
+            <p class="home-details__copy">{{ block.settings.text | escape }}</p>
+          </li>
+        {%- endfor -%}
+      </ol>
+      {%- if section.settings.button_label != blank -%}
+        <a class="button button--outline" href="{{ section.settings.button_link | default: routes.root_url }}" data-reveal>
+          {{- section.settings.button_label | escape }}
+          {% render 'icon', name: 'arrow-up-right' %}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="home-details__visual" data-details-visual>
+      <div class="home-details__desk">
+        <img
+          class="home-details__poster"
+          src="{{ 'details-exploded.webp' | asset_url }}"
+          width="1200"
+          height="1000"
+          alt="{{ 'sections.home_details.poster_alt' | t }}"
+          loading="lazy"
+        >
+        <div class="home-details__stage" data-stage aria-hidden="true"></div>
+        {%- for block in section.blocks -%}
+          {%- liquid
+            case block.settings.part
+              when 'top'
+                assign along = 0.7
+                assign place = '--x: 73.8%; --y: 20.7%;'
+              when 'cable_tray'
+                assign along = 0.75
+                assign place = '--x: 69.6%; --y: 30.9%;'
+              else
+                assign along = -0.55
+                assign place = '--x: 37.5%; --y: 37.4%;'
+            endcase
+          -%}
+          <span
+            class="detail-marker"
+            style="{{ place }}"
+            data-marker="{{ block.id }}"
+            data-anchor="{{ block.settings.part }}"
+            data-along="{{ along }}"
+            aria-hidden="true"
+          >
+            {{- forloop.index -}}
+          </span>
+        {%- endfor -%}
+      </div>
+
+      {%- if section.settings.show_closeup -%}
+        <figure class="home-details__closeup" data-reveal>
+          {%- if section.settings.closeup != blank -%}
+            {{ section.settings.closeup | image_url: width: 800 | image_tag: loading: 'lazy', widths: '320, 480, 640, 800', sizes: '(min-width: 990px) 16vw, 40vw' }}
+          {%- else -%}
+            <img src="{{ 'detail-walnut-edge.webp' | asset_url }}" width="800" height="960" alt="{{ 'sections.home_details.closeup_alt' | t }}" loading="lazy">
+          {%- endif -%}
+          {%- if section.settings.closeup_caption != blank -%}
+            <figcaption>{{ section.settings.closeup_caption | escape }}</figcaption>
+          {%- endif -%}
+        </figure>
+      {%- endif -%}
+    </div>
+  </div>
+</desk-details>
+
+{% schema %}
+{
+  "name": "Home details",
+  "class": "section-home-details",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Small heading", "default": "Designed around you" },
+    { "type": "textarea", "id": "heading", "label": "Heading", "info": "One line per row", "default": "Every detail.\nOn your terms." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Explore the details" },
+    { "type": "url", "id": "button_link", "label": "Button link" },
+    { "type": "checkbox", "id": "show_closeup", "label": "Show material close-up", "default": true },
+    { "type": "image_picker", "id": "closeup", "label": "Close-up image", "info": "Leave empty for the rendered walnut edge" },
+    { "type": "text", "id": "closeup_caption", "label": "Close-up caption", "default": "Solid walnut, oak or bamboo, finished with hardwax oil." }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Row",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Size" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Choose a width and depth that fits your room." },
+        {
+          "type": "select",
+          "id": "part",
+          "label": "Marker on",
+          "options": [
+            { "value": "beam", "label": "Cross beam (size)" },
+            { "value": "top", "label": "Top (finish)" },
+            { "value": "cable_tray", "label": "Cable tray (add-ons)" }
+          ],
+          "default": "beam"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home details",
+      "blocks": [
+        { "type": "row", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room.", "part": "beam" } },
+        { "type": "row", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style.", "part": "top" } },
+        { "type": "row", "settings": { "title": "Add-ons", "text": "Monitor arms, cable trays, desk pads and more.", "part": "cable_tray" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

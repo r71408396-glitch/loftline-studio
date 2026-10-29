@@ -767,7 +767,7 @@ small {
 /* ---------- Footer ---------- */
 
 .site-footer {
-  background: var(--color-ink);
+  background: var(--color-charcoal);
   color: var(--color-muted-on-dark);
   font-size: 1.5rem;
 }
@@ -1344,61 +1344,83 @@ a:focus-visible > .logo [data-logo-line] {
   animation: motion-fallback 0s linear 4s forwards;
 }
 
-/* ---------- Brand mark ---------- */
+/* ---------- Home page header ---------- */
 
-.brand-mark {
-  overflow: hidden;
+/* On the home page the header sits over the dark hero. */
+.template-index .section-header-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
 }
 
-.brand-mark--ink {
-  background:
-    radial-gradient(60rem 40rem at 75% 50%, rgba(var(--color-accent-rgb), 0.28), transparent 70%),
-    var(--color-ink);
+.template-index .site-header {
+  border-bottom: 0;
+  background: transparent;
+}
+
+.template-index .site-header__inner {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.template-index .site-header__lockup,
+.template-index .site-header__actions > .icon-button,
+.template-index .menu-drawer > summary {
   color: #fff;
 }
 
-.brand-mark--ink .brand-mark__heading {
+.template-index .site-header__menu a {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.template-index .site-header__menu a:hover,
+.template-index .site-header__menu a[aria-current='page'] {
   color: #fff;
 }
 
-.brand-mark--ink .eyebrow {
-  color: #a5b4fc;
+.template-index .site-header__actions > .icon-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.brand-mark--ink .brand-mark__lead {
-  color: var(--color-muted-on-dark);
+.site-header__cta .icon {
+  width: 1.6rem;
+  height: 1.6rem;
 }
 
-.brand-mark--light {
-  background: radial-gradient(60rem 40rem at 75% 50%, var(--color-tint), transparent 70%), var(--color-background);
-}
+/* ---------- Footer closing line ---------- */
 
-.brand-mark__grid {
+.footer-cta {
   display: grid;
-  gap: var(--space-4);
-  align-items: center;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-6) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
 }
 
-.brand-mark__heading {
-  font-size: clamp(3.2rem, 6vw, 5.6rem);
+.footer-cta__emblem {
+  width: 7.2rem;
+}
+
+.site-footer .footer-cta__button {
+  color: var(--color-on-accent);
+}
+
+.footer-cta__heading {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 3.6vw, 4.6rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
   line-height: 1.05;
 }
 
-.brand-mark__lead {
-  max-width: 40ch;
-  margin-bottom: var(--space-4);
-  font-size: 1.8rem;
-}
-
-.brand-mark__visual {
-  width: min(100%, 52rem);
-  margin: 0 auto;
-}
-
-@media screen and (min-width: 990px) {
-  .brand-mark__grid {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    gap: var(--space-8);
+@media screen and (min-width: 750px) {
+  .footer-cta {
+    grid-template-columns: auto 1fr auto;
+    text-align: center;
   }
 }
 

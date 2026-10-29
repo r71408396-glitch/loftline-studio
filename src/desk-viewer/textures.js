@@ -294,3 +294,31 @@ export function keypadDisplay(text) {
   ctx.fillText(text, 64, 26);
   return canvas;
 }
+
+/** Key caps seen from above for the scene keyboard: dark caps on a darker deck. */
+export function keyboardKeys() {
+  const canvas = makeCanvas(512, 160);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#15171a';
+  ctx.fillRect(0, 0, 512, 160);
+  const rows = [14, 14, 13, 12, 10];
+  rows.forEach((count, row) => {
+    const y = 6 + row * (148 / rows.length);
+    const h = 148 / rows.length - 5;
+    const w = (496 - (count - 1) * 4) / count;
+    for (let i = 0; i < count; i++) {
+      // The bottom row: a long space bar in the middle.
+      if (row === 4 && i === 3) {
+        ctx.fillStyle = '#2c2f34';
+        ctx.fillRect(8 + i * (w + 4), y, w * 4 + 12, h);
+        i += 3;
+        continue;
+      }
+      ctx.fillStyle = '#2c2f34';
+      ctx.fillRect(8 + i * (w + 4), y, w, h);
+      ctx.fillStyle = 'rgba(255,255,255,0.05)';
+      ctx.fillRect(8 + i * (w + 4), y, w, 2);
+    }
+  });
+  return canvas;
+}

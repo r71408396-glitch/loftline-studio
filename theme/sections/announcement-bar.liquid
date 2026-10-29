@@ -1,4 +1,5 @@
-{%- if section.settings.text != blank -%}
+{%- comment -%} The home page shows delivery, warranty and trial in its hero strip instead. {%- endcomment -%}
+{%- if section.settings.text != blank and template.name != 'index' -%}
   <div class="announcement-bar" role="region" aria-label="{{ 'sections.announcement.label' | t }}">
     <div class="announcement-bar__inner">
       {%- if section.settings.link != blank -%}

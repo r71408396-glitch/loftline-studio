@@ -12,6 +12,7 @@
       },
       "block_order": ["brand", "shop", "help", "newsletter"],
       "settings": {
+        "cta_link": "shopify://pages/build",
         "show_payment_icons": true
       }
     }

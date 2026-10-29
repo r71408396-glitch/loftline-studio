@@ -47,6 +47,23 @@
       "poster_alt": "Loftline standing desk with an oak top, black frame, monitor arm and felt desk pad",
       "stage_label": "3D view of the desk. Drag to turn it.",
       "load_3d": "Turn it in 3D"
+    },
+    "home_hero": {
+      "finish_heading": "Make it yours",
+      "finish_label": "Finish",
+      "previous_finish": "Previous finish",
+      "next_finish": "Next finish",
+      "poster_alt": "Loftline standing desk, [finish], with a monitor arm, cable tray and felt desk pad",
+      "stage_label": "3D view of the desk"
+    },
+    "home_details": {
+      "marker": "Detail [number]: [title]",
+      "poster_alt": "Exploded view of a Loftline desk: the top, cable tray, side brackets, cross beam, height keypad, columns and feet",
+      "closeup_alt": "Close-up of the rounded edge of a walnut desk top"
+    },
+    "home_accessories": {
+      "previous": "Previous",
+      "next": "Next"
     }
   },
   "products": {
@@ -197,5 +214,16 @@
     "build": "Build",
     "size": "Size",
     "setup_needed": "Choose the frame and desk top products in this section's settings."
+  },
+  "finishes": {
+    "walnut": "Walnut",
+    "oak": "Oak",
+    "bamboo": "Bamboo",
+    "white": "White laminate",
+    "linoleum": "Charcoal linoleum",
+    "frame_black": "Black",
+    "frame_white": "White",
+    "frame_graphite": "Graphite",
+    "frame_aluminium": "Aluminium"
   }
 }

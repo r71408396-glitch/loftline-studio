@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Scene lab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { margin: 0; background: #141414; font: 13px system-ui; color: #ddd; }
+  #stage { position: relative; width: 100vw; height: 100vh; }
+  #panel { position: fixed; left: 8px; bottom: 8px; background: rgba(0,0,0,.6); padding: 8px; }
+  #panel label { display: block; }
+</style></head>
+<body><div id="stage"></div>
+<div id="panel"></div>
+<script type="module">
+// Tuning page for the desk viewer stages: preview/scene-lab.html?stage=studio&top=walnut&frame=black&center=0.62
+import { DeskViewer } from '../theme/assets/desk-viewer.js';
+const q = new URLSearchParams(location.search);
+const stageName = q.get('stage') || 'studio';
+document.body.style.background = stageName === 'studio' ? '#141414' : '#f4f1ec';
+const viewer = new DeskViewer(document.getElementById('stage'), {
+  interactive: false,
+  stage: stageName,
+  props: true,
+  explodedFraming: q.has('explode'),
+  view: {
+    direction: (q.get('dir') || '0.62,0.42,1').split(',').map(Number),
+    center: Number(q.get('center') || 0.62),
+    margin: Number(q.get('margin') || 0.86),
+  },
+});
+viewer.set({
+  top: q.get('top') || 'walnut', frame: q.get('frame') || 'black', edge: q.get('edge') || 'rounded',
+  width: 1.6, depth: 0.8,
+  accessories: { monitor_arm: true, desk_pad: true, cable_tray: true },
+}, { instant: true });
+window.viewer = viewer;
+const panel = document.getElementById('panel');
+for (const [name, min, max, step, apply] of [
+  ['explode', 0, 1, 0.01, (v) => viewer.setExplode(v)],
+  ['yaw', -0.5, 0.5, 0.01, (v) => viewer.setDrift({ yaw: v })],
+  ['pitch', -0.3, 0.3, 0.01, (v) => viewer.setDrift({ pitch: v })],
+  ['dolly', 0, 0.3, 0.01, (v) => viewer.setDrift({ dolly: v })],
+]) {
+  const label = document.createElement('label');
+  label.textContent = name + ' ';
+  const input = Object.assign(document.createElement('input'), { type: 'range', min, max, step, value: 0 });
+  input.addEventListener('input', () => apply(Number(input.value)));
+  label.append(input);
+  panel.append(label);
+}
+if (q.has('explode')) viewer.setExplode(Number(q.get('explode')));
+
+// Saves one frame at w x h px to preview/out/<name> (needs scripts/capture-server.mjs).
+window.capture = async (name, w = 1440, h = 900) => {
+  const stage = document.getElementById('stage');
+  viewer.renderer.setPixelRatio(1);
+  stage.style.width = `${w}px`;
+  stage.style.height = `${h}px`;
+  viewer.resize();
+  const data = viewer.snapshot('image/webp', 0.9);
+  const res = await fetch(`http://localhost:5179/save?dir=out&name=${name}`, { method: 'POST', body: data });
+  return res.text();
+};
+</script></body></html>

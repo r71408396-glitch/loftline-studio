@@ -74,6 +74,20 @@
       },
       {
         "type": "color",
+        "id": "color_charcoal",
+        "label": "Charcoal",
+        "info": "Dark sections: the home page hero",
+        "default": "#141414"
+      },
+      {
+        "type": "color",
+        "id": "color_paper",
+        "label": "Warm off-white",
+        "info": "Warm sections: the home page details",
+        "default": "#f4f1ec"
+      },
+      {
+        "type": "color",
         "id": "color_text",
         "label": "Body text",
         "default": "#334155"

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Home page renders</title>
+<style>body{margin:0;background:#222}#stage{position:relative}</style></head>
+<body><div id="stage"></div>
+<script type="module">
+// Renders the home page images from the 3D desk and posts them to the local
+// capture server (node scripts/capture-server.mjs), which saves them in theme/assets:
+//   hero-<preset>.webp / hero-<preset>-mobile.webp   hero posters, one per finish preset
+//   details-exploded.webp                             the details section before 3D loads
+//   detail-walnut-edge.webp                           close-up of the rounded walnut edge
+//   editorial-<product>.webp                          accessory photos for the home page
+// Open preview/renders.html?only=hero to render one group; ?dir=out saves to preview/out.
+import { DeskViewer } from '../theme/assets/desk-viewer.js';
+
+const q = new URLSearchParams(location.search);
+const only = q.get('only');
+const dir = q.get('dir') || '';
+const stageEl = document.getElementById('stage');
+const log = [];
+window.renderLog = log;
+
+async function save(name, data) {
+  const res = await fetch(`http://localhost:5179/save?name=${name}${dir ? `&dir=${dir}` : ''}`, { method: 'POST', body: data });
+  log.push(await res.text());
+}
+
+function makeViewer(options, w, h) {
+  stageEl.innerHTML = '';
+  stageEl.style.width = `${w}px`;
+  stageEl.style.height = `${h}px`;
+  const viewer = new DeskViewer(stageEl, { interactive: false, ...options });
+  viewer.renderer.setPixelRatio(1);
+  viewer.resize();
+  return viewer;
+}
+
+// Hero: the same camera as sections/home-hero (assets/home-hero.js).
+const HERO_VIEW = { direction: [0.55, 0.27, 1], margin: 0.95 };
+const PRESETS = [
+  ['walnut-black', 'walnut', 'black'],
+  ['oak-white', 'oak', 'white'],
+  ['linoleum-graphite', 'linoleum', 'graphite'],
+];
+const HERO_ACCESSORIES = { monitor_arm: true, desk_pad: true, cable_tray: true };
+
+if (!only || only === 'hero') {
+  for (const [name, top, frame] of PRESETS) {
+    for (const [suffix, w, h, center, centerY] of [['', 2000, 1200, 0.62, 0.56], ['-mobile', 1000, 860, 0.5, 0.5]]) {
+      const viewer = makeViewer({ stage: 'studio', props: true, view: { ...HERO_VIEW, center, centerY } }, w, h);
+      viewer.set({ top, frame, edge: 'rounded', width: 1.6, depth: 0.8, accessories: HERO_ACCESSORIES }, { instant: true });
+      viewer.resize();
+      await save(`hero-${name}${suffix}.webp`, viewer.snapshot('image/webp', 0.86));
+      viewer.dispose();
+    }
+  }
+}
+
+if (!only || only === 'details') {
+  const viewer = makeViewer({ stage: 'paper', explodedFraming: true, view: { direction: [0.5, 0.42, 1], margin: 0.9 } }, 1200, 1000);
+  viewer.set({ top: 'walnut', frame: 'black', edge: 'rounded', width: 1.6, depth: 0.8, accessories: { cable_tray: true, desk_pad: true } }, { instant: true });
+  viewer.setExplode(1);
+  viewer.resize();
+  await save('details-exploded.webp', viewer.snapshot('image/webp', 0.86));
+  // Marker places on that render, for sections/home-details.liquid (percent of width / height).
+  for (const [name, along] of [['beam', -0.55], ['top', 0.7], ['cable_tray', 0.75]]) {
+    const { x, y } = viewer.project(viewer.anchor(name, along));
+    log.push(`${name}: ${(x / 12).toFixed(1)}% ${(y / 10).toFixed(1)}%`);
+  }
+
+  viewer.dispose();
+
+  // Close-up of the front right corner of the walnut top, in the warm room.
+  const close = makeViewer({ stage: 'room' }, 800, 960);
+  close.set({ top: 'walnut', frame: 'black', edge: 'rounded', width: 1.6, depth: 0.8, accessories: {} }, { instant: true });
+  await save('detail-walnut-edge.webp', close.shootFrom({ position: [1.02, 0.86, 0.66], target: [0.7, 0.72, 0.3], fov: 22 }));
+  close.dispose();
+}
+
+if (!only || only === 'editorial') {
+  const shots = [
+    ['monitor-arm', { monitor_arm: true, desk_pad: true }, { position: [-1.25, 1.42, -1.35], target: [0, 0.98, -0.2], fov: 28 }],
+    ['desk-pad', { desk_pad: true }, { position: [0.32, 1.32, 0.78], target: [0.02, 0.74, 0.14], fov: 30 }],
+    ['cable-tray', { cable_tray: true }, { position: [0.62, 0.3, 0.75], target: [0.05, 0.62, -0.2], fov: 34 }],
+    ['drawer', { drawer: true }, { position: [-0.15, 0.55, 1.05], target: [-0.44, 0.65, 0.15], fov: 30 }],
+  ];
+  for (const [name, accessories, camera] of shots) {
+    const viewer = makeViewer({ stage: 'room', props: true }, 1200, 900);
+    viewer.set({ top: 'walnut', frame: 'black', edge: 'rounded', width: 1.6, depth: 0.8, accessories }, { instant: true });
+    await save(`editorial-${name}.webp`, viewer.shootFrom(camera));
+    viewer.dispose();
+  }
+}
+
+window.renderDone = true;
+</script></body></html>

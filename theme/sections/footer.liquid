@@ -1,5 +1,18 @@
 <footer class="site-footer">
   <div class="page-width">
+    {%- if section.settings.cta_heading != blank -%}
+      <div class="footer-cta">
+        {% render 'logo-3d', mode: 'once', class: 'footer-cta__emblem' %}
+        <p class="footer-cta__heading">{{ section.settings.cta_heading | escape }}</p>
+        {%- if section.settings.cta_label != blank -%}
+          <a class="button footer-cta__button" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}" data-footer-build>
+            {{- section.settings.cta_label | escape }}
+            {% render 'icon', name: 'arrow-up-right' %}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
     <div class="site-footer__top">
       {%- for block in section.blocks -%}
         <div data-reveal {{ block.shopify_attributes }}>
@@ -120,6 +133,9 @@
   "class": "section-footer",
   "max_blocks": 6,
   "settings": [
+    { "type": "text", "id": "cta_heading", "label": "Closing line", "default": "Work, beautifully." },
+    { "type": "text", "id": "cta_label", "label": "Button label", "default": "Build your desk" },
+    { "type": "url", "id": "cta_link", "label": "Button link" },
     {
       "type": "checkbox",
       "id": "show_payment_icons",

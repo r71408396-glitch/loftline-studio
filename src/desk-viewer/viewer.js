@@ -3,16 +3,9 @@
 import {
   Box3,
   CanvasTexture,
-  Color,
-  DirectionalLight,
-  HemisphereLight,
-  Mesh,
   NeutralToneMapping,
   PerspectiveCamera,
-  PlaneGeometry,
-  PMREMGenerator,
   Scene,
-  ShadowMaterial,
   SRGBColorSpace,
   Timer,
   VSMShadowMap,
@@ -20,12 +13,29 @@ import {
   WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { DeskModel } from './desk-model.js';
 import { MaterialLibrary } from './materials.js';
 import { contactShadow } from './textures.js';
+import { lightStage, studioStage } from './stages.js';
 
 const ACCESSORIES = ['desk_pad', 'monitor_arm', 'cable_tray', 'drawer'];
+
+// How far each piece moves when the desk is pulled apart (metres, up / back).
+// The top lifts off the brackets with what sits on it; the cable tray, drawer
+// and keypad, which hang under the top, float in the gap; the brackets and
+// cross beam rise a little off the columns.
+const EXPLODE = {
+  top: 0.46,
+  desk_pad: 0.54,
+  props: 0.54,
+  monitor_arm: 0.58,
+  keypad: 0.26,
+  cable_tray: 0.25,
+  drawer: 0.25,
+  bracket: 0.1,
+  beam: 0.05,
+};
+const EXPLODE_BACK = {};
 const DEFAULTS = {
   width: 1.6,
   depth: 0.8,
@@ -39,7 +49,16 @@ const DEFAULTS = {
 export class DeskViewer {
   constructor(container, options = {}) {
     this.container = container;
-    this.options = { autoRotate: false, interactive: true, ...options };
+    // stage: 'light' | 'paper' | 'studio' | 'room' (see stages.js)
+    // view: { direction: [x, y, z] camera direction from the desk, center / centerY:
+    //   where the desk sits in the canvas (0.5 = middle, 0.62 = right of / below it), margin }
+    // explodedFraming: frame the desk with its parts pulled apart, so the camera
+    //   holds still while setExplode() animates.
+    // props: keyboard and mouse on the desk pad (for scenes, not sold).
+    this.options = { autoRotate: false, interactive: true, stage: 'light', view: {}, explodedFraming: false, props: false, ...options };
+    this.drift = { yaw: 0, pitch: 0, dolly: 0 };
+    this.explode = 0;
+    this.renderCallbacks = new Set();
     this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.frame = this.frame.bind(this);
     this.timer = new Timer();
@@ -50,7 +69,7 @@ export class DeskViewer {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = SRGBColorSpace;
     renderer.toneMapping = NeutralToneMapping;
-    renderer.toneMappingExposure = 0.95;
+    renderer.toneMappingExposure = ['studio', 'room'].includes(this.options.stage) ? 1.1 : 0.95;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = VSMShadowMap;
     renderer.domElement.style.display = 'block';
@@ -61,47 +80,17 @@ export class DeskViewer {
     this.renderer = renderer;
 
     const scene = new Scene();
-    const pmrem = new PMREMGenerator(renderer);
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    scene.environmentIntensity = 0.8;
-    pmrem.dispose();
     this.scene = scene;
-
-    // Soft key light high above front left (like a large studio softbox),
-    // a cool rim from behind, and a soft sky fill.
-    const key = new DirectionalLight(new Color('#fff6ee'), 2.0);
-    key.position.set(-1.4, 5, 2.4);
-    key.castShadow = true;
-    key.shadow.mapSize.set(1536, 1536);
-    key.shadow.camera.left = -5;
-    key.shadow.camera.right = 5;
-    key.shadow.camera.top = 5;
-    key.shadow.camera.bottom = -5;
-    key.shadow.camera.near = 2;
-    key.shadow.camera.far = 10;
-    key.shadow.bias = -0.0005;
-    key.shadow.radius = 12;
-    key.shadow.blurSamples = 20;
-    scene.add(key);
-    this.key = key;
-
-    const rim = new DirectionalLight(new Color('#e6edff'), 0.9);
-    rim.position.set(2.5, 2.2, -3);
-    scene.add(rim);
-
-    scene.add(new HemisphereLight('#ffffff', '#d9dde3', 0.35));
-
-    const floor = new Mesh(new PlaneGeometry(7, 7), new ShadowMaterial({ opacity: 0.13, color: '#0b1220' }));
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    scene.add(floor);
-
     this.camera = new PerspectiveCamera(26, 1, 0.05, 30);
     this.target = new Vector3(0, 0.5, 0);
 
     this.materials = new MaterialLibrary(renderer);
+    const stage = ['studio', 'room'].includes(this.options.stage)
+      ? studioStage(scene, renderer, this.materials, this.options.stage)
+      : lightStage(scene, renderer, { paper: this.options.stage === 'paper' });
+    this.key = stage.key;
     this.shadowTexture = new CanvasTexture(contactShadow());
-    this.desk = new DeskModel(this.materials);
+    this.desk = new DeskModel(this.materials, { shadowColor: stage.shadowColor, props: this.options.props });
     scene.add(this.desk.group);
 
     // Current (animated) and target values.
@@ -192,14 +181,16 @@ export class DeskViewer {
 
   // Finds the closest camera distance along `direction` at which every corner
   // of the box stays inside the frame, then centres the box on screen.
-  frameBox(box, direction, margin = 0.86) {
+  frameBox(box, direction, margin = 0.86, marginX = margin) {
     const corners = [];
     for (const x of [box.min.x, box.max.x]) {
       for (const y of [box.min.y, box.max.y]) {
         for (const z of [box.min.z, box.max.z]) corners.push(new Vector3(x, y, z));
       }
     }
+    // Fit inside the whole (virtual) frame; resize() shifts it afterwards.
     const camera = this.camera.clone();
+    camera.clearViewOffset();
     const point = new Vector3();
     const project = (target, distance) => {
       camera.position.copy(target).addScaledVector(direction, distance);
@@ -223,7 +214,7 @@ export class DeskViewer {
       for (let i = 0; i < 26; i++) {
         const mid = (near + far) / 2;
         const b = project(target, mid);
-        const fits = b.minX > -margin && b.maxX < margin && b.minY > -margin && b.maxY < margin;
+        const fits = b.minX > -marginX && b.maxX < marginX && b.minY > -margin && b.maxY < margin;
         if (fits) far = mid; else near = mid;
       }
       distance = far;
@@ -271,20 +262,63 @@ export class DeskViewer {
     return data;
   }
 
+  /** Editorial shot from an exact camera position; returns an image data URL. */
+  shootFrom({ position, target, fov = 26, type = 'image/webp', quality = 0.88 }) {
+    if (this.needsRebuild) this.rebuild();
+    const { clientWidth: w, clientHeight: h } = this.container;
+    const camera = this.camera.clone();
+    camera.clearViewOffset();
+    camera.fov = fov;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    camera.position.set(...position);
+    camera.lookAt(...target);
+    this.renderer.render(this.scene, camera);
+    return this.renderer.domElement.toDataURL(type, quality);
+  }
+
   // Frames the desk from the front right, a little above table height.
+  // Without orbit controls the camera follows options.view and the scroll drift.
   fitCamera(jump = false) {
     const { width, depth, height, presence } = this.goal;
-    const top = height + (presence.monitor_arm ? 0.52 : 0.02);
-    const direction = jump || !this.controls
-      ? new Vector3(0.62, 0.42, 1).normalize()
-      : this.camera.position.clone().sub(this.controls.target).normalize();
+    const view = this.options.view;
+    // Room above the top for the highest piece when the desk is pulled apart.
+    let lift = 0;
+    if (this.options.explodedFraming) {
+      lift = EXPLODE.top;
+      if (presence.desk_pad) lift = Math.max(lift, EXPLODE.desk_pad);
+      if (presence.monitor_arm) lift = Math.max(lift, EXPLODE.monitor_arm);
+    }
+    const top = height + lift + (presence.monitor_arm ? 0.52 : 0.02);
+    let direction;
+    if (jump || !this.controls) {
+      direction = new Vector3(...(view.direction || [0.62, 0.42, 1])).normalize();
+      if (!this.controls) {
+        // Scroll drift: turn around the desk, lift and move in a little.
+        direction.applyAxisAngle(new Vector3(0, 1, 0), this.drift.yaw);
+        direction.y += this.drift.pitch;
+        direction.normalize();
+      }
+    } else {
+      direction = this.camera.position.clone().sub(this.controls.target).normalize();
+    }
 
-    const box = new Box3(new Vector3(-width / 2 - 0.04, 0, -depth / 2 - 0.02), new Vector3(width / 2 + 0.04, top, depth / 2 + 0.02));
-    const { target, distance } = this.frameBox(box, direction);
+    const box = new Box3(
+      new Vector3(-width / 2 - 0.04, 0, -depth / 2 - 0.02),
+      new Vector3(width / 2 + 0.04, top, depth / 2 + 0.02),
+    );
+    const margin = view.margin || 0.86;
+    // The desk sits off centre: frame it in a window that is as wide on both
+    // sides as the space to its right (and below), then shift that window (setViewOffset).
+    const [cx, cy] = this.center();
+    const room = (c) => Math.min(c, 1 - c) / Math.max(c, 1 - c);
+    const { target, distance } = this.frameBox(box, direction, margin * room(cy), margin * room(cx));
+    const dolly = 1 - this.drift.dolly;
 
     this.target.copy(target);
+    this.distance = distance;
     if (jump || !this.controls) {
-      this.camera.position.copy(this.target).addScaledVector(direction, distance);
+      this.camera.position.copy(this.target).addScaledVector(direction, distance * dolly);
       this.camera.lookAt(this.target);
     }
     if (this.controls) {
@@ -295,17 +329,89 @@ export class DeskViewer {
     }
   }
 
+  /** Where the desk sits in the canvas: [x, y] fractions (view.center, view.centerY). */
+  center() {
+    const { center = 0.5, centerY = 0.5 } = this.options.view;
+    const value = (v) => (typeof v === 'function' ? v() : v);
+    return [value(center), value(centerY)];
+  }
+
   resize() {
     const { clientWidth: w, clientHeight: h } = this.container;
     if (!w || !h) return;
     this.renderer.setSize(w, h, false);
-    this.camera.aspect = w / h;
+    const [cx, cy] = this.center();
+    if (cx !== 0.5 || cy !== 0.5) {
+      // Render part of a larger virtual frame whose middle is at (cx, cy) of the canvas.
+      const fullW = w * 2 * Math.max(cx, 1 - cx);
+      const fullH = h * 2 * Math.max(cy, 1 - cy);
+      this.camera.aspect = fullW / fullH;
+      this.camera.setViewOffset(fullW, fullH, cx < 0.5 ? fullW - w : 0, cy < 0.5 ? fullH - h : 0, w, h);
+    } else {
+      this.camera.aspect = w / h;
+      this.camera.clearViewOffset();
+    }
     this.camera.updateProjectionMatrix();
+    if (!this.controls) this.fitCamera(true);
     this.invalidate();
+  }
+
+  /** Camera drift for scroll: yaw (radians around the desk), pitch (lift), dolly (0..1 closer). */
+  setDrift({ yaw = this.drift.yaw, pitch = this.drift.pitch, dolly = this.drift.dolly } = {}) {
+    Object.assign(this.drift, { yaw, pitch, dolly });
+    if (!this.controls) this.fitCamera(true);
+    this.invalidate();
+  }
+
+  /** Pulls the top, frame and accessories apart (0 = assembled, 1 = fully apart). */
+  setExplode(amount) {
+    this.explode = Math.max(0, Math.min(1, amount));
+    this.applyExplode();
+    this.invalidate();
+  }
+
+  applyExplode() {
+    const e = this.explode;
+    for (const child of this.desk.parts.children) {
+      const key = child.userData.piece || child.userData.part;
+      const offset = EXPLODE[key] || 0;
+      const back = EXPLODE_BACK[key] || 0;
+      if (child.userData.baseY === undefined) continue;
+      child.position.y = child.userData.baseY + offset * e;
+      child.position.z = child.userData.baseZ + back * e;
+    }
+  }
+
+  /** Called after every rendered frame (for labels that follow the model). */
+  onRender(callback) {
+    this.renderCallbacks.add(callback);
+    return () => this.renderCallbacks.delete(callback);
+  }
+
+  /** World position -> CSS pixels inside the container. */
+  project(point) {
+    const v = point.clone().project(this.camera);
+    return { x: ((v.x + 1) / 2) * this.container.clientWidth, y: ((1 - v.y) / 2) * this.container.clientHeight };
+  }
+
+  /**
+   * A point on a named part in world space: 'top', 'beam', 'cable_tray', ...
+   * along: -1 (left end) to 1 (right end) of the part; 0 is its centre.
+   */
+  anchor(name, along = 0) {
+    const box = new Box3();
+    for (const child of this.desk.parts.children) {
+      if ((child.userData.piece || child.userData.part) === name && child.visible) box.expandByObject(child);
+    }
+    if (box.isEmpty()) return null;
+    const point = box.getCenter(new Vector3());
+    point.x += ((box.max.x - box.min.x) / 2) * along;
+    return point;
   }
 
   rebuild() {
     this.desk.build(this.state, this.shadowTexture);
+    this.applyExplode();
     this.needsRebuild = false;
   }
 
@@ -348,6 +454,7 @@ export class DeskViewer {
     if (this.dirty || controlsMoving) {
       this.renderer.render(this.scene, this.camera);
       this.dirty = false;
+      for (const callback of this.renderCallbacks) callback(this);
     }
 
     const autoRotating = this.controls && this.controls.autoRotate;

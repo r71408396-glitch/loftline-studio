@@ -82,7 +82,8 @@
       </a>
       {%- if section.settings.cta_label != blank -%}
         <a class="button site-header__cta" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">
-          {{- section.settings.cta_label | escape -}}
+          {{- section.settings.cta_label | escape }}
+          {% render 'icon', name: 'arrow-up-right' %}
         </a>
       {%- endif -%}
     </div>
