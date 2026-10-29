@@ -33,8 +33,11 @@
     </details>
 
     <div class="site-header__logo">
-      <a href="{{ routes.root_url }}">
-        {%- if settings.logo != blank -%}
+      <a href="{{ routes.root_url }}"{% if settings.logo == blank %} class="site-header__lockup" style="--logo-width: {{ settings.logo_width }}px;" data-logo-intro{% endif %}>
+        {%- if settings.logo == blank -%}
+          {% render 'logo' %}
+          <span class="visually-hidden">{{ shop.name }}</span>
+        {%- else -%}
           {{
             settings.logo
             | image_url: width: 480
@@ -46,8 +49,6 @@
               alt: shop.name,
               preload: true
           }}
-        {%- else -%}
-          {{ shop.name }}
         {%- endif -%}
       </a>
     </div>

@@ -19,7 +19,7 @@
     <h1>{{ page.title | escape }}</h1>
 
     {%- for topic in topics -%}
-      <div class="faq-group">
+      <div class="faq-group" data-reveal>
         {%- if topics.size > 1 -%}
           <h2 class="h4 faq-group__title">{{ topic | escape }}</h2>
         {%- endif -%}

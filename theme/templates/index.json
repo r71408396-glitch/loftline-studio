@@ -20,6 +20,10 @@
       "block_order": ["step-1", "step-2", "step-3"],
       "settings": {}
     },
+    "brand": {
+      "type": "brand-mark",
+      "settings": { "button_link": "shopify://pages/build" }
+    },
     "accessories": {
       "type": "featured-collection",
       "settings": { "heading": "Finish the setup", "limit": 4 }
@@ -29,5 +33,5 @@
       "settings": {}
     }
   },
-  "order": ["hero", "steps", "accessories", "promise"]
+  "order": ["hero", "steps", "brand", "accessories", "promise"]
 }

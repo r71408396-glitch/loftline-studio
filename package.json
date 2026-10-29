@@ -11,6 +11,7 @@
   "devDependencies": {
     "@shopify/cli": "^4.9.4",
     "esbuild": "^0.28.2",
+    "gsap": "^3.15.0",
     "liquidjs": "^10.30.0",
     "three": "^0.186.1"
   }

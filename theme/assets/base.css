@@ -1274,3 +1274,189 @@ small {
 .password-page form {
   margin-top: var(--space-4);
 }
+
+/* ---------- Logo ---------- */
+
+.logo {
+  display: block;
+  overflow: hidden;
+}
+
+.logo [data-logo-line] {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* The floating line lifts a little on hover, like a desk rising. */
+a:hover > .logo [data-logo-line],
+a:focus-visible > .logo [data-logo-line] {
+  transform: translateY(-20px);
+}
+
+.site-header__lockup {
+  display: block;
+  width: var(--logo-width, 132px);
+  color: var(--color-ink);
+}
+
+.site-footer__brand .logo {
+  width: 18rem;
+  color: #fff;
+}
+
+/* ---------- 3D logo ---------- */
+
+.logo-3d {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+}
+
+.logo-3d__still,
+.logo-3d__stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.logo-3d__still {
+  object-fit: contain;
+  transition: opacity 0.6s ease;
+}
+
+.logo-3d__stage {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.logo-3d.is-live .logo-3d__stage {
+  opacity: 1;
+}
+
+.logo-3d.is-live .logo-3d__still {
+  opacity: 0;
+  animation: none;
+}
+
+/* The intro plays from pieces apart, so the assembled still waits for it. */
+.motion .logo-3d[data-mode='intro']:not(.is-still) .logo-3d__still {
+  opacity: 0;
+  animation: motion-fallback 0s linear 4s forwards;
+}
+
+/* ---------- Brand mark ---------- */
+
+.brand-mark {
+  overflow: hidden;
+}
+
+.brand-mark--ink {
+  background:
+    radial-gradient(60rem 40rem at 75% 50%, rgba(var(--color-accent-rgb), 0.28), transparent 70%),
+    var(--color-ink);
+  color: #fff;
+}
+
+.brand-mark--ink .brand-mark__heading {
+  color: #fff;
+}
+
+.brand-mark--ink .eyebrow {
+  color: #a5b4fc;
+}
+
+.brand-mark--ink .brand-mark__lead {
+  color: var(--color-muted-on-dark);
+}
+
+.brand-mark--light {
+  background: radial-gradient(60rem 40rem at 75% 50%, var(--color-tint), transparent 70%), var(--color-background);
+}
+
+.brand-mark__grid {
+  display: grid;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.brand-mark__heading {
+  font-size: clamp(3.2rem, 6vw, 5.6rem);
+  line-height: 1.05;
+}
+
+.brand-mark__lead {
+  max-width: 40ch;
+  margin-bottom: var(--space-4);
+  font-size: 1.8rem;
+}
+
+.brand-mark__visual {
+  width: min(100%, 52rem);
+  margin: 0 auto;
+}
+
+@media screen and (min-width: 990px) {
+  .brand-mark__grid {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--space-8);
+  }
+}
+
+/* ---------- Password page ---------- */
+
+.password-page__emblem {
+  width: min(26rem, 60vw);
+  margin: 0 auto;
+}
+
+.password-page__logo {
+  margin: 0 auto var(--space-4);
+}
+
+.password-page__logo .logo {
+  width: 22rem;
+  margin: 0 auto;
+  color: var(--color-ink);
+}
+
+/* ---------- Motion ---------- */
+
+/* Arrows in buttons nudge forward on hover. */
+.button .icon-arrow-right {
+  transition: transform 0.25s ease;
+}
+
+.button:hover .icon-arrow-right {
+  transform: translateX(0.3rem);
+}
+
+/* motion.js reveals these as they scroll into view. If it hasn't run after
+   3 seconds (blocked or failed), they appear anyway. */
+.motion [data-reveal] {
+  opacity: 0;
+  animation: motion-fallback 0s linear 3s forwards;
+}
+
+.motion-ready [data-reveal] {
+  animation: none;
+}
+
+/* The home hero enters on wide screens only; on phones it is the first thing
+   on screen and shows at once. */
+@media screen and (min-width: 990px) {
+  .motion:not(.motion-ready) [data-hero-heading],
+  .motion:not(.motion-ready) [data-hero-item] {
+    opacity: 0;
+    animation: motion-fallback 0s linear 3s forwards;
+  }
+
+  .motion.motion-ready [data-hero-heading] {
+    opacity: 0;
+  }
+}
+
+@keyframes motion-fallback {
+  to {
+    opacity: 1;
+  }
+}

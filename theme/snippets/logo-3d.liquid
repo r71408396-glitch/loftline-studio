@@ -1,0 +1,17 @@
+{%- comment -%}
+  The 3D Loftline emblem (custom element in assets/motion.js). Shows the still
+  render until the 3D view is ready, and keeps it with reduced motion or
+  without WebGL.
+  Accepts: mode ('intro' plays on load, 'scroll' follows scrolling), class (optional).
+{%- endcomment -%}
+<logo-3d class="logo-3d{% if class %} {{ class }}{% endif %}" data-mode="{{ mode | default: 'intro' }}">
+  <img
+    class="logo-3d__still"
+    src="{{ 'logo-3d-still.webp' | asset_url }}"
+    width="800"
+    height="800"
+    alt=""
+    loading="lazy"
+  >
+  <div class="logo-3d__stage" data-stage aria-hidden="true"></div>
+</logo-3d>

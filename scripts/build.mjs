@@ -1,15 +1,34 @@
-// Bundles the 3D desk viewer (three.js, tree-shaken) into theme/assets.
+// Bundles the theme's JavaScript into theme/assets:
+//   desk-viewer.js  3D desk viewer (three.js, tree-shaken)
+//   motion.js       GSAP animations and the 3D logo element
+// Code shared between them (three.js, GSAP) and the lazily loaded 3D logo scene
+// go into chunk-*.js files next to them. Shopify serves theme assets from one
+// folder, so the relative imports between them keep working on the CDN.
 // Usage: node scripts/build.mjs [--watch] [--serve]
+import fs from 'node:fs';
+import path from 'node:path';
 import * as esbuild from 'esbuild';
 
 const watch = process.argv.includes('--watch');
 const serve = process.argv.includes('--serve');
+const outdir = 'theme/assets';
+
+// Old chunks would otherwise pile up in the theme with every build.
+for (const file of fs.readdirSync(outdir)) {
+  if (/^chunk-[\w-]+\.js$/.test(file)) fs.rmSync(path.join(outdir, file));
+}
 
 const options = {
-  entryPoints: { 'desk-viewer': 'src/desk-viewer/index.js' },
-  outdir: 'theme/assets',
+  entryPoints: {
+    'desk-viewer': 'src/desk-viewer/index.js',
+    motion: 'src/motion/index.js',
+  },
+  outdir,
   bundle: true,
+  splitting: true,
   format: 'esm',
+  chunkNames: 'chunk-[hash]',
+  loader: { '.glb': 'binary' },
   minify: true,
   target: ['es2020'],
   legalComments: 'none',
@@ -26,6 +45,7 @@ if (watch || serve) {
   }
 } else {
   const result = await esbuild.build(options);
-  const bytes = Object.values(result.metafile.outputs).reduce((sum, output) => sum + output.bytes, 0);
-  console.log(`desk-viewer.js: ${(bytes / 1024).toFixed(1)} KB`);
+  for (const [file, output] of Object.entries(result.metafile.outputs)) {
+    console.log(`${path.basename(file)}: ${(output.bytes / 1024).toFixed(1)} KB`);
+  }
 }

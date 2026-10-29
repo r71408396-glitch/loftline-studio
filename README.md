@@ -4,13 +4,14 @@ Shopify store: modular standing desks with a 3D configurator, sold in the US, Ca
 
 - `theme/`: Online Store 2.0 theme written from scratch (no Dawn code). Colours, fonts and spacing are theme settings (`theme/config/settings_schema.json`), turned into CSS variables in `theme/snippets/css-variables.liquid`.
 - `src/desk-viewer/`: the 3D desk (three.js), built in code from the configuration in metres. Procedural textures for wood, linoleum, plywood edges and powder coat; no model or image files. Bundled into `theme/assets/desk-viewer.js`.
+- `src/motion/`: store-wide GSAP animation (scroll reveals, home hero entrance, the assembling SVG logo, FAQ answers, cart count) and the `<logo-3d>` element. `src/logo-3d/` renders the 3D emblem from the logo kit's GLB, embedded in the bundle. Bundled into `theme/assets/motion.js`; three.js and GSAP go into shared `chunk-*.js` files. Motion is off with reduced motion and in the theme editor.
 - `data/`: products, SKUs, prices, photos, specs, pages and FAQ. The local preview reads it, and the store setup ([docs/store-setup.md](docs/store-setup.md)) loads it into a store in one run.
 - `app/`: Loftline Ops, the store's admin app: production queue, build sheet PDFs, configurator rules and webhooks ([docs/loftline-ops.md](docs/loftline-ops.md)), plus two Shopify Functions, `desk-bundle` (Cart Transform) and `accessory-tiers` (Discount) ([docs/discounts-and-bundles.md](docs/discounts-and-bundles.md)).
 
 ## Commands
 
 ```bash
-npm run build                      # bundle the 3D viewer into theme/assets
+npm run build                      # bundle the 3D viewer and motion.js into theme/assets
 npm run preview                    # rebuild on change + serve on http://localhost:5178
 node scripts/preview-theme.mjs     # render pages with sample data into preview/out/
 npm run check                      # Theme Check

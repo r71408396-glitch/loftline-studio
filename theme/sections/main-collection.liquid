@@ -29,7 +29,7 @@
                     assign lazy = false
                   endif
                 -%}
-                <li>{% render 'product-card', card_product: product, lazy: lazy, quick_add: section.settings.quick_add, sizes: '(min-width: 990px) 25vw, 50vw' %}</li>
+                <li{% if forloop.index > 3 %} data-reveal{% endif %}>{% render 'product-card', card_product: product, lazy: lazy, quick_add: section.settings.quick_add, sizes: '(min-width: 990px) 25vw, 50vw' %}</li>
               {%- endfor -%}
             </ul>
             {% render 'pagination', paginate: paginate %}

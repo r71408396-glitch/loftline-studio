@@ -2,17 +2,17 @@
   Headline on the left, product visual on the right. The visual is an image
   for now; the configurator's 3D desk viewer replaces it once it is built.
 {%- endcomment -%}
-<section class="section hero" aria-labelledby="HeroHeading-{{ section.id }}">
+<section class="section hero" data-hero aria-labelledby="HeroHeading-{{ section.id }}">
   <div class="page-width hero__grid">
     <div class="hero__text">
       {%- if section.settings.eyebrow != blank -%}
-        <span class="eyebrow">{{ section.settings.eyebrow | escape }}</span>
+        <span class="eyebrow" data-hero-item>{{ section.settings.eyebrow | escape }}</span>
       {%- endif -%}
-      <h1 id="HeroHeading-{{ section.id }}">{{ section.settings.heading | escape }}</h1>
+      <h1 id="HeroHeading-{{ section.id }}" data-hero-heading>{{ section.settings.heading | escape }}</h1>
       {%- if section.settings.text != blank -%}
-        <div class="hero__lead rte">{{ section.settings.text }}</div>
+        <div class="hero__lead rte" data-hero-item>{{ section.settings.text }}</div>
       {%- endif -%}
-      <div class="hero__actions">
+      <div class="hero__actions" data-hero-item>
         {%- if section.settings.button_label != blank -%}
           <a class="button" href="{{ section.settings.button_link | default: routes.all_products_collection_url }}">
             {{- section.settings.button_label | escape }}
@@ -26,7 +26,7 @@
         {%- endif -%}
       </div>
       {%- if section.blocks.size > 0 -%}
-        <ul class="hero__points">
+        <ul class="hero__points" data-hero-item>
           {%- for block in section.blocks -%}
             <li {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
           {%- endfor -%}
@@ -62,6 +62,7 @@
       <script src="{{ 'desk-hero.js' | asset_url }}" type="module"></script>
       <desk-hero
         class="hero__visual hero__visual--3d"
+        data-hero-visual
         data-viewer-src="{{ 'desk-viewer.js' | asset_url }}"
         data-config='{"top":"{{ section.settings.top }}","frame":"{{ section.settings.frame }}","edge":"rounded","width":1.6,"depth":0.8,"accessories":{"monitor_arm":true,"desk_pad":true}}'
       >
@@ -72,7 +73,7 @@
         </button>
       </desk-hero>
     {%- else -%}
-      <div class="hero__visual">{{ still }}</div>
+      <div class="hero__visual" data-hero-visual>{{ still }}</div>
     {%- endif -%}
   </div>
 </section>

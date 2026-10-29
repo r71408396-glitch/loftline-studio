@@ -2,10 +2,13 @@
   <div class="page-width">
     <div class="site-footer__top">
       {%- for block in section.blocks -%}
-        <div {{ block.shopify_attributes }}>
+        <div data-reveal {{ block.shopify_attributes }}>
           {%- case block.type -%}
             {%- when 'brand' -%}
-              <p class="site-footer__brand">{{ shop.name }}</p>
+              <p class="site-footer__brand" data-logo-scroll>
+                {% render 'logo' %}
+                <span class="visually-hidden">{{ shop.name }}</span>
+              </p>
               {%- if block.settings.text != blank -%}
                 <div class="rte">{{ block.settings.text }}</div>
               {%- endif -%}

@@ -1,12 +1,12 @@
 <section class="section{% if section.settings.tint %} section--tint{% endif %}" aria-labelledby="StepsHeading-{{ section.id }}">
   <div class="page-width">
-    <div class="section-header">
+    <div class="section-header" data-reveal>
       <h2 id="StepsHeading-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
     </div>
     <ol class="steps grid grid--3-tablet">
       {%- for block in section.blocks -%}
-        <li class="step" {{ block.shopify_attributes }}>
-          <span class="step__number" aria-hidden="true">{{ forloop.index }}</span>
+        <li class="step" data-reveal {{ block.shopify_attributes }}>
+          <span class="step__number" aria-hidden="true" data-reveal-pop>{{ forloop.index }}</span>
           <h3 class="h4">{{ block.settings.title | escape }}</h3>
           <div class="rte muted">{{ block.settings.text }}</div>
         </li>

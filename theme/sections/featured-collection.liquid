@@ -4,7 +4,7 @@
 -%}
 <section class="section" aria-labelledby="FeaturedHeading-{{ section.id }}">
   <div class="page-width">
-    <div class="section-header">
+    <div class="section-header" data-reveal>
       <h2 id="FeaturedHeading-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
       {%- if collection != blank -%}
         <a href="{{ collection.url }}">{{ 'collections.view_all' | t }}</a>
@@ -13,11 +13,11 @@
     <ul class="grid grid--2 grid--4-desktop" role="list" style="list-style: none; margin: 0; padding: 0;">
       {%- if collection != blank and collection.products_count > 0 -%}
         {%- for product in collection.products limit: limit -%}
-          <li>{% render 'product-card', card_product: product %}</li>
+          <li data-reveal>{% render 'product-card', card_product: product %}</li>
         {%- endfor -%}
       {%- else -%}
         {%- for i in (1..limit) -%}
-          <li>
+          <li data-reveal>
             <article class="card">
               <div class="card__media">{{ 'product-' | append: i | placeholder_svg_tag }}</div>
               <div class="card__body">
