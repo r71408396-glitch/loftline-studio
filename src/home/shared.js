@@ -12,14 +12,16 @@ export function webglAvailable() {
   }
 }
 
-// The 3D desk is a large download: skip it with reduced motion, Save-Data or no WebGL.
+// The 3D desk is a large download and a steady bit of GPU work: skip it with
+// reduced motion, Save-Data, little memory or no WebGL.
 export function canLoad3d() {
   const saveData = navigator.connection && navigator.connection.saveData;
-  return !saveData && webglAvailable() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory < 4;
+  return !saveData && !lowMemory && webglAvailable() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 export function afterLoad(callback) {
-  const idle = () => (window.requestIdleCallback || setTimeout)(callback, { timeout: 2000 });
+  const idle = () => (window.requestIdleCallback || setTimeout)(callback, { timeout: 2500 });
   if (document.readyState === 'complete') idle();
   else window.addEventListener('load', idle, { once: true });
 }

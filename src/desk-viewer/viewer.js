@@ -55,6 +55,7 @@ export class DeskViewer {
     // explodedFraming: frame the desk with its parts pulled apart, so the camera
     //   holds still while setExplode() animates.
     // props: keyboard and mouse on the desk pad (for scenes, not sold).
+    // pixelRatio: cap on the device pixel ratio (default 2); lower for big canvases.
     this.options = { autoRotate: false, interactive: true, stage: 'light', view: {}, explodedFraming: false, props: false, ...options };
     this.drift = { yaw: 0, pitch: 0, dolly: 0 };
     this.explode = 0;
@@ -66,7 +67,7 @@ export class DeskViewer {
     this.visible = true;
 
     const renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.options.pixelRatio || 2));
     renderer.outputColorSpace = SRGBColorSpace;
     renderer.toneMapping = NeutralToneMapping;
     renderer.toneMappingExposure = ['studio', 'room'].includes(this.options.stage) ? 1.1 : 0.95;

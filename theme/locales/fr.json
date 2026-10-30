@@ -54,16 +54,16 @@
       "previous_finish": "Finition précédente",
       "next_finish": "Finition suivante",
       "poster_alt": "Bureau assis-debout Loftline, [finish], avec bras d’écran, goulotte et sous-main en feutre",
-      "stage_label": "Vue 3D du bureau"
-    },
-    "home_details": {
-      "marker": "Détail [number] : [title]",
-      "poster_alt": "Vue éclatée d’un bureau Loftline : plateau, goulotte, supports latéraux, traverse, clavier de réglage, colonnes et pieds",
-      "closeup_alt": "Gros plan sur le chant arrondi d’un plateau en noyer"
+      "stage_label": "Vue 3D du bureau",
+      "height_label": "Hauteur",
+      "scroll_hint": "Faites défiler pour lever le bureau"
     },
     "home_accessories": {
       "previous": "Précédent",
       "next": "Suivant"
+    },
+    "home_marquee": {
+      "label": "Loftline en bref"
     }
   },
   "products": {

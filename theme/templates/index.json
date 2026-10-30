@@ -5,27 +5,54 @@
       "blocks": {
         "finish-walnut": { "type": "finish", "settings": { "top": "walnut", "frame": "black" } },
         "finish-oak": { "type": "finish", "settings": { "top": "oak", "frame": "white" } },
-        "finish-linoleum": { "type": "finish", "settings": { "top": "linoleum", "frame": "graphite" } },
-        "point-delivery": { "type": "point", "settings": { "title": "Free delivery", "text": "Desks ship free to the US, Canada and the UK." } },
-        "point-warranty": { "type": "point", "settings": { "title": "10-year warranty", "text": "On the frame, motors and electronics." } },
-        "point-trial": { "type": "point", "settings": { "title": "100-night trial", "text": "If it isn't right, we collect it for free." } }
+        "finish-linoleum": { "type": "finish", "settings": { "top": "linoleum", "frame": "graphite" } }
       },
-      "block_order": ["finish-walnut", "finish-oak", "finish-linoleum", "point-delivery", "point-warranty", "point-trial"],
+      "block_order": ["finish-walnut", "finish-oak", "finish-linoleum"],
+      "settings": {
+        "button_link": "shopify://pages/build",
+        "second_link": "shopify://collections/accessories"
+      }
+    },
+    "marquee": {
+      "type": "home-marquee",
+      "blocks": {
+        "walnut": { "type": "item", "settings": { "text": "Solid walnut" } },
+        "oak": { "type": "item", "settings": { "text": "Solid oak" } },
+        "bamboo": { "type": "item", "settings": { "text": "Bamboo" } },
+        "linoleum": { "type": "item", "settings": { "text": "Charcoal linoleum" } },
+        "height": { "type": "item", "settings": { "text": "62 to 127 cm" } },
+        "load": { "type": "item", "settings": { "text": "Holds 140 kg" } },
+        "motors": { "type": "item", "settings": { "text": "Two quiet motors" } },
+        "warranty": { "type": "item", "settings": { "text": "10-year warranty" } },
+        "delivery": { "type": "item", "settings": { "text": "Free delivery to the US, Canada and the UK" } }
+      },
+      "block_order": ["walnut", "oak", "bamboo", "linoleum", "height", "load", "motors", "warranty", "delivery"],
+      "settings": {}
+    },
+    "steps": {
+      "type": "home-steps",
+      "blocks": {
+        "size": { "type": "step", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room. The price updates as you go.", "chips": "120 to 200 cm wide, 60 or 80 cm deep", "theme_image": "step-size.webp" } },
+        "finish": { "type": "step", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style, shown on the desk as you pick them.", "chips": "5 tops, 4 frames, Square or rounded edge", "theme_image": "step-finish.webp" } },
+        "addons": { "type": "step", "settings": { "title": "Add-ons", "text": "Monitor arms, cable trays, desk pads and drawers, fitted to your desk before it ships.", "chips": "Monitor arm, Cable tray, Desk pad, Drawer", "theme_image": "step-addons.webp" } }
+      },
+      "block_order": ["size", "finish", "addons"],
       "settings": {
         "button_link": "shopify://pages/build"
       }
     },
-    "details": {
-      "type": "home-details",
+    "facts": {
+      "type": "home-facts",
       "blocks": {
-        "row-size": { "type": "row", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room.", "part": "beam" } },
-        "row-finish": { "type": "row", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style.", "part": "top" } },
-        "row-addons": { "type": "row", "settings": { "title": "Add-ons", "text": "Monitor arms, cable trays, desk pads and more.", "part": "cable_tray" } }
+        "height": { "type": "fact", "settings": { "number": "127", "before": "62 to", "unit": "cm", "title": "Height range", "text": "Two quiet motors and three-stage legs take the top from sitting to standing in seconds.", "wide": true, "dark": true } },
+        "load": { "type": "fact", "settings": { "number": "140", "unit": "kg", "title": "Load", "text": "Monitors, speakers, books, and your elbows." } },
+        "warranty": { "type": "fact", "settings": { "number": "10", "unit": "yr", "title": "Warranty", "text": "On the frame, motors and electronics." } },
+        "trial": { "type": "fact", "settings": { "number": "100", "unit": "nights", "title": "Trial", "text": "If it isn't right, we collect it for free." } },
+        "delivery": { "type": "fact", "settings": { "title": "Free delivery", "text": "Desks ship free to the US, Canada and the UK.", "wide": true } },
+        "assembly": { "type": "fact", "settings": { "number": "25", "unit": "min", "title": "Frame assembly", "text": "Or let us do it: assembly at home is a tick at checkout." } }
       },
-      "block_order": ["row-size", "row-finish", "row-addons"],
-      "settings": {
-        "button_link": "shopify://pages/about"
-      }
+      "block_order": ["height", "load", "warranty", "trial", "delivery", "assembly"],
+      "settings": {}
     },
     "accessories": {
       "type": "home-accessories",
@@ -41,5 +68,5 @@
       }
     }
   },
-  "order": ["hero", "details", "accessories"]
+  "order": ["hero", "marquee", "steps", "facts", "accessories"]
 }

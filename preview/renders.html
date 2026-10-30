@@ -9,6 +9,7 @@
 //   details-exploded.webp                             the details section before 3D loads
 //   detail-walnut-edge.webp                           close-up of the rounded walnut edge
 //   editorial-<product>.webp                          accessory photos for the home page
+//   step-<size|finish|addons>.webp                    pictures for the builder steps
 // Open preview/renders.html?only=hero to render one group; ?dir=out saves to preview/out.
 import { DeskViewer } from '../theme/assets/desk-viewer.js';
 
@@ -89,6 +90,30 @@ if (!only || only === 'editorial') {
     await save(`editorial-${name}.webp`, viewer.shootFrom(camera));
     viewer.dispose();
   }
+}
+
+if (!only || only === 'steps') {
+  // The builder steps (sections/home-steps.liquid), all in the warm room.
+  // Size: a wide oak desk on its own, from the front right.
+  const size = makeViewer({ stage: 'room', view: { direction: [0.7, 0.3, 1], margin: 0.9 } }, 1400, 1050);
+  size.set({ top: 'oak', frame: 'white', edge: 'rounded', width: 1.8, depth: 0.8, accessories: {} }, { instant: true });
+  size.resize();
+  await save('step-size.webp', size.snapshot('image/webp', 0.86));
+  size.dispose();
+
+  // Finish: the rounded walnut edge over the black frame, up close.
+  const finish = makeViewer({ stage: 'room' }, 1400, 1050);
+  finish.set({ top: 'walnut', frame: 'black', edge: 'rounded', width: 1.6, depth: 0.8, accessories: {} }, { instant: true });
+  await save('step-finish.webp', finish.shootFrom({ position: [1.08, 0.92, 0.74], target: [0.66, 0.7, 0.26], fov: 24 }));
+  finish.dispose();
+
+  // Add-ons: every accessory on the desk, pulled a little apart.
+  const addons = makeViewer({ stage: 'room', explodedFraming: true, view: { direction: [0.5, 0.42, 1], margin: 0.9 } }, 1400, 1050);
+  addons.set({ top: 'walnut', frame: 'black', edge: 'rounded', width: 1.6, depth: 0.8, accessories: { monitor_arm: true, cable_tray: true, desk_pad: true, drawer: true } }, { instant: true });
+  addons.setExplode(0.5);
+  addons.resize();
+  await save('step-addons.webp', addons.snapshot('image/webp', 0.86));
+  addons.dispose();
 }
 
 window.renderDone = true;

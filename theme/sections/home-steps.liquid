@@ -1,0 +1,120 @@
+{%- comment -%}
+  "Built in three moves" (assets/home.js, <home-steps>): the three choices in
+  the desk builder, one under the other. On wide screens the picture on the
+  left stays put while the steps scroll past it, and changes with the step in
+  view. Each step's picture is its block image, else a theme image (renders
+  from preview/renders.html).
+{%- endcomment -%}
+{{ 'home.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'home.js' | asset_url }}" type="module"></script>
+
+<home-steps class="section home-steps">
+  <div class="page-width">
+    <div class="home-steps__header">
+      <div data-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="home-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h2 class="home-display">
+          {%- assign heading_lines = section.settings.heading | newline_to_br | replace: '<br />', '<br>' | split: '<br>' -%}
+          {%- for line in heading_lines -%}
+            <span class="home-display__line">{{ line | strip | escape }}</span>
+          {%- endfor -%}
+        </h2>
+      </div>
+      {%- if section.settings.text != blank -%}
+        <p class="home-steps__lead" data-reveal>{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="home-steps__grid">
+      <div class="home-steps__visual" data-reveal>
+        <div class="home-steps__frame">
+          {%- for block in section.blocks -%}
+            <div class="home-steps__picture{% if forloop.first %} is-active{% endif %}" data-step-picture="{{ forloop.index0 }}">
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600, 900, 1200, 1400', sizes: '(min-width: 990px) 50vw, 100vw', alt: block.settings.title }}
+              {%- elsif block.settings.theme_image != blank -%}
+                <img src="{{ block.settings.theme_image | asset_url }}" width="1400" height="1050" alt="{{ block.settings.title | escape }}" loading="lazy">
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+          <span class="home-steps__big" data-step-number aria-hidden="true">01</span>
+        </div>
+      </div>
+
+      <ol class="home-steps__list" role="list" data-step-list>
+        <span class="home-steps__progress" aria-hidden="true"><span data-step-progress></span></span>
+        {%- for block in section.blocks -%}
+          <li class="home-steps__item{% if forloop.first %} is-active{% endif %}" data-step="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            <div class="home-steps__inline">
+              {%- if block.settings.image != blank -%}
+                {{ block.settings.image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '500, 800, 1000', sizes: '100vw', alt: block.settings.title }}
+              {%- elsif block.settings.theme_image != blank -%}
+                <img src="{{ block.settings.theme_image | asset_url }}" width="1400" height="1050" alt="{{ block.settings.title | escape }}" loading="lazy">
+              {%- endif -%}
+            </div>
+            <span class="home-steps__number" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            <h3 class="home-steps__title">{{ block.settings.title | escape }}</h3>
+            <p class="home-steps__copy">{{ block.settings.text | escape }}</p>
+            {%- if block.settings.chips != blank -%}
+              <ul class="home-steps__chips" role="list">
+                {%- assign chips = block.settings.chips | split: ',' -%}
+                {%- for chip in chips -%}
+                  <li>{{ chip | strip | escape }}</li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ol>
+    </div>
+
+    {%- if section.settings.button_label != blank -%}
+      <div class="home-steps__footer" data-reveal>
+        <a class="button button--large" href="{{ section.settings.button_link | default: routes.root_url }}">
+          {{- section.settings.button_label | escape }}
+          {% render 'icon', name: 'arrow-up-right' %}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</home-steps>
+
+{% schema %}
+{
+  "name": "Home steps",
+  "class": "section-home-steps",
+  "max_blocks": 4,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Small heading", "default": "The desk builder" },
+    { "type": "textarea", "id": "heading", "label": "Heading", "info": "One line per row", "default": "Built in\nthree moves." },
+    { "type": "text", "id": "text", "label": "Text", "default": "Every Loftline desk starts in the builder. Three choices, a live 3D preview, and a price that updates as you go." },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Open the builder" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Size" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Choose a width and depth that fits your room." },
+        { "type": "text", "id": "chips", "label": "Details", "info": "Short facts, separated by commas", "default": "120 to 200 cm wide, 60 or 80 cm deep" },
+        { "type": "image_picker", "id": "image", "label": "Picture" },
+        { "type": "text", "id": "theme_image", "label": "Theme image file", "info": "Used when no picture is chosen, e.g. step-size.webp" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home steps",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room.", "chips": "120 to 200 cm wide, 60 or 80 cm deep", "theme_image": "step-size.webp" } },
+        { "type": "step", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style.", "chips": "5 tops, 4 frames, 2 edges", "theme_image": "step-finish.webp" } },
+        { "type": "step", "settings": { "title": "Add-ons", "text": "Monitor arms, cable trays, desk pads and more.", "chips": "Monitor arm, Cable tray, Desk pad, Drawer", "theme_image": "step-addons.webp" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -54,16 +54,16 @@
       "previous_finish": "Previous finish",
       "next_finish": "Next finish",
       "poster_alt": "Loftline standing desk, [finish], with a monitor arm, cable tray and felt desk pad",
-      "stage_label": "3D view of the desk"
-    },
-    "home_details": {
-      "marker": "Detail [number]: [title]",
-      "poster_alt": "Exploded view of a Loftline desk: the top, cable tray, side brackets, cross beam, height keypad, columns and feet",
-      "closeup_alt": "Close-up of the rounded edge of a walnut desk top"
+      "stage_label": "3D view of the desk",
+      "height_label": "Height",
+      "scroll_hint": "Scroll to raise the desk"
     },
     "home_accessories": {
       "previous": "Previous",
       "next": "Next"
+    },
+    "home_marquee": {
+      "label": "Loftline in short"
     }
   },
   "products": {

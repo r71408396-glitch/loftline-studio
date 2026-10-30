@@ -1,0 +1,50 @@
+{%- comment -%}
+  A line of short facts and finishes that glides sideways under the hero.
+  The movement is a CSS animation (no JavaScript); it pauses under the pointer
+  and stands still with reduced motion.
+{%- endcomment -%}
+{{ 'home.css' | asset_url | stylesheet_tag }}
+
+<section class="home-marquee" aria-label="{{ 'sections.home_marquee.label' | t }}">
+  <div class="home-marquee__track">
+    {%- for copy in (1..2) -%}
+      <ul class="home-marquee__list" role="list"{% if copy == 2 %} aria-hidden="true"{% endif %}>
+        {%- for block in section.blocks -%}
+          <li class="home-marquee__item" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
+          <li class="home-marquee__mark" aria-hidden="true"></li>
+        {%- endfor -%}
+      </ul>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Home marquee",
+  "class": "section-home-marquee",
+  "max_blocks": 16,
+  "settings": [],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [{ "type": "text", "id": "text", "label": "Text", "default": "Solid walnut" }]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home marquee",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Solid walnut" } },
+        { "type": "item", "settings": { "text": "Solid oak" } },
+        { "type": "item", "settings": { "text": "Bamboo" } },
+        { "type": "item", "settings": { "text": "Charcoal linoleum" } },
+        { "type": "item", "settings": { "text": "62 to 127 cm" } },
+        { "type": "item", "settings": { "text": "Holds 140 kg" } },
+        { "type": "item", "settings": { "text": "Two quiet motors" } },
+        { "type": "item", "settings": { "text": "10-year warranty" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

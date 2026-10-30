@@ -1,74 +1,70 @@
-// <home-hero>: full-width studio scene with the desk, a finish selector and the
-// build button. A poster render shows at once; the live 3D desk replaces it
-// after the page has loaded (wide screens) or after the first touch or scroll
-// (phones). Choosing a finish changes the desk (or the poster), its name, and
-// the finish the build button carries into the desk builder.
+// <home-hero>: the studio scene with the desk, a finish selector and the build
+// button. A poster render shows at once. On wide screens with a pointer the
+// live 3D desk replaces it after the page has loaded, and rises from sitting to
+// standing height as the visitor scrolls through the hero (the hero is taller
+// than the screen; its inner frame sticks). Phones keep the poster: choosing a
+// finish swaps the poster image. Either way the finish travels into the desk
+// builder through the button link, and tints the glow behind the desk.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
 import { afterLoad, canLoad3d, desktop, motionOn } from './shared.js';
 
-gsap.registerPlugin(ScrollTrigger, SplitText);
+gsap.registerPlugin(ScrollTrigger);
 
 // The same camera as preview/renders.html, so the posters line up with the 3D view.
 const VIEW = { direction: [0.55, 0.27, 1], margin: 0.95 };
 const SCENE = { edge: 'rounded', width: 1.6, depth: 0.8, accessories: { monitor_arm: true, desk_pad: true, cable_tray: true } };
+// Sitting and standing heights of the top, in metres.
+const SIT = 0.72;
+const STAND = 1.18;
+const ease = gsap.parseEase('power2.inOut');
 
 class HomeHero extends HTMLElement {
   connectedCallback() {
-    // Set up once: moving the element in the page (GSAP pinning does) connects it again.
+    // Set up once: moving the element in the page connects it again.
     if (this.ready) return;
     this.ready = true;
     this.inputs = [...this.querySelectorAll('input[data-finish]')];
     this.poster = this.querySelector('[data-poster]');
     this.posterSource = this.querySelector('[data-poster-mobile]');
     this.stage = this.querySelector('[data-stage]');
-    this.media = this.querySelector('[data-hero-media]');
+    this.thumb = this.querySelector('[data-finish-thumb]');
     this.name = this.querySelector('[data-finish-name]');
-    this.count = this.querySelector('[data-finish-count]');
+    this.readout = this.querySelector('[data-readout-value]');
+    this.dot = this.querySelector('[data-readout-dot]');
     this.links = [...this.querySelectorAll('[data-build-link]')];
+    this.height = SIT;
 
     this.inputs.forEach((input, index) => input.addEventListener('change', () => this.select(index)));
-    this.querySelector('[data-finish-prev]')?.addEventListener('click', () => this.step(-1));
-    this.querySelector('[data-finish-next]')?.addEventListener('click', () => this.step(1));
     this.select(Math.max(0, this.inputs.findIndex((input) => input.checked)), { initial: true });
-
-    if (canLoad3d()) {
-      if (desktop() && window.matchMedia('(hover: hover)').matches) {
-        afterLoad(() => this.load());
-      } else {
-        // Phones: wait for the visitor, so the first load stays light.
-        const start = () => this.load();
-        for (const type of ['pointerdown', 'scroll', 'keydown']) window.addEventListener(type, start, { once: true, passive: true });
-      }
+    if (this.thumb) {
+      // Fonts arriving and resizes change the chip widths.
+      new ResizeObserver(() => this.placeThumb()).observe(this.thumb.parentElement);
+      document.fonts?.ready.then(() => this.placeThumb());
     }
 
-    if (motionOn()) {
-      this.entrance();
-      this.scrollDrift();
-    }
+    if (this.wants3d()) afterLoad(() => this.load());
+    if (motionOn() && desktop()) this.rise();
     this.stickyButton();
+  }
+
+  wants3d() {
+    return desktop() && window.matchMedia('(hover: hover)').matches && canLoad3d();
   }
 
   get current() {
     return this.inputs[this.index];
   }
 
-  step(direction) {
-    const index = (this.index + direction + this.inputs.length) % this.inputs.length;
-    this.inputs[index].checked = true;
-    this.select(index);
-    this.inputs[index].focus();
-  }
-
   select(index, { initial = false } = {}) {
     this.index = index;
     const input = this.current;
     if (!input) return;
-    const { top, frame, code, label } = input.dataset;
+    const { top, frame, code, label, glow } = input.dataset;
     if (this.name) this.name.textContent = label;
-    if (this.count) this.count.textContent = `${String(index + 1).padStart(2, '0')} / ${String(this.inputs.length).padStart(2, '0')}`;
+    if (glow) this.style.setProperty('--glow', glow);
     for (const link of this.links) link.href = `${link.dataset.base}#${code}`;
+    this.placeThumb();
     if (initial) return;
 
     if (this.viewer) {
@@ -78,8 +74,20 @@ class HomeHero extends HTMLElement {
       if (this.posterSource) this.posterSource.srcset = input.dataset.posterMobile;
       this.poster.src = input.dataset.poster;
       this.poster.alt = input.dataset.alt;
-      if (canLoad3d()) this.load();
+      if (this.wants3d()) this.load();
     }
+  }
+
+  // The highlight slides behind the chosen chip.
+  placeThumb() {
+    const input = this.current;
+    if (!this.thumb || !input) return;
+    const chip = input.closest('.finish-chip');
+    const box = chip.getBoundingClientRect();
+    const parent = this.thumb.parentElement.getBoundingClientRect();
+    this.thumb.style.transform = `translateX(${box.left - parent.left}px)`;
+    this.thumb.style.width = `${box.width}px`;
+    this.thumb.classList.add('is-placed');
   }
 
   async load() {
@@ -92,9 +100,11 @@ class HomeHero extends HTMLElement {
         interactive: false,
         stage: 'studio',
         props: true,
-        view: { ...VIEW, center: () => (desktop() ? 0.62 : 0.5), centerY: () => (desktop() ? 0.56 : 0.5) },
+        // A full-screen canvas: 1.5x is plenty, and far cheaper than 2x on a retina screen.
+        pixelRatio: 1.5,
+        view: { ...VIEW, center: 0.62, centerY: 0.56 },
       });
-      this.viewer.set({ ...SCENE, top, frame }, { instant: true });
+      this.viewer.set({ ...SCENE, top, frame, height: this.height }, { instant: true });
       if (this.drift) this.viewer.setDrift(this.drift);
       await this.viewer.ready();
       this.classList.add('is-live');
@@ -104,46 +114,32 @@ class HomeHero extends HTMLElement {
     }
   }
 
-  // Headline lines rise, then the desk settles, then the controls arrive.
-  // Phones show the headline at once (it is the first thing on screen).
-  entrance() {
-    const heading = this.querySelector('[data-home-heading]');
-    const items = this.querySelectorAll('[data-home-item]');
-    const timeline = gsap.timeline({ defaults: { ease: 'power4.out' } });
-
-    if (desktop() && heading) {
-      SplitText.create(heading, {
-        type: 'lines',
-        mask: 'lines',
-        autoSplit: true,
-        onSplit(self) {
-          gsap.set(heading, { opacity: 1 });
-          return gsap.from(self.lines, { yPercent: 110, duration: 1.2, stagger: 0.1, ease: 'power4.out' });
-        },
-      });
-    }
-    // The poster is the largest paint, so it is never hidden: it only eases in.
-    if (this.media) timeline.from(this.media, { scale: 1.06, duration: 1.8, ease: 'expo.out', clearProps: 'scale' }, 0.15);
-    if (desktop() && items.length) {
-      timeline.fromTo(items, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.9, stagger: 0.08, clearProps: 'transform' }, 0.55);
-    }
-  }
-
-  // As the hero scrolls away the camera turns a little around the desk and
-  // moves in (the poster zooms slightly until the 3D view is live).
-  scrollDrift() {
+  // Scrolling through the hero raises the desk from sitting to standing
+  // height, turns the camera a little, and ticks the height readout.
+  rise() {
     ScrollTrigger.create({
       trigger: this,
       start: 'top top',
-      end: 'bottom top',
-      scrub: 0.6,
-      onUpdate: (self) => {
-        const p = self.progress;
-        this.drift = { yaw: -0.18 * p, pitch: 0.05 * p, dolly: 0.08 * p };
-        if (this.viewer) this.viewer.setDrift(this.drift);
-        else gsap.set(this.poster, { scale: 1 + 0.05 * p });
-      },
+      end: 'bottom bottom',
+      scrub: true,
+      onUpdate: (self) => this.setProgress(self.progress),
     });
+  }
+
+  setProgress(progress) {
+    const p = ease(progress);
+    this.height = SIT + (STAND - SIT) * p;
+    this.drift = { yaw: -0.14 * p, pitch: 0.04 * p, dolly: 0.05 * p };
+    this.style.setProperty('--rise', p.toFixed(3));
+    if (this.readout) this.readout.textContent = Math.round(this.height * 100);
+    if (this.dot) this.dot.style.transform = `translateY(${(-p * 100).toFixed(1)}%)`;
+    if (this.viewer) {
+      this.viewer.setDrift(this.drift);
+      this.viewer.set({ height: this.height }, { instant: true });
+    } else if (this.poster) {
+      // Poster only: a slow push in stands in for the camera move.
+      this.poster.style.transform = `scale(${1 + 0.06 * p})`;
+    }
   }
 
   // Phones: a build button stays at the bottom of the screen once the hero's

@@ -1,0 +1,87 @@
+{%- comment -%}
+  "Built for the long day" (assets/home.js, <home-facts>): a grid of tiles
+  with the numbers that matter. Numbers count up as the grid comes into view.
+  A tile without a number shows its title large instead.
+{%- endcomment -%}
+{{ 'home.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'home.js' | asset_url }}" type="module"></script>
+
+<home-facts class="section home-facts">
+  <div class="page-width">
+    <div class="home-facts__header" data-reveal>
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="home-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="home-display">
+        {%- assign heading_lines = section.settings.heading | newline_to_br | replace: '<br />', '<br>' | split: '<br>' -%}
+        {%- for line in heading_lines -%}
+          <span class="home-display__line">{{ line | strip | escape }}</span>
+        {%- endfor -%}
+      </h2>
+    </div>
+
+    <ul class="facts-grid" role="list">
+      {%- for block in section.blocks -%}
+        <li class="fact{% if block.settings.wide %} fact--wide{% endif %}{% if block.settings.dark %} fact--dark{% endif %}" data-reveal {{ block.shopify_attributes }}>
+          {%- if block.settings.number != blank -%}
+            <p class="fact__figure">
+              {%- if block.settings.before != blank -%}<span class="fact__before">{{ block.settings.before | escape }}</span>{%- endif -%}
+              <span class="fact__number" data-count="{{ block.settings.number | escape }}">{{ block.settings.number | escape }}</span>
+              {%- if block.settings.unit != blank -%}<span class="fact__unit">{{ block.settings.unit | escape }}</span>{%- endif -%}
+            </p>
+          {%- else -%}
+            <p class="fact__figure fact__figure--text">{{ block.settings.title | escape }}</p>
+          {%- endif -%}
+          <div class="fact__body">
+            {%- if block.settings.number != blank and block.settings.title != blank -%}
+              <h3 class="fact__title">{{ block.settings.title | escape }}</h3>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="fact__text">{{ block.settings.text | escape }}</p>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</home-facts>
+
+{% schema %}
+{
+  "name": "Home facts",
+  "class": "section-home-facts",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Small heading", "default": "Why Loftline" },
+    { "type": "textarea", "id": "heading", "label": "Heading", "info": "One line per row", "default": "Built for\nthe long day." }
+  ],
+  "blocks": [
+    {
+      "type": "fact",
+      "name": "Fact",
+      "settings": [
+        { "type": "text", "id": "number", "label": "Number", "info": "Counts up as it comes into view. Leave empty to show the title large instead." },
+        { "type": "text", "id": "before", "label": "Before the number", "info": "e.g. 62 to" },
+        { "type": "text", "id": "unit", "label": "Unit", "info": "e.g. cm" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Height range" },
+        { "type": "text", "id": "text", "label": "Text", "default": "Two quiet motors, three-stage legs." },
+        { "type": "checkbox", "id": "wide", "label": "Double width", "default": false },
+        { "type": "checkbox", "id": "dark", "label": "Dark tile", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home facts",
+      "blocks": [
+        { "type": "fact", "settings": { "number": "127", "before": "62 to", "unit": "cm", "title": "Height range", "text": "Two quiet motors and three-stage legs take the top from sitting to standing in seconds.", "wide": true, "dark": true } },
+        { "type": "fact", "settings": { "number": "140", "unit": "kg", "title": "Load", "text": "Monitors, speakers, books, and your elbows." } },
+        { "type": "fact", "settings": { "number": "10", "unit": "yr", "title": "Warranty", "text": "On the frame, motors and electronics." } },
+        { "type": "fact", "settings": { "number": "100", "unit": "nights", "title": "Trial", "text": "If it isn't right, we collect it for free." } },
+        { "type": "fact", "settings": { "title": "Free delivery", "text": "Desks ship free to the US, Canada and the UK.", "wide": true } },
+        { "type": "fact", "settings": { "number": "25", "unit": "min", "title": "Frame assembly", "text": "Or let us do it: assembly at home is a tick at checkout." } }
+      ]
+    }
+  ]
+}
+{% endschema %}
