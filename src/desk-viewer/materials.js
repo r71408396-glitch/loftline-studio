@@ -11,6 +11,9 @@ import {
 } from 'three';
 import { woodTexture, solidTexture, plywoodTexture, powderCoatBump, feltTexture } from './textures.js';
 
+// Thickness of the desk top (desk-model.js TOP_THICKNESS), for the edge grain.
+const EDGE_THICKNESS = 0.025;
+
 export const TOPS = {
   oak: {
     kind: 'wood',
@@ -59,7 +62,10 @@ export const FRAMES = {
 };
 
 export class MaterialLibrary {
-  constructor(renderer) {
+  // woodDetail: wood texture pixels per metre. The default suits the live
+  // views; close-up renders ask for more so the grain stays sharp.
+  constructor(renderer, { woodDetail = 768 } = {}) {
+    this.woodDetail = woodDetail;
     this.anisotropy = renderer.capabilities.getMaxAnisotropy();
     this.tops = new Map();
     this.frames = new Map();
@@ -81,20 +87,27 @@ export class MaterialLibrary {
     if (this.tops.has(key)) return this.tops.get(key);
     const preset = TOPS[key] || TOPS.oak;
     let face;
+    let woodEdge = null;
 
     if (preset.kind === 'wood') {
       // Texture covers 2.0 x 0.8 m; UVs are in metres centred on the desk.
-      const maps = woodTexture(preset.species);
-      const options = { repeat: [1 / 2.0, 1 / 0.8], offset: [0.5, 0.5] };
-      face = new MeshPhysicalMaterial({
+      const maps = woodTexture(preset.species, { pxPerMetre: this.woodDetail });
+      const solidWood = (options, bump = true) => new MeshPhysicalMaterial({
         map: this.texture(maps.color, { ...options, srgb: true }),
         roughnessMap: this.texture(maps.rough, options),
-        bumpMap: this.texture(maps.bump, options),
+        bumpMap: bump ? this.texture(maps.bump, options) : null,
         bumpScale: 0.35,
         roughness: 1,
         clearcoat: preset.clearcoat,
         clearcoatRoughness: 0.4,
       });
+      face = solidWood({ repeat: [1 / 2.0, 1 / 0.8], offset: [0.5, 0.5] });
+      // The edge's v runs 0..1 across the top's thickness (desk-model.js), so
+      // it gets the grain at close to its true size (a strip a few times the
+      // 25 mm thickness, so a few grain lines show), not the whole 0.8 m
+      // squeezed into it. No bump: on the narrow rounded edge it shows as
+      // blocky specks in the highlight.
+      woodEdge = solidWood({ repeat: [1 / 2.0, (EDGE_THICKNESS * 3) / 0.8], offset: [0.5, 0.45] }, false);
     } else {
       const maps = solidTexture(preset.surface);
       const options = { repeat: [2, 2] };
@@ -107,7 +120,7 @@ export class MaterialLibrary {
       });
     }
 
-    let edge = face;
+    let edge = woodEdge || face;
     if (preset.edge === 'plywood') {
       this.shared.plywood ||= plywoodTexture();
       const maps = this.shared.plywood;

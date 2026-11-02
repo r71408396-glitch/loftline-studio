@@ -55,6 +55,7 @@ export class DeskViewer {
     // explodedFraming: frame the desk with its parts pulled apart, so the camera
     //   holds still while setExplode() animates.
     // props: keyboard and mouse on the desk pad (for scenes, not sold).
+    // woodDetail: wood texture pixels per metre (higher for close-up renders).
     // pixelRatio: cap on the device pixel ratio (default 2); lower for big canvases.
     this.options = { autoRotate: false, interactive: true, stage: 'light', view: {}, explodedFraming: false, props: false, ...options };
     this.drift = { yaw: 0, pitch: 0, dolly: 0 };
@@ -85,7 +86,7 @@ export class DeskViewer {
     this.camera = new PerspectiveCamera(26, 1, 0.05, 30);
     this.target = new Vector3(0, 0.5, 0);
 
-    this.materials = new MaterialLibrary(renderer);
+    this.materials = new MaterialLibrary(renderer, { woodDetail: this.options.woodDetail });
     const stage = ['studio', 'room'].includes(this.options.stage)
       ? studioStage(scene, renderer, this.materials, this.options.stage)
       : lightStage(scene, renderer, { paper: this.options.stage === 'paper' });

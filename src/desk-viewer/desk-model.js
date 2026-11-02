@@ -15,6 +15,7 @@ import {
   Vector2,
 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { keyboardKeys, keypadDisplay } from './textures.js';
 
 const TOP_THICKNESS = 0.025;
@@ -41,6 +42,8 @@ function roundedRect(width, depth, radius) {
 
 // Caps get UVs in metres (x, y of the shape). Side walls get u along the edge
 // and v from 0 to 1 across the slab thickness, for the plywood plies.
+// u = x + y runs on without a jump around the rounded corners: along the
+// front and back only x changes, along the ends only y.
 function slabUVs(minZ, maxZ) {
   const span = maxZ - minZ;
   return {
@@ -48,15 +51,9 @@ function slabUVs(minZ, maxZ) {
       return [a, b, c].map((i) => new Vector2(vertices[i * 3], vertices[i * 3 + 1]));
     },
     generateSideWallUV(geometry, vertices, a, b, c, d) {
-      const ax = vertices[a * 3];
-      const ay = vertices[a * 3 + 1];
-      const bx = vertices[b * 3];
-      const by = vertices[b * 3 + 1];
-      const alongX = Math.abs(ay - by) < Math.abs(ax - bx);
-      return [a, b, c, d].map((i) => {
-        const along = alongX ? vertices[i * 3] : vertices[i * 3 + 1];
-        return new Vector2(along, (vertices[i * 3 + 2] - minZ) / span);
-      });
+      return [a, b, c, d].map(
+        (i) => new Vector2(vertices[i * 3] + vertices[i * 3 + 1], (vertices[i * 3 + 2] - minZ) / span),
+      );
     },
   };
 }
@@ -77,7 +74,13 @@ function slabGeometry(width, depth, thickness, cornerRadius, edgeRadius) {
   // Extruded along +z from -bevel to thickness - bevel: lay it flat, top at y = 0.
   geometry.rotateX(-Math.PI / 2);
   geometry.translate(0, -(thickness - bevel), 0);
-  return geometry;
+  // ExtrudeGeometry gives every facet its own vertices, so the rounded edge
+  // shades as flat strips. Join the vertices the facets share (same place and
+  // UV; the top and the edge keep their crease) and smooth the normals.
+  const smooth = mergeVertices(geometry.deleteAttribute('normal'), 1e-6);
+  smooth.computeVertexNormals();
+  geometry.dispose();
+  return smooth;
 }
 
 /** Tapered foot profile seen from the side, extruded across its width. */

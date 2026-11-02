@@ -25,6 +25,18 @@ async function save(name, data) {
   log.push(await res.text());
 }
 
+// Scales an image data URL down to w x h (smooth) and returns it as WebP.
+async function downscale(url, w, h, quality = 0.9) {
+  const image = new Image();
+  image.src = url;
+  await image.decode();
+  const canvas = Object.assign(document.createElement('canvas'), { width: w, height: h });
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(image, 0, 0, w, h);
+  return canvas.toDataURL('image/webp', quality);
+}
+
 function makeViewer(options, w, h) {
   stageEl.innerHTML = '';
   stageEl.style.width = `${w}px`;
@@ -101,10 +113,15 @@ if (!only || only === 'steps') {
   await save('step-size.webp', size.snapshot('image/webp', 0.86));
   size.dispose();
 
-  // Finish: the rounded walnut edge over the black frame, up close.
-  const finish = makeViewer({ stage: 'room' }, 1400, 1050);
+  // Finish: the rounded walnut edge over the black frame, up close. The camera
+  // is so near that the grain needs a finer texture, and the frame is drawn at
+  // twice the size and scaled down so the edges stay crisp.
+  const finish = makeViewer({ stage: 'room', woodDetail: 3072 }, 1400, 1050);
+  finish.renderer.setPixelRatio(2);
+  finish.resize();
   finish.set({ top: 'walnut', frame: 'black', edge: 'rounded', width: 1.6, depth: 0.8, accessories: {} }, { instant: true });
-  await save('step-finish.webp', finish.shootFrom({ position: [1.08, 0.92, 0.74], target: [0.66, 0.7, 0.26], fov: 24 }));
+  const large = finish.shootFrom({ position: [1.08, 0.92, 0.74], target: [0.66, 0.7, 0.26], fov: 24, type: 'image/png' });
+  await save('step-finish.webp', await downscale(large, 1400, 1050));
   finish.dispose();
 
   // Add-ons: every accessory on the desk, pulled a little apart.
