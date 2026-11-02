@@ -16,7 +16,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { DeskModel } from './desk-model.js';
 import { MaterialLibrary } from './materials.js';
 import { contactShadow } from './textures.js';
-import { lightStage, studioStage } from './stages.js';
+import { lightStage, nightStage, studioStage } from './stages.js';
 
 const ACCESSORIES = ['desk_pad', 'monitor_arm', 'cable_tray', 'drawer'];
 
@@ -49,7 +49,7 @@ const DEFAULTS = {
 export class DeskViewer {
   constructor(container, options = {}) {
     this.container = container;
-    // stage: 'light' | 'paper' | 'studio' | 'room' (see stages.js)
+    // stage: 'light' | 'paper' | 'studio' | 'room' | 'night' (see stages.js)
     // view: { direction: [x, y, z] camera direction from the desk, center / centerY:
     //   where the desk sits in the canvas (0.5 = middle, 0.62 = right of / below it), margin }
     // explodedFraming: frame the desk with its parts pulled apart, so the camera
@@ -87,9 +87,12 @@ export class DeskViewer {
     this.target = new Vector3(0, 0.5, 0);
 
     this.materials = new MaterialLibrary(renderer, { woodDetail: this.options.woodDetail });
-    const stage = ['studio', 'room'].includes(this.options.stage)
-      ? studioStage(scene, renderer, this.materials, this.options.stage)
-      : lightStage(scene, renderer, { paper: this.options.stage === 'paper' });
+    let stage;
+    if (this.options.stage === 'night') stage = nightStage(scene, renderer, this.materials, { animate: !this.reducedMotion });
+    else if (['studio', 'room'].includes(this.options.stage)) stage = studioStage(scene, renderer, this.materials, this.options.stage);
+    else stage = lightStage(scene, renderer, { paper: this.options.stage === 'paper' });
+    // Stages with something moving (night: the dust) keep the frames coming while in view.
+    this.stageUpdate = stage.update || null;
     this.key = stage.key;
     this.shadowTexture = new CanvasTexture(contactShadow());
     this.desk = new DeskModel(this.materials, { shadowColor: stage.shadowColor, props: this.options.props });
@@ -453,6 +456,10 @@ export class DeskViewer {
     if (moving) this.fitCamera(false);
 
     const controlsMoving = this.controls ? this.controls.update(dt) : false;
+    if (this.stageUpdate) {
+      this.stageUpdate(dt);
+      this.dirty = true;
+    }
     if (this.dirty || controlsMoving) {
       this.renderer.render(this.scene, this.camera);
       this.dirty = false;
@@ -460,7 +467,7 @@ export class DeskViewer {
     }
 
     const autoRotating = this.controls && this.controls.autoRotate;
-    if (this.visible && (moving || controlsMoving || autoRotating)) {
+    if (this.visible && (moving || controlsMoving || autoRotating || this.stageUpdate)) {
       this.raf = requestAnimationFrame(this.frame);
     }
   }

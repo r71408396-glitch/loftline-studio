@@ -4,8 +4,20 @@
 //   studio  a dark charcoal room: concrete floor and wall, one warm window
 //           light falling across the desk, fading into darkness (home hero)
 //   room    the same room with warm plaster walls in daylight (editorial shots)
+//   night   a dark room lit violet: a round floor with a violet glow, a warm
+//           key light, violet and blue rims, slow rising dust and a lit
+//           monitor (home page hero and small builder)
 import {
+  ACESFilmicToneMapping,
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  CircleGeometry,
   Color,
+  MeshBasicMaterial,
+  PCFSoftShadowMap,
+  Points,
+  PointsMaterial,
   DirectionalLight,
   Fog,
   HemisphereLight,
@@ -134,4 +146,125 @@ export function studioStage(scene, renderer, materials, kind = 'studio') {
   if (materials) materials.screen.emissiveIntensity = 0.08;
 
   return { key: sun, shadowColor: '#000000' };
+}
+
+function canvas(width, height, draw) {
+  const element = document.createElement('canvas');
+  element.width = width;
+  element.height = height;
+  draw(element.getContext('2d'), width, height);
+  const texture = new CanvasTexture(element);
+  texture.colorSpace = SRGBColorSpace;
+  return texture;
+}
+
+// A violet pool of light on the floor under the desk.
+function floorGlow() {
+  return canvas(256, 256, (g, w, h) => {
+    const gradient = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+    gradient.addColorStop(0, 'rgba(99,102,241,0.55)');
+    gradient.addColorStop(0.5, 'rgba(99,102,241,0.14)');
+    gradient.addColorStop(1, 'rgba(99,102,241,0)');
+    g.fillStyle = gradient;
+    g.fillRect(0, 0, w, h);
+  });
+}
+
+// The monitor shows a quiet app window, so the screen reads as switched on.
+function screenImage() {
+  return canvas(640, 360, (g, w, h) => {
+    const gradient = g.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#0a0d2c');
+    gradient.addColorStop(0.55, '#1b1b66');
+    gradient.addColorStop(1, '#4f46e5');
+    g.fillStyle = gradient;
+    g.fillRect(0, 0, w, h);
+    const panel = (x, y, pw, ph, alpha) => {
+      g.fillStyle = `rgba(255,255,255,${alpha})`;
+      g.beginPath();
+      g.roundRect(x, y, pw, ph, 14);
+      g.fill();
+    };
+    panel(46, 44, 300, 190, 0.08);
+    panel(372, 70, 220, 140, 0.14);
+    g.fillStyle = 'rgba(255,255,255,0.35)';
+    for (let i = 0; i < 5; i++) g.fillRect(66, 70 + i * 24, 120 + (i % 3) * 50, 8);
+    g.fillStyle = 'rgba(255,255,255,0.1)';
+    g.fillRect(0, h - 34, w, 34);
+  });
+}
+
+export function nightStage(scene, renderer, materials, { animate = true } = {}) {
+  environment(scene, renderer, 0.25);
+  scene.background = new Color('#0b0b0f');
+  scene.fog = new Fog('#0b0b0f', 7, 15);
+  renderer.toneMapping = ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.type = PCFSoftShadowMap;
+
+  const floor = new Mesh(new CircleGeometry(9, 64).rotateX(-Math.PI / 2), new MeshStandardMaterial({ color: '#191a20', roughness: 0.9 }));
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  const glow = new Mesh(
+    new PlaneGeometry(6.5, 6.5).rotateX(-Math.PI / 2),
+    new MeshBasicMaterial({ map: floorGlow(), transparent: true, depthWrite: false, blending: AdditiveBlending }),
+  );
+  glow.position.y = 0.002;
+  scene.add(glow);
+
+  scene.add(new HemisphereLight('#dfe3ff', '#1a1512', 1.0));
+  const key = new DirectionalLight('#ffe3c4', 2.6);
+  key.position.set(-2.6, 4.6, 3.2);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 1, far: 14 });
+  key.shadow.bias = -0.0004;
+  key.shadow.normalBias = 0.02;
+  key.shadow.radius = 5;
+  scene.add(key, key.target);
+  const rim = new DirectionalLight('#7f78ff', 1.0);
+  rim.position.set(3.2, 2.4, -3);
+  scene.add(rim, rim.target);
+  const fill = new DirectionalLight('#8aa0ff', 0.5);
+  fill.position.set(3, 1.5, 3);
+  scene.add(fill, fill.target);
+
+  if (materials) {
+    materials.screen.emissiveMap = screenImage();
+    materials.screen.emissiveIntensity = 1;
+    materials.screen.needsUpdate = true;
+  }
+
+  // Dust drifting up through the light.
+  const count = 260;
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 7;
+    positions[i * 3 + 1] = Math.random() * 3.2;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 6;
+  }
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new BufferAttribute(positions, 3));
+  const dust = new Points(
+    geometry,
+    new PointsMaterial({ size: 0.022, color: '#9aa0ff', transparent: true, opacity: 0.55, depthWrite: false, blending: AdditiveBlending }),
+  );
+  scene.add(dust);
+
+  return {
+    key,
+    shadowColor: '#000000',
+    update: animate
+      ? (dt) => {
+          const position = dust.geometry.attributes.position;
+          for (let i = 0; i < position.count; i++) {
+            let y = position.getY(i) + dt * (0.04 + (i % 5) * 0.012);
+            if (y > 3.2) y = 0;
+            position.setY(i, y);
+          }
+          position.needsUpdate = true;
+        }
+      : null,
+  };
 }

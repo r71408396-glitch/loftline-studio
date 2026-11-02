@@ -13,10 +13,17 @@
       <link rel="icon" type="image/svg+xml" href="{{ 'loftline-icon.svg' | asset_url }}">
     {%- endif -%}
 
-    {{ 'instrument-sans-latin-wght-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: true }}
-    {%- if settings.type_heading_font == 'syne' -%}
-      {{ 'syne-latin-wght-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: true }}
+    {%- if settings.type_body_font == 'inter' -%}
+      {{ 'inter-latin-wght-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: true }}
+    {%- else -%}
+      {{ 'instrument-sans-latin-wght-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: true }}
     {%- endif -%}
+    {%- case settings.type_heading_font -%}
+      {%- when 'syne' -%}
+        {{ 'syne-latin-wght-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: true }}
+      {%- when 'manrope' -%}
+        {{ 'manrope-latin-wght-normal.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: true }}
+    {%- endcase -%}
 
     <title>
       {{- page_title -}}

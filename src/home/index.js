@@ -1,10 +1,9 @@
-// Home page: the studio hero with its finish selector and the desk that rises
-// as you scroll, the three builder steps with their sticky picture, the facts
-// grid with its counting numbers, and the accessories row. Bundled into
-// theme/assets/home.js and loaded only by those sections. Everything works
+// Home page: the studio hero whose desk rises as you scroll, the small desk
+// builder with its live 3D preview, and the page's motion (headline, reveals,
+// counting numbers, ticker, magnetic buttons, tilting cards). Bundled into
+// theme/assets/home.js and loaded only by the home sections. Everything works
 // without motion (reduced motion, theme editor): the swatches then swap poster
-// images, the numbers stand still and the pictures switch without easing.
+// images and the numbers stand still.
 import './home-hero.js';
-import './steps.js';
-import './facts.js';
-import './card-scroller.js';
+import './home-builder.js';
+import './motion.js';

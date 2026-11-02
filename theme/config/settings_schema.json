@@ -143,9 +143,29 @@
           {
             "value": "instrument_sans",
             "label": "Instrument Sans"
+          },
+          {
+            "value": "manrope",
+            "label": "Manrope"
           }
         ],
         "default": "syne"
+      },
+      {
+        "type": "select",
+        "id": "type_body_font",
+        "label": "Body font",
+        "options": [
+          {
+            "value": "instrument_sans",
+            "label": "Instrument Sans"
+          },
+          {
+            "value": "inter",
+            "label": "Inter"
+          }
+        ],
+        "default": "instrument_sans"
       },
       {
         "type": "range",

@@ -12,7 +12,8 @@
       "type": "header",
       "settings": {
         "menu": "main-menu",
-        "cta_label": "Build your desk"
+        "cta_label": "Build your desk",
+        "cta_link": "shopify://pages/build"
       }
     }
   },

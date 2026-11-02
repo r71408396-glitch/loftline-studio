@@ -34,7 +34,10 @@
     "country": "Country or region",
     "language": "Language",
     "update": "Update",
-    "payment_methods": "Payment methods"
+    "payment_methods": "Payment methods",
+    "newsletter_done_title": "You are on the list",
+    "newsletter_done_text": "Thanks for signing up. We will send new finishes and parts about once a month.",
+    "close": "Close"
   },
   "sections": {
     "announcement": {
@@ -64,6 +67,22 @@
     },
     "home_marquee": {
       "label": "Loftline in short"
+    },
+    "home_steps": {
+      "width": "Width",
+      "depth": "Depth",
+      "top": "Top",
+      "frame": "Frame",
+      "edge": "Edge",
+      "addons_total": "Add-ons",
+      "open_builder": "Open the full builder",
+      "price_note": "Desk price is shown in the full builder.",
+      "sitting": "Sitting [cm] cm",
+      "standing": "Standing [cm] cm",
+      "drag_hint": "Drag to turn the desk",
+      "stage_label": "3D preview of your desk. Drag to turn it around.",
+      "still_alt": "Preview of a walnut Loftline desk",
+      "spec": "[width] x [depth] cm, [top] top, [frame] frame, [edge] edge"
     }
   },
   "products": {

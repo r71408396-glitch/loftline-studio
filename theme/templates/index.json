@@ -32,11 +32,15 @@
     "steps": {
       "type": "home-steps",
       "blocks": {
-        "size": { "type": "step", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room. The price updates as you go.", "chips": "120 to 200 cm wide, 60 or 80 cm deep", "theme_image": "step-size.webp" } },
-        "finish": { "type": "step", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style, shown on the desk as you pick them.", "chips": "5 tops, 4 frames, Square or rounded edge", "theme_image": "step-finish.webp" } },
-        "addons": { "type": "step", "settings": { "title": "Add-ons", "text": "Monitor arms, cable trays, desk pads and drawers, fitted to your desk before it ships.", "chips": "Monitor arm, Cable tray, Desk pad, Drawer", "theme_image": "step-addons.webp" } }
+        "size": { "type": "step", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room.", "chips": "120 to 180 cm wide, 70 or 80 cm deep", "theme_image": "step-size.webp", "alt": "White-framed standing desk with an oak top" } },
+        "finish": { "type": "step", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style, shown on the desk as you pick them.", "chips": "Walnut, oak, bamboo, linoleum, white laminate, 4 frames, Square or rounded edge", "theme_image": "step-finish.webp", "alt": "Close-up of a walnut desk top with a rounded edge" } },
+        "addons": { "type": "step", "settings": { "title": "Add-ons", "text": "Monitor arms, cable trays, desk pads and drawers, fitted to your desk before it ships.", "chips": "Monitor arm, Cable tray, Desk pad, Drawer", "theme_image": "step-addons.webp", "alt": "Desk with a monitor arm and desk pad" } },
+        "arm": { "type": "addon", "settings": { "product": "monitor-arm", "model": "monitor_arm", "builder_id": "monitor-arm", "checked": true } },
+        "pad": { "type": "addon", "settings": { "product": "felt-desk-pad", "model": "desk_pad", "builder_id": "desk-pad", "checked": true } },
+        "tray": { "type": "addon", "settings": { "product": "cable-tray", "model": "cable_tray", "builder_id": "cable-tray" } },
+        "drawer": { "type": "addon", "settings": { "product": "under-desk-drawer", "model": "drawer", "builder_id": "drawer" } }
       },
-      "block_order": ["size", "finish", "addons"],
+      "block_order": ["size", "finish", "addons", "arm", "pad", "tray", "drawer"],
       "settings": {
         "button_link": "shopify://pages/build"
       }
@@ -44,12 +48,12 @@
     "facts": {
       "type": "home-facts",
       "blocks": {
-        "height": { "type": "fact", "settings": { "number": "127", "before": "62 to", "unit": "cm", "title": "Height range", "text": "Two quiet motors and three-stage legs take the top from sitting to standing in seconds.", "wide": true, "dark": true } },
+        "height": { "type": "fact", "settings": { "before": "62 to", "number": "127", "unit": "cm", "title": "Height range", "text": "Two quiet motors and three-stage legs take the top from sitting to standing in seconds.", "size": "large", "lift": true } },
         "load": { "type": "fact", "settings": { "number": "140", "unit": "kg", "title": "Load", "text": "Monitors, speakers, books, and your elbows." } },
-        "warranty": { "type": "fact", "settings": { "number": "10", "unit": "yr", "title": "Warranty", "text": "On the frame, motors and electronics." } },
+        "warranty": { "type": "fact", "settings": { "number": "10", "unit": "yr", "title": "Warranty", "text": "On the frame, motors and electronics.", "tone": "accent" } },
         "trial": { "type": "fact", "settings": { "number": "100", "unit": "nights", "title": "Trial", "text": "If it isn't right, we collect it for free." } },
-        "delivery": { "type": "fact", "settings": { "title": "Free delivery", "text": "Desks ship free to the US, Canada and the UK.", "wide": true } },
-        "assembly": { "type": "fact", "settings": { "number": "25", "unit": "min", "title": "Frame assembly", "text": "Or let us do it: assembly at home is a tick at checkout." } }
+        "delivery": { "type": "fact", "settings": { "title": "Free delivery", "text": "Desks ship free to the US, Canada and the UK.", "tone": "dark" } },
+        "assembly": { "type": "fact", "settings": { "number": "25", "unit": "min", "title": "Frame assembly", "text": "Or let us do it: assembly at home is a tick at checkout.", "size": "wide" } }
       },
       "block_order": ["height", "load", "warranty", "trial", "delivery", "assembly"],
       "settings": {}
@@ -57,10 +61,10 @@
     "accessories": {
       "type": "home-accessories",
       "blocks": {
-        "monitor-arm": { "type": "product", "settings": { "product": "monitor-arm", "theme_image": "editorial-monitor-arm.webp" } },
-        "desk-pad": { "type": "product", "settings": { "product": "felt-desk-pad", "theme_image": "editorial-desk-pad.webp" } },
-        "cable-tray": { "type": "product", "settings": { "product": "cable-tray", "theme_image": "editorial-cable-tray.webp" } },
-        "drawer": { "type": "product", "settings": { "product": "under-desk-drawer", "theme_image": "editorial-drawer.webp" } }
+        "monitor-arm": { "type": "product", "settings": { "product": "monitor-arm", "theme_image": "editorial-monitor-arm.webp", "alt": "Monitor arm clamped to the back edge of the desk" } },
+        "desk-pad": { "type": "product", "settings": { "product": "felt-desk-pad", "theme_image": "editorial-desk-pad.webp", "alt": "Graphite felt desk pad on a walnut desk" } },
+        "cable-tray": { "type": "product", "settings": { "product": "cable-tray", "theme_image": "editorial-cable-tray.webp", "alt": "Cable tray mounted under the desk top" } },
+        "drawer": { "type": "product", "settings": { "product": "under-desk-drawer", "theme_image": "editorial-drawer.webp", "alt": "Slim drawer under the front edge of the desk" } }
       },
       "block_order": ["monitor-arm", "desk-pad", "cable-tray", "drawer"],
       "settings": {

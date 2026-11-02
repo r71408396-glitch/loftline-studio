@@ -1,51 +1,51 @@
-// <home-hero>: the studio scene with the desk, a finish selector and the build
-// button. A poster render shows at once. On wide screens with a pointer the
-// live 3D desk replaces it after the page has loaded, and rises from sitting to
-// standing height as the visitor scrolls through the hero (the hero is taller
-// than the screen; its inner frame sticks). Phones keep the poster: choosing a
-// finish swaps the poster image. Either way the finish travels into the desk
-// builder through the button link, and tints the glow behind the desk.
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { afterLoad, canLoad3d, desktop, motionOn } from './shared.js';
+// <home-hero>: the studio scene with the desk, the finish swatches and the
+// height readout. The hero is taller than the screen and its inner frame
+// sticks; scrolling through it raises the desk from 72 to 127 cm. A poster
+// shows at once; on wide screens with a pointer the live 3D desk replaces it
+// after the page has loaded. Phones keep the posters (a swatch swaps them).
+// Either way the chosen finish travels into the desk builder through the
+// button link.
+import { afterLoad, canLoad3d, desktop } from './shared.js';
 
-gsap.registerPlugin(ScrollTrigger);
-
-// The same camera as preview/renders.html, so the posters line up with the 3D view.
-const VIEW = { direction: [0.55, 0.27, 1], margin: 0.95 };
+// The same camera as preview/renders.html, so the posters line up with the 3D
+// view: the desk right of the headline on wide screens, above it when tall.
+const portrait = () => window.matchMedia('(max-aspect-ratio: 1/1)').matches;
+const VIEW = {
+  direction: [-0.42, 0.3, 0.86],
+  margin: 0.8,
+  center: () => (portrait() ? 0.5 : 0.66),
+  centerY: () => (portrait() ? 0.32 : 0.55),
+};
 const SCENE = { edge: 'rounded', width: 1.6, depth: 0.8, accessories: { monitor_arm: true, desk_pad: true, cable_tray: true } };
-// Sitting and standing heights of the top, in metres.
-const SIT = 0.72;
-const STAND = 1.18;
-const ease = gsap.parseEase('power2.inOut');
+// Top height in cm at the start and the end of the scroll.
+const LOW = 72;
+const HIGH = 127;
 
 class HomeHero extends HTMLElement {
   connectedCallback() {
     // Set up once: moving the element in the page connects it again.
     if (this.ready) return;
     this.ready = true;
-    this.inputs = [...this.querySelectorAll('input[data-finish]')];
+    this.swatches = [...this.querySelectorAll('[data-finish]')];
     this.poster = this.querySelector('[data-poster]');
     this.posterSource = this.querySelector('[data-poster-mobile]');
     this.stage = this.querySelector('[data-stage]');
-    this.thumb = this.querySelector('[data-finish-thumb]');
     this.name = this.querySelector('[data-finish-name]');
     this.readout = this.querySelector('[data-readout-value]');
     this.dot = this.querySelector('[data-readout-dot]');
     this.links = [...this.querySelectorAll('[data-build-link]')];
-    this.height = SIT;
+    this.progress = 0;
+    this.shown = LOW;
 
-    this.inputs.forEach((input, index) => input.addEventListener('change', () => this.select(index)));
-    this.select(Math.max(0, this.inputs.findIndex((input) => input.checked)), { initial: true });
-    if (this.thumb) {
-      // Fonts arriving and resizes change the chip widths.
-      new ResizeObserver(() => this.placeThumb()).observe(this.thumb.parentElement);
-      document.fonts?.ready.then(() => this.placeThumb());
-    }
+    this.swatches.forEach((swatch, index) => swatch.addEventListener('click', () => this.select(index)));
+    this.index = Math.max(0, this.swatches.findIndex((swatch) => swatch.getAttribute('aria-pressed') === 'true'));
+
+    this.onScroll = this.onScroll.bind(this);
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    window.addEventListener('resize', this.onScroll);
+    this.onScroll();
 
     if (this.wants3d()) afterLoad(() => this.load());
-    if (motionOn() && desktop()) this.rise();
-    this.stickyButton();
   }
 
   wants3d() {
@@ -53,41 +53,56 @@ class HomeHero extends HTMLElement {
   }
 
   get current() {
-    return this.inputs[this.index];
+    return this.swatches[this.index];
   }
 
-  select(index, { initial = false } = {}) {
+  select(index) {
     this.index = index;
-    const input = this.current;
-    if (!input) return;
-    const { top, frame, code, label, glow } = input.dataset;
+    const swatch = this.current;
+    const { top, frame, code, label } = swatch.dataset;
+    this.swatches.forEach((other) => other.setAttribute('aria-pressed', String(other === swatch)));
     if (this.name) this.name.textContent = label;
-    if (glow) this.style.setProperty('--glow', glow);
     for (const link of this.links) link.href = `${link.dataset.base}#${code}`;
-    this.placeThumb();
-    if (initial) return;
 
     if (this.viewer) {
       this.viewer.set({ top, frame });
     } else {
       // Not live (yet): show this finish's poster.
-      if (this.posterSource) this.posterSource.srcset = input.dataset.posterMobile;
-      this.poster.src = input.dataset.poster;
-      this.poster.alt = input.dataset.alt;
+      if (this.posterSource) this.posterSource.srcset = swatch.dataset.posterMobile;
+      this.poster.src = swatch.dataset.poster;
+      this.poster.alt = swatch.dataset.alt;
       if (this.wants3d()) this.load();
     }
   }
 
-  // The highlight slides behind the chosen chip.
-  placeThumb() {
-    const input = this.current;
-    if (!this.thumb || !input) return;
-    const chip = input.closest('.finish-chip');
-    const box = chip.getBoundingClientRect();
-    const parent = this.thumb.parentElement.getBoundingClientRect();
-    this.thumb.style.transform = `translateX(${box.left - parent.left}px)`;
-    this.thumb.style.width = `${box.width}px`;
-    this.thumb.classList.add('is-placed');
+  // How far the visitor has scrolled through the hero (0 to 1).
+  onScroll() {
+    if (this.frameRequest) return;
+    this.frameRequest = requestAnimationFrame(() => {
+      this.frameRequest = null;
+      const total = this.offsetHeight - window.innerHeight;
+      const top = this.getBoundingClientRect().top;
+      this.progress = total > 0 ? Math.min(1, Math.max(0, -top / total)) : 0;
+      this.update();
+    });
+  }
+
+  update() {
+    const p = this.progress;
+    const cm = Math.round(LOW + p * (HIGH - LOW));
+    if (cm !== this.shown) {
+      this.shown = cm;
+      if (this.readout) this.readout.textContent = cm;
+    }
+    if (this.dot) this.dot.style.bottom = `${p * 100}%`;
+    this.drift = { yaw: -0.14 * p, pitch: 0.04 * p, dolly: 0.05 * p };
+    if (this.viewer) {
+      this.viewer.setDrift(this.drift);
+      this.viewer.set({ height: (LOW + p * (HIGH - LOW)) / 100 }, { instant: true });
+    } else if (this.poster) {
+      // Poster only: a slow push in stands in for the camera move.
+      this.poster.style.transform = `scale(${1 + 0.06 * p})`;
+    }
   }
 
   async load() {
@@ -98,13 +113,13 @@ class HomeHero extends HTMLElement {
       const { top, frame } = this.current.dataset;
       this.viewer = new DeskViewer(this.stage, {
         interactive: false,
-        stage: 'studio',
+        stage: 'night',
         props: true,
         // A full-screen canvas: 1.5x is plenty, and far cheaper than 2x on a retina screen.
         pixelRatio: 1.5,
-        view: { ...VIEW, center: 0.62, centerY: 0.56 },
+        view: VIEW,
       });
-      this.viewer.set({ ...SCENE, top, frame, height: this.height }, { instant: true });
+      this.viewer.set({ ...SCENE, top, frame, height: (LOW + this.progress * (HIGH - LOW)) / 100 }, { instant: true });
       if (this.drift) this.viewer.setDrift(this.drift);
       await this.viewer.ready();
       this.classList.add('is-live');
@@ -112,60 +127,6 @@ class HomeHero extends HTMLElement {
       this.loading = false;
       console.error(error);
     }
-  }
-
-  // Scrolling through the hero raises the desk from sitting to standing
-  // height, turns the camera a little, and ticks the height readout.
-  rise() {
-    ScrollTrigger.create({
-      trigger: this,
-      start: 'top top',
-      end: 'bottom bottom',
-      scrub: true,
-      onUpdate: (self) => this.setProgress(self.progress),
-    });
-  }
-
-  setProgress(progress) {
-    const p = ease(progress);
-    this.height = SIT + (STAND - SIT) * p;
-    this.drift = { yaw: -0.14 * p, pitch: 0.04 * p, dolly: 0.05 * p };
-    this.style.setProperty('--rise', p.toFixed(3));
-    if (this.readout) this.readout.textContent = Math.round(this.height * 100);
-    if (this.dot) this.dot.style.transform = `translateY(${(-p * 100).toFixed(1)}%)`;
-    if (this.viewer) {
-      this.viewer.setDrift(this.drift);
-      this.viewer.set({ height: this.height }, { instant: true });
-    } else if (this.poster) {
-      // Poster only: a slow push in stands in for the camera move.
-      this.poster.style.transform = `scale(${1 + 0.06 * p})`;
-    }
-  }
-
-  // Phones: a build button stays at the bottom of the screen once the hero's
-  // own button has scrolled away, until the footer's button comes into view.
-  stickyButton() {
-    const bar = this.querySelector('[data-sticky-build]');
-    const button = this.querySelector('[data-hero-button]');
-    if (!bar || !button) return;
-    const footerButton = document.querySelector('[data-footer-build]');
-    const state = { heroVisible: true, footerVisible: false };
-    const update = () => {
-      const show = !state.heroVisible && !state.footerVisible;
-      bar.classList.toggle('is-visible', show);
-      bar.inert = !show;
-    };
-    new IntersectionObserver(([entry]) => {
-      state.heroVisible = entry.isIntersecting || entry.boundingClientRect.top > 0;
-      update();
-    }).observe(button);
-    if (footerButton) {
-      new IntersectionObserver(([entry]) => {
-        state.footerVisible = entry.isIntersecting;
-        update();
-      }).observe(footerButton);
-    }
-    update();
   }
 }
 

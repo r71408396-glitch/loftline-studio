@@ -1,22 +1,17 @@
 {%- comment -%}
-  A line of short facts and finishes that glides sideways under the hero.
-  The movement is a CSS animation (no JavaScript); it pauses under the pointer
-  and stands still with reduced motion.
+  A line of short facts and finishes that glides sideways under the hero
+  (assets/home.js copies the items once and loops them; it slows down under the
+  pointer). With reduced motion the items wrap and stand still.
 {%- endcomment -%}
 {{ 'home.css' | asset_url | stylesheet_tag }}
 
-<section class="home-marquee" aria-label="{{ 'sections.home_marquee.label' | t }}">
-  <div class="home-marquee__track">
-    {%- for copy in (1..2) -%}
-      <ul class="home-marquee__list" role="list"{% if copy == 2 %} aria-hidden="true"{% endif %}>
-        {%- for block in section.blocks -%}
-          <li class="home-marquee__item" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</li>
-          <li class="home-marquee__mark" aria-hidden="true"></li>
-        {%- endfor -%}
-      </ul>
+<div class="lh-ticker" aria-label="{{ 'sections.home_marquee.label' | t }}" role="region">
+  <div class="lh-ticker-track" data-marquee="45">
+    {%- for block in section.blocks -%}
+      <span class="lh-ticker-item" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</span>
     {%- endfor -%}
   </div>
-</section>
+</div>
 
 {% schema %}
 {

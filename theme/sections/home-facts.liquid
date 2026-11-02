@@ -1,50 +1,68 @@
 {%- comment -%}
-  "Built for the long day" (assets/home.js, <home-facts>): a grid of tiles
-  with the numbers that matter. Numbers count up as the grid comes into view.
-  A tile without a number shows its title large instead.
+  "Built for the long day": a tiled grid of the numbers that matter. Numbers
+  count up as they come into view (assets/home.js). The large tile shows a
+  small desk rising and falling between its lowest and highest setting.
 {%- endcomment -%}
+{%- assign heading_lines = section.settings.heading | newline_to_br | replace: '<br />', '<br>' | split: '<br>' -%}
 {{ 'home.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'home.js' | asset_url }}" type="module"></script>
 
-<home-facts class="section home-facts">
-  <div class="page-width">
-    <div class="home-facts__header" data-reveal>
-      {%- if section.settings.eyebrow != blank -%}
-        <p class="home-eyebrow">{{ section.settings.eyebrow | escape }}</p>
-      {%- endif -%}
-      <h2 class="home-display">
-        {%- assign heading_lines = section.settings.heading | newline_to_br | replace: '<br />', '<br>' | split: '<br>' -%}
-        {%- for line in heading_lines -%}
-          <span class="home-display__line">{{ line | strip | escape }}</span>
-        {%- endfor -%}
-      </h2>
+<section class="lh-section lh-section-tint" id="why" aria-labelledby="WhyHeading-{{ section.id }}">
+  <div class="lh-wrap">
+    <div class="lh-section-head">
+      <div data-animate="reveal">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="lh-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h2 id="WhyHeading-{{ section.id }}">
+          {%- for line in heading_lines -%}
+            {{ line | strip | escape }}{% unless forloop.last %}<br>{% endunless %}
+          {%- endfor -%}
+        </h2>
+      </div>
     </div>
 
-    <ul class="facts-grid" role="list">
+    <div class="lh-bento" data-animate="stagger">
       {%- for block in section.blocks -%}
-        <li class="fact{% if block.settings.wide %} fact--wide{% endif %}{% if block.settings.dark %} fact--dark{% endif %}" data-reveal {{ block.shopify_attributes }}>
-          {%- if block.settings.number != blank -%}
-            <p class="fact__figure">
-              {%- if block.settings.before != blank -%}<span class="fact__before">{{ block.settings.before | escape }}</span>{%- endif -%}
-              <span class="fact__number" data-count="{{ block.settings.number | escape }}">{{ block.settings.number | escape }}</span>
-              {%- if block.settings.unit != blank -%}<span class="fact__unit">{{ block.settings.unit | escape }}</span>{%- endif -%}
-            </p>
-          {%- else -%}
-            <p class="fact__figure fact__figure--text">{{ block.settings.title | escape }}</p>
+        {%- liquid
+          assign classes = 'lh-tile'
+          case block.settings.size
+            when 'large'
+              assign classes = classes | append: ' lh-tile-lg'
+            when 'wide'
+              assign classes = classes | append: ' lh-tile-wide'
+          endcase
+          case block.settings.tone
+            when 'accent'
+              assign classes = classes | append: ' lh-tile-accent'
+            when 'dark'
+              assign classes = classes | append: ' lh-tile-dark lh-tile-glow'
+          endcase
+        -%}
+        <article class="{{ classes }}" {{ block.shopify_attributes }}>
+          {%- if block.settings.size == 'large' and block.settings.lift -%}
+            <div class="lh-lift-demo" aria-hidden="true">
+              <div class="lh-lift-floor"></div>
+              <div class="lh-lift-gauge" data-low="{{ block.settings.before | remove: 'to' | strip | append: ' CM' }}" data-high="{{ block.settings.number | append: ' CM' }}"></div>
+              <div class="lh-lift-body"><div class="lh-lift-top"></div><div class="lh-lift-leg lh-l"></div><div class="lh-lift-leg lh-r"></div></div>
+            </div>
           {%- endif -%}
-          <div class="fact__body">
-            {%- if block.settings.number != blank and block.settings.title != blank -%}
-              <h3 class="fact__title">{{ block.settings.title | escape }}</h3>
-            {%- endif -%}
-            {%- if block.settings.text != blank -%}
-              <p class="fact__text">{{ block.settings.text | escape }}</p>
-            {%- endif -%}
-          </div>
-        </li>
+          {%- if block.settings.number != blank -%}
+            <div class="lh-stat">
+              {%- if block.settings.before != blank -%}{{ block.settings.before | escape }} {% endif -%}
+              <span data-animate="count" data-to="{{ block.settings.number | escape }}">{{ block.settings.number | escape }}</span>
+              {%- if block.settings.unit != blank -%}<small>{{ block.settings.unit | escape }}</small>{%- endif -%}
+            </div>
+          {%- endif -%}
+          <h3>{{ block.settings.title | escape }}</h3>
+          {%- if block.settings.text != blank -%}
+            <p>{{ block.settings.text | escape }}</p>
+          {%- endif -%}
+        </article>
       {%- endfor -%}
-    </ul>
+    </div>
   </div>
-</home-facts>
+</section>
 
 {% schema %}
 {
@@ -60,13 +78,34 @@
       "type": "fact",
       "name": "Fact",
       "settings": [
-        { "type": "text", "id": "number", "label": "Number", "info": "Counts up as it comes into view. Leave empty to show the title large instead." },
-        { "type": "text", "id": "before", "label": "Before the number", "info": "e.g. 62 to" },
-        { "type": "text", "id": "unit", "label": "Unit", "info": "e.g. cm" },
-        { "type": "text", "id": "title", "label": "Title", "default": "Height range" },
-        { "type": "text", "id": "text", "label": "Text", "default": "Two quiet motors, three-stage legs." },
-        { "type": "checkbox", "id": "wide", "label": "Double width", "default": false },
-        { "type": "checkbox", "id": "dark", "label": "Dark tile", "default": false }
+        { "type": "text", "id": "before", "label": "Text before the number", "info": "e.g. 62 to" },
+        { "type": "text", "id": "number", "label": "Number", "info": "Counts up from 0. Leave empty for a tile with a title only." },
+        { "type": "text", "id": "unit", "label": "Unit", "info": "e.g. cm, kg, yr" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Load" },
+        { "type": "text", "id": "text", "label": "Text" },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Size",
+          "options": [
+            { "value": "normal", "label": "Normal" },
+            { "value": "large", "label": "Large (two by two)" },
+            { "value": "wide", "label": "Full width" }
+          ],
+          "default": "normal"
+        },
+        {
+          "type": "select",
+          "id": "tone",
+          "label": "Colours",
+          "options": [
+            { "value": "light", "label": "White" },
+            { "value": "accent", "label": "Accent" },
+            { "value": "dark", "label": "Dark with glow" }
+          ],
+          "default": "light"
+        },
+        { "type": "checkbox", "id": "lift", "label": "Rising desk drawing", "info": "Large tiles only", "default": false }
       ]
     }
   ],
@@ -74,12 +113,8 @@
     {
       "name": "Home facts",
       "blocks": [
-        { "type": "fact", "settings": { "number": "127", "before": "62 to", "unit": "cm", "title": "Height range", "text": "Two quiet motors and three-stage legs take the top from sitting to standing in seconds.", "wide": true, "dark": true } },
-        { "type": "fact", "settings": { "number": "140", "unit": "kg", "title": "Load", "text": "Monitors, speakers, books, and your elbows." } },
-        { "type": "fact", "settings": { "number": "10", "unit": "yr", "title": "Warranty", "text": "On the frame, motors and electronics." } },
-        { "type": "fact", "settings": { "number": "100", "unit": "nights", "title": "Trial", "text": "If it isn't right, we collect it for free." } },
-        { "type": "fact", "settings": { "title": "Free delivery", "text": "Desks ship free to the US, Canada and the UK.", "wide": true } },
-        { "type": "fact", "settings": { "number": "25", "unit": "min", "title": "Frame assembly", "text": "Or let us do it: assembly at home is a tick at checkout." } }
+        { "type": "fact", "settings": { "before": "62 to", "number": "127", "unit": "cm", "title": "Height range", "text": "Two quiet motors and three-stage legs take the top from sitting to standing in seconds.", "size": "large", "lift": true } },
+        { "type": "fact", "settings": { "number": "140", "unit": "kg", "title": "Load", "text": "Monitors, speakers, books, and your elbows." } }
       ]
     }
   ]

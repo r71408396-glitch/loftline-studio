@@ -34,7 +34,10 @@
     "country": "Pays ou région",
     "language": "Langue",
     "update": "Mettre à jour",
-    "payment_methods": "Moyens de paiement"
+    "payment_methods": "Moyens de paiement",
+    "newsletter_done_title": "Vous êtes inscrit",
+    "newsletter_done_text": "Merci de votre inscription. Nous vous écrirons environ une fois par mois au sujet des nouvelles finitions et pièces.",
+    "close": "Fermer"
   },
   "sections": {
     "announcement": {
@@ -64,6 +67,22 @@
     },
     "home_marquee": {
       "label": "Loftline en bref"
+    },
+    "home_steps": {
+      "width": "Largeur",
+      "depth": "Profondeur",
+      "top": "Plateau",
+      "frame": "Piètement",
+      "edge": "Chant",
+      "addons_total": "Accessoires",
+      "open_builder": "Ouvrir le configurateur",
+      "price_note": "Le prix du bureau s’affiche dans le configurateur.",
+      "sitting": "Assis [cm] cm",
+      "standing": "Debout [cm] cm",
+      "drag_hint": "Faites glisser pour tourner le bureau",
+      "stage_label": "Aperçu 3D de votre bureau. Faites-le tourner en le faisant glisser.",
+      "still_alt": "Aperçu d’un bureau Loftline en noyer",
+      "spec": "[width] x [depth] cm, plateau [top], piètement [frame], chant [edge]"
     }
   },
   "products": {

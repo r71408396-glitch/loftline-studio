@@ -1,108 +1,241 @@
 {%- comment -%}
-  "Built in three moves" (assets/home.js, <home-steps>): the three choices in
-  the desk builder, one under the other. On wide screens the picture on the
-  left stays put while the steps scroll past it, and changes with the step in
-  view. Each step's picture is its block image, else a theme image (renders
-  from preview/renders.html).
+  "Built in three moves" (assets/home.js, <home-builder>): the three choices in
+  the desk builder as a list, then a small builder with a live 3D desk. It only
+  offers real options (sizes, tops, frames, edges, add-ons from the store) and
+  passes the choice to the full builder, which prices the desk.
+  Step pictures: the block image, else a theme image (preview/renders.html).
 {%- endcomment -%}
+{%- liquid
+  assign steps = section.blocks | where: 'type', 'step'
+  assign addons = section.blocks | where: 'type', 'addon'
+  assign build_url = section.settings.button_link | default: routes.all_products_collection_url
+  assign heading_lines = section.settings.heading | newline_to_br | replace: '<br />', '<br>' | split: '<br>'
+  assign size_title = steps[0].settings.title | default: 'Size'
+  assign finish_title = steps[1].settings.title | default: 'Finish'
+  assign addons_title = steps[2].settings.title | default: 'Add-ons'
+-%}
 {{ 'home.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'home.js' | asset_url }}" type="module"></script>
 
-<home-steps class="section home-steps">
-  <div class="page-width">
-    <div class="home-steps__header">
-      <div data-reveal>
+<section class="lh-section" id="builder" aria-labelledby="BuilderHeading-{{ section.id }}">
+  <div class="lh-wrap">
+    <div class="lh-section-head">
+      <div data-animate="reveal">
         {%- if section.settings.eyebrow != blank -%}
-          <p class="home-eyebrow">{{ section.settings.eyebrow | escape }}</p>
+          <p class="lh-eyebrow">{{ section.settings.eyebrow | escape }}</p>
         {%- endif -%}
-        <h2 class="home-display">
-          {%- assign heading_lines = section.settings.heading | newline_to_br | replace: '<br />', '<br>' | split: '<br>' -%}
+        <h2 id="BuilderHeading-{{ section.id }}">
           {%- for line in heading_lines -%}
-            <span class="home-display__line">{{ line | strip | escape }}</span>
+            {{ line | strip | escape }}{% unless forloop.last %}<br>{% endunless %}
           {%- endfor -%}
         </h2>
       </div>
       {%- if section.settings.text != blank -%}
-        <p class="home-steps__lead" data-reveal>{{ section.settings.text | escape }}</p>
+        <p data-animate="reveal">{{ section.settings.text | escape }}</p>
       {%- endif -%}
     </div>
 
-    <div class="home-steps__grid">
-      <div class="home-steps__visual" data-reveal>
-        <div class="home-steps__frame">
-          {%- for block in section.blocks -%}
-            <div class="home-steps__picture{% if forloop.first %} is-active{% endif %}" data-step-picture="{{ forloop.index0 }}">
-              {%- if block.settings.image != blank -%}
-                {{ block.settings.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '600, 900, 1200, 1400', sizes: '(min-width: 990px) 50vw, 100vw', alt: block.settings.title }}
-              {%- elsif block.settings.theme_image != blank -%}
-                <img src="{{ block.settings.theme_image | asset_url }}" width="1400" height="1050" alt="{{ block.settings.title | escape }}" loading="lazy">
-              {%- endif -%}
-            </div>
-          {%- endfor -%}
-          <span class="home-steps__big" data-step-number aria-hidden="true">01</span>
-        </div>
-      </div>
-
-      <ol class="home-steps__list" role="list" data-step-list>
-        <span class="home-steps__progress" aria-hidden="true"><span data-step-progress></span></span>
-        {%- for block in section.blocks -%}
-          <li class="home-steps__item{% if forloop.first %} is-active{% endif %}" data-step="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
-            <div class="home-steps__inline">
-              {%- if block.settings.image != blank -%}
-                {{ block.settings.image | image_url: width: 1000 | image_tag: loading: 'lazy', widths: '500, 800, 1000', sizes: '100vw', alt: block.settings.title }}
-              {%- elsif block.settings.theme_image != blank -%}
-                <img src="{{ block.settings.theme_image | asset_url }}" width="1400" height="1050" alt="{{ block.settings.title | escape }}" loading="lazy">
-              {%- endif -%}
-            </div>
-            <span class="home-steps__number" aria-hidden="true">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-            <h3 class="home-steps__title">{{ block.settings.title | escape }}</h3>
-            <p class="home-steps__copy">{{ block.settings.text | escape }}</p>
+    <ol class="lh-steps" data-animate="stagger">
+      {%- for block in steps -%}
+        <li class="lh-step" {{ block.shopify_attributes }}>
+          <span class="lh-step-num">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <div>
+            <h3>{{ block.settings.title | escape }}</h3>
+            <p>{{ block.settings.text | escape }}</p>
             {%- if block.settings.chips != blank -%}
-              <ul class="home-steps__chips" role="list">
-                {%- assign chips = block.settings.chips | split: ',' -%}
+              {%- assign chips = block.settings.chips | split: ',' -%}
+              <div class="lh-pills">
                 {%- for chip in chips -%}
-                  <li>{{ chip | strip | escape }}</li>
+                  <span class="lh-pill">{{ chip | strip | escape }}</span>
                 {%- endfor -%}
-              </ul>
+              </div>
             {%- endif -%}
-          </li>
-        {%- endfor -%}
-      </ol>
-    </div>
+          </div>
+          <div class="lh-step-photo">
+            {%- if block.settings.image != blank -%}
+              {{ block.settings.image | image_url: width: 1400 | image_tag: loading: 'lazy', widths: '400, 600, 900, 1400', sizes: '(min-width: 961px) 280px, 100vw', alt: block.settings.image.alt | default: block.settings.title }}
+            {%- elsif block.settings.theme_image != blank -%}
+              <img src="{{ block.settings.theme_image | asset_url }}" width="1400" height="1050" loading="lazy" alt="{{ block.settings.alt | default: block.settings.title | escape }}">
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ol>
 
-    {%- if section.settings.button_label != blank -%}
-      <div class="home-steps__footer" data-reveal>
-        <a class="button button--large" href="{{ section.settings.button_link | default: routes.root_url }}">
-          {{- section.settings.button_label | escape }}
-          {% render 'icon', name: 'arrow-up-right' %}
-        </a>
+    <home-builder class="lh-config" data-viewer-src="{{ 'desk-viewer.js' | asset_url }}" data-builder="{{ build_url }}" data-currency="{{ cart.currency.iso_code }}" data-locale="{{ request.locale.iso_code }}">
+      <div class="lh-stage">
+        <img class="lh-stage-still" src="{{ 'step-finish.webp' | asset_url }}" width="1400" height="1050" loading="lazy" alt="{{ 'sections.home_steps.still_alt' | t }}">
+        <div class="lh-stage-canvas" data-stage role="img" aria-label="{{ 'sections.home_steps.stage_label' | t }}"></div>
+        <div class="lh-stage-bar">
+          <span class="lh-chip" data-dims>160 x 80 cm</span>
+          {%- liquid
+            assign sitting = 'sections.home_steps.sitting' | t | replace: '[cm]', '72'
+            assign standing = 'sections.home_steps.standing' | t | replace: '[cm]', '112'
+          -%}
+          <button class="lh-chip" type="button" aria-pressed="false" data-mode data-sitting="{{ sitting | escape }}" data-standing="{{ standing | escape }}">
+            {{- sitting -}}
+          </button>
+        </div>
+        <p class="lh-stage-hint">{{ 'sections.home_steps.drag_hint' | t }}</p>
       </div>
-    {%- endif -%}
+
+      <form class="lh-panel" data-config-form data-spec="{{ 'sections.home_steps.spec' | t | escape }}" onsubmit="return false">
+        <div class="lh-group">
+          <div class="lh-group-head"><span>01</span><h3>{{ size_title | escape }}</h3></div>
+          <label class="lh-field-label" for="HomeWidth-{{ section.id }}">{{ 'sections.home_steps.width' | t }} <output data-width-out>160 cm</output></label>
+          <input id="HomeWidth-{{ section.id }}" type="range" min="120" max="180" step="20" value="160" name="width" style="--p: 66.7%;">
+          <p class="lh-field-label">{{ 'sections.home_steps.depth' | t }}</p>
+          <div class="lh-opts lh-opts-2">
+            <label class="lh-opt lh-opt-center"><input type="radio" name="depth" value="70">70 cm</label>
+            <label class="lh-opt lh-opt-center"><input type="radio" name="depth" value="80" checked>80 cm</label>
+          </div>
+        </div>
+
+        <div class="lh-group">
+          <div class="lh-group-head"><span>02</span><h3>{{ finish_title | escape }}</h3></div>
+          <p class="lh-field-label">{{ 'sections.home_steps.top' | t }} <output data-top-out>{{ 'finishes.walnut' | t }}</output></p>
+          <div class="lh-opts lh-opts-2">
+            {%- assign tops = 'walnut,oak,bamboo,linoleum' | split: ',' -%}
+            {%- for top in tops -%}
+              {%- liquid
+                case top
+                  when 'walnut'
+                    assign code = 'wal'
+                    assign color = '#5b3a25'
+                  when 'oak'
+                    assign code = 'oak'
+                    assign color = '#c99d68'
+                  when 'bamboo'
+                    assign code = 'bam'
+                    assign color = '#d4b676'
+                  else
+                    assign code = 'lin'
+                    assign color = '#2d3036'
+                endcase
+                assign top_key = 'finishes.' | append: top
+              -%}
+              <label class="lh-opt">
+                <input type="radio" name="top" value="{{ top }}" data-code="{{ code }}" data-name="{{ top_key | t }}"{% if forloop.first %} checked{% endif %}>
+                <span class="lh-dot" style="--c1: {{ color }};" aria-hidden="true"></span>{{ top_key | t }}
+              </label>
+            {%- endfor -%}
+          </div>
+          <p class="lh-field-label">{{ 'sections.home_steps.frame' | t }} <output data-frame-out>{{ 'finishes.frame_black' | t }}</output></p>
+          <div class="lh-opts lh-opts-4">
+            {%- assign frames = 'black,white,graphite,aluminium' | split: ',' -%}
+            {%- for frame in frames -%}
+              {%- liquid
+                case frame
+                  when 'white'
+                    assign code = 'wht'
+                    assign color = '#e9e9ec'
+                  when 'graphite'
+                    assign code = 'gra'
+                    assign color = '#4b4e57'
+                  when 'aluminium'
+                    assign code = 'alu'
+                    assign color = '#b6bac2'
+                  else
+                    assign code = 'blk'
+                    assign color = '#17181c'
+                endcase
+                assign frame_key = 'finishes.frame_' | append: frame
+              -%}
+              <label class="lh-opt lh-opt-frame">
+                <input type="radio" name="frame" value="{{ frame }}" data-code="{{ code }}" data-name="{{ frame_key | t }}"{% if forloop.first %} checked{% endif %}>
+                <span class="lh-dot" style="--c1: {{ color }};" aria-hidden="true"></span>{{ frame_key | t }}
+              </label>
+            {%- endfor -%}
+          </div>
+          <p class="lh-field-label">{{ 'sections.home_steps.edge' | t }}</p>
+          <div class="lh-opts lh-opts-2">
+            <label class="lh-opt lh-opt-center"><input type="radio" name="edge" value="rounded" data-name="{{ 'configurator.edge_rounded' | t | downcase }}" checked>{{ 'configurator.edge_rounded' | t }}</label>
+            <label class="lh-opt lh-opt-center"><input type="radio" name="edge" value="square" data-name="{{ 'configurator.edge_square' | t | downcase }}">{{ 'configurator.edge_square' | t }}</label>
+          </div>
+        </div>
+
+        {%- if addons.size > 0 -%}
+          <div class="lh-group">
+            <div class="lh-group-head"><span>03</span><h3>{{ addons_title | escape }}</h3></div>
+            <div class="lh-opts">
+              {%- for block in addons -%}
+                {%- assign product = block.settings.product -%}
+                {%- if product == blank -%}{%- continue -%}{%- endif -%}
+                {%- assign variant = product.selected_or_first_available_variant -%}
+                <label class="lh-opt lh-addon" {{ block.shopify_attributes }}>
+                  <input
+                    type="checkbox"
+                    name="addon"
+                    value="{{ block.settings.builder_id }}"
+                    data-model="{{ block.settings.model }}"
+                    data-price="{{ variant.price }}"
+                    {% if block.settings.checked %}checked{% endif %}
+                    {% unless variant.available %}disabled{% endunless %}
+                  >
+                  <span class="lh-check" aria-hidden="true">{% render 'icon', name: 'check' %}</span>
+                  <span class="lh-addon-name">{{ product.title | escape }}</span>
+                  <span class="lh-addon-price">{{ variant.price | money }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        <div class="lh-summary">
+          <p class="lh-summary-spec" data-spec-out></p>
+          <div class="lh-summary-row"><span>{{ 'sections.home_steps.addons_total' | t }}</span><strong data-total-out></strong></div>
+          <a class="button button--large button--glow" href="{{ build_url }}" data-builder-link>{{ 'sections.home_steps.open_builder' | t }}</a>
+          <p class="lh-summary-note">{{ 'sections.home_steps.price_note' | t }}</p>
+        </div>
+      </form>
+    </home-builder>
   </div>
-</home-steps>
+</section>
 
 {% schema %}
 {
   "name": "Home steps",
   "class": "section-home-steps",
-  "max_blocks": 4,
+  "max_blocks": 8,
   "settings": [
     { "type": "text", "id": "eyebrow", "label": "Small heading", "default": "The desk builder" },
     { "type": "textarea", "id": "heading", "label": "Heading", "info": "One line per row", "default": "Built in\nthree moves." },
     { "type": "text", "id": "text", "label": "Text", "default": "Every Loftline desk starts in the builder. Three choices, a live 3D preview, and a price that updates as you go." },
-    { "type": "text", "id": "button_label", "label": "Button label", "default": "Open the builder" },
-    { "type": "url", "id": "button_link", "label": "Button link" }
+    { "type": "url", "id": "button_link", "label": "Desk builder page", "info": "The small builder passes its choices to this page." }
   ],
   "blocks": [
     {
       "type": "step",
       "name": "Step",
+      "limit": 3,
       "settings": [
         { "type": "text", "id": "title", "label": "Title", "default": "Size" },
         { "type": "text", "id": "text", "label": "Text", "default": "Choose a width and depth that fits your room." },
-        { "type": "text", "id": "chips", "label": "Details", "info": "Short facts, separated by commas", "default": "120 to 200 cm wide, 60 or 80 cm deep" },
+        { "type": "text", "id": "chips", "label": "Details", "info": "Short facts, separated by commas", "default": "120 to 180 cm wide, 70 or 80 cm deep" },
         { "type": "image_picker", "id": "image", "label": "Picture" },
-        { "type": "text", "id": "theme_image", "label": "Theme image file", "info": "Used when no picture is chosen, e.g. step-size.webp" }
+        { "type": "text", "id": "theme_image", "label": "Theme image file", "info": "Used when no picture is chosen, e.g. step-size.webp" },
+        { "type": "text", "id": "alt", "label": "Picture description" }
+      ]
+    },
+    {
+      "type": "addon",
+      "name": "Add-on",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        {
+          "type": "select",
+          "id": "model",
+          "label": "Shown on the 3D desk as",
+          "options": [
+            { "value": "monitor_arm", "label": "Monitor arm" },
+            { "value": "desk_pad", "label": "Desk pad" },
+            { "value": "cable_tray", "label": "Cable tray" },
+            { "value": "drawer", "label": "Drawer" }
+          ],
+          "default": "monitor_arm"
+        },
+        { "type": "text", "id": "builder_id", "label": "Builder accessory ID", "info": "The block ID of this accessory in the desk builder page (for example monitor-arm)" },
+        { "type": "checkbox", "id": "checked", "label": "Chosen at first", "default": false }
       ]
     }
   ],
@@ -110,8 +243,8 @@
     {
       "name": "Home steps",
       "blocks": [
-        { "type": "step", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room.", "chips": "120 to 200 cm wide, 60 or 80 cm deep", "theme_image": "step-size.webp" } },
-        { "type": "step", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style.", "chips": "5 tops, 4 frames, 2 edges", "theme_image": "step-finish.webp" } },
+        { "type": "step", "settings": { "title": "Size", "text": "Choose a width and depth that fits your room.", "chips": "120 to 180 cm wide, 70 or 80 cm deep", "theme_image": "step-size.webp" } },
+        { "type": "step", "settings": { "title": "Finish", "text": "Frame colour, top material and edge style.", "chips": "5 tops, 4 frames, Square or rounded edge", "theme_image": "step-finish.webp" } },
         { "type": "step", "settings": { "title": "Add-ons", "text": "Monitor arms, cable trays, desk pads and more.", "chips": "Monitor arm, Cable tray, Desk pad, Drawer", "theme_image": "step-addons.webp" } }
       ]
     }

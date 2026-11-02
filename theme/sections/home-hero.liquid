@@ -1,10 +1,11 @@
 {%- comment -%}
-  Home hero (assets/home.js, <home-hero>): a dark studio with the desk, the
-  headline and a finish selector. A poster render of the first finish paints
-  first; on wide screens with a pointer the live 3D desk takes over after the
-  page has loaded and rises from sitting to standing height as the visitor
-  scrolls (the hero is taller than the screen and its inner frame sticks).
-  Phones get the poster and the selector only, so the first load stays light.
+  Home hero (assets/home.js, <home-hero>): the dark studio with the desk, the
+  headline, a finish selector and a height readout. The hero is taller than the
+  screen and its inner frame sticks; scrolling through it raises the desk from
+  sitting to standing height. A poster render of the chosen finish shows first;
+  on wide screens with a pointer the live 3D desk takes over after the page has
+  loaded. Phones keep the posters. The chosen finish travels into the desk
+  builder through the button link.
   Posters: assets/hero-<top>-<frame>.webp and -mobile.webp (preview/renders.html).
 {%- endcomment -%}
 {%- liquid
@@ -16,7 +17,7 @@
 {{ 'home.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'home.js' | asset_url }}" type="module"></script>
 
-{%- capture finish_inputs -%}
+{%- capture swatches -%}
   {%- for block in finishes -%}
     {%- liquid
       assign top = block.settings.top
@@ -29,173 +30,135 @@
       case top
         when 'walnut'
           assign top_code = 'wal'
-          assign top_color = '#5b3a26'
-          assign glow = '#a8673f'
+          assign top_color = '#5b3a25'
         when 'oak'
           assign top_code = 'oak'
-          assign top_color = '#c8a273'
-          assign glow = '#d9b073'
+          assign top_color = '#c99d68'
         when 'bamboo'
           assign top_code = 'bam'
-          assign top_color = '#d7bd8c'
-          assign glow = '#e2c98f'
+          assign top_color = '#d4b676'
         when 'white'
           assign top_code = 'wht'
           assign top_color = '#ecebe7'
-          assign glow = '#d8dbe2'
         else
           assign top_code = 'lin'
-          assign top_color = '#3b3e42'
-          assign glow = '#6d7a8c'
+          assign top_color = '#2d3036'
       endcase
       case frame
         when 'white'
           assign frame_code = 'wht'
-          assign frame_color = '#e9ebee'
+          assign frame_color = '#e9e9ec'
         when 'graphite'
           assign frame_code = 'gra'
-          assign frame_color = '#5a5f67'
+          assign frame_color = '#4b4e57'
         when 'aluminium'
           assign frame_code = 'alu'
-          assign frame_color = '#cfd4da'
+          assign frame_color = '#b6bac2'
         else
           assign frame_code = 'blk'
-          assign frame_color = '#26282c'
+          assign frame_color = '#17181c'
       endcase
+      assign code = 'm=' | append: top_code | append: '&f=' | append: frame_code | append: '&e=rounded'
       assign poster_name = 'hero-' | append: top | append: '-' | append: frame
       if block.settings.poster != blank
         assign poster = block.settings.poster | image_url: width: 2000
-        assign poster_mobile = block.settings.poster | image_url: width: 1000
+        assign poster_mobile = block.settings.poster | image_url: width: 900
       else
         assign poster = poster_name | append: '.webp' | asset_url
         assign poster_mobile = poster_name | append: '-mobile.webp' | asset_url
       endif
       if forloop.first
         assign first_label = label
-        assign first_glow = glow
-        assign first_code = 'm=' | append: top_code | append: '&f=' | append: frame_code | append: '&e=rounded'
+        assign first_code = code
         assign first_poster = poster
         assign first_poster_mobile = poster_mobile
       endif
     -%}
-    <label class="finish-chip" style="--swatch: {{ top_color }}; --swatch-frame: {{ frame_color }};" {{ block.shopify_attributes }}>
-      <input
-        class="visually-hidden"
-        type="radio"
-        name="HeroFinish-{{ section.id }}"
-        value="{{ top }}-{{ frame }}"
-        data-finish
-        data-top="{{ top }}"
-        data-frame="{{ frame }}"
-        data-glow="{{ glow }}"
-        data-code="m={{ top_code }}&f={{ frame_code }}&e=rounded"
-        data-label="{{ label | escape }}"
-        data-alt="{{ 'sections.home_hero.poster_alt' | t: finish: label | escape }}"
-        data-poster="{{ poster }}"
-        data-poster-mobile="{{ poster_mobile }}"
-        {% if forloop.first %}checked{% endif %}
-      >
-      <span class="finish-chip__dot" aria-hidden="true"></span>
-      <span class="finish-chip__label">{{ top_label }}</span>
-    </label>
+    <button
+      class="lh-swatch"
+      type="button"
+      aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
+      data-finish
+      data-top="{{ top }}"
+      data-frame="{{ frame }}"
+      data-code="{{ code }}"
+      data-label="{{ label | escape }}"
+      data-alt="{{ 'sections.home_hero.poster_alt' | t: finish: label | escape }}"
+      data-poster="{{ poster }}"
+      data-poster-mobile="{{ poster_mobile }}"
+      {{ block.shopify_attributes }}
+    >
+      <span class="lh-dot" style="--c1: {{ top_color }}; --c2: {{ frame_color }};" aria-hidden="true"></span>
+      <span class="lh-swatch-name">{{ top_label }}</span>
+    </button>
   {%- endfor -%}
 {%- endcapture -%}
 
-<home-hero class="home-hero" data-viewer-src="{{ 'desk-viewer.js' | asset_url }}" style="--glow: {{ first_glow | default: '#a8673f' }};">
-  <div class="home-hero__frame">
-    <div class="home-hero__media" data-hero-media>
-      <div class="home-hero__glow" aria-hidden="true"></div>
-      {%- if first_poster -%}
-        <picture>
-          <source media="(max-width: 989px)" srcset="{{ first_poster_mobile }}" width="1000" height="860" data-poster-mobile>
-          <img
-            src="{{ first_poster }}"
-            width="2000"
-            height="1200"
-            alt="{{ 'sections.home_hero.poster_alt' | t: finish: first_label }}"
-            fetchpriority="high"
-            decoding="async"
-            data-poster
-          >
-        </picture>
+<home-hero class="lh-hero-wrap" data-viewer-src="{{ 'desk-viewer.js' | asset_url }}">
+  <section class="lh-hero" id="hero" aria-labelledby="HeroHeading-{{ section.id }}">
+    {%- if first_poster -%}
+      <picture class="lh-hero-still">
+        <source media="(max-aspect-ratio: 1/1)" srcset="{{ first_poster_mobile }}" width="900" height="1600" data-poster-mobile>
+        <img
+          src="{{ first_poster }}"
+          width="2000"
+          height="1200"
+          alt="{{ 'sections.home_hero.poster_alt' | t: finish: first_label }}"
+          fetchpriority="high"
+          decoding="async"
+          data-poster
+        >
+      </picture>
+    {%- endif -%}
+    <div class="lh-hero-canvas" data-stage aria-hidden="true"></div>
+
+    <div class="lh-hero-copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="lh-eyebrow-dark" data-animate="hero"><span class="lh-pulse" aria-hidden="true"></span>{{ section.settings.eyebrow | escape }}</p>
       {%- endif -%}
-      <div class="home-hero__stage" data-stage aria-hidden="true"></div>
-      <div class="home-hero__shade" aria-hidden="true"></div>
-    </div>
-
-    <div class="page-width home-hero__content">
-      <div class="home-hero__text">
-        {%- if section.settings.eyebrow != blank -%}
-          <p class="home-hero__eyebrow" data-home-item style="--i: 0;">
-            <span class="home-hero__pulse" aria-hidden="true"></span>
-            {{ section.settings.eyebrow | escape }}
-          </p>
+      <h1 id="HeroHeading-{{ section.id }}" data-animate="split">
+        {%- for line in heading_lines -%}
+          {{ line | strip | escape }}{% unless forloop.last %}<br>{% endunless %}
+        {%- endfor -%}
+      </h1>
+      {%- if section.settings.text != blank -%}
+        <p class="lh-lede" data-animate="hero">{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+      <div class="lh-hero-actions" data-animate="hero">
+        {%- if section.settings.button_label != blank -%}
+          <a
+            class="button button--large button--glow"
+            href="{{ build_url }}{% if first_code %}#{{ first_code }}{% endif %}"
+            data-build-link
+            data-base="{{ build_url }}"
+            data-magnetic
+          >
+            {{- section.settings.button_label | escape }}
+            {% render 'icon', name: 'arrow-up-right' %}
+          </a>
         {%- endif -%}
-        <h1 class="home-hero__heading" data-home-heading>
-          {%- for line in heading_lines -%}
-            <span class="home-hero__line" style="--i: {{ forloop.index0 }};"><span class="home-hero__line-inner">{{ line | strip | escape }}</span></span>
-          {%- endfor -%}
-        </h1>
-        {%- if section.settings.text != blank -%}
-          <p class="home-hero__lead" data-home-item style="--i: 1;">{{ section.settings.text | escape }}</p>
+        {%- if section.settings.second_label != blank -%}
+          <a class="lh-link-arrow" href="{{ second_url }}">
+            {{- section.settings.second_label | escape }}
+            {% render 'icon', name: 'arrow-right' %}
+          </a>
         {%- endif -%}
-        <div class="home-hero__actions" data-home-item style="--i: 2;">
-          {%- if section.settings.button_label != blank -%}
-            <a
-              class="button button--large home-hero__button"
-              href="{{ build_url }}{% if first_code %}#{{ first_code }}{% endif %}"
-              data-build-link
-              data-base="{{ build_url }}"
-              data-hero-button
-            >
-              {{- section.settings.button_label | escape }}
-              {% render 'icon', name: 'arrow-up-right' %}
-            </a>
-          {%- endif -%}
-          {%- if section.settings.second_label != blank -%}
-            <a class="home-hero__textlink" href="{{ second_url }}">
-              {{- section.settings.second_label | escape }}
-              {% render 'icon', name: 'arrow-right' %}
-            </a>
-          {%- endif -%}
-        </div>
       </div>
-
-      <div class="home-hero__dock">
-        {%- if finishes.size > 0 -%}
-          <fieldset class="finish-bar" data-home-item style="--i: 3;">
-            <legend class="visually-hidden">{{ 'sections.home_hero.finish_heading' | t }}</legend>
-            <div class="finish-bar__chips">
-              <span class="finish-bar__thumb" data-finish-thumb aria-hidden="true"></span>
-              {{ finish_inputs }}
-            </div>
-            <p class="finish-bar__name" data-finish-name aria-live="polite">{{ first_label }}</p>
-          </fieldset>
-        {%- endif -%}
-
-        <div class="height-readout" data-readout data-home-item style="--i: 4;" aria-hidden="true">
-          <span class="height-readout__label">{{ 'sections.home_hero.height_label' | t }}</span>
-          <span class="height-readout__value"><span data-readout-value>72</span><span class="height-readout__unit">cm</span></span>
-          <span class="height-readout__track"><span class="height-readout__dot" data-readout-dot></span></span>
-          <span class="height-readout__hint">{{ 'sections.home_hero.scroll_hint' | t }}</span>
+      {%- if finishes.size > 0 -%}
+        <div class="lh-hero-finish" data-animate="hero">
+          <div class="lh-swatches" role="group" aria-label="{{ 'sections.home_hero.finish_heading' | t }}">{{ swatches }}</div>
+          <p class="lh-finish-label" aria-live="polite" data-finish-name>{{ first_label }}</p>
         </div>
-      </div>
+      {%- endif -%}
     </div>
-  </div>
 
-  {%- if section.settings.button_label != blank -%}
-    <div class="sticky-build" data-sticky-build inert>
-      <a
-        class="button button--full"
-        href="{{ build_url }}{% if first_code %}#{{ first_code }}{% endif %}"
-        data-build-link
-        data-base="{{ build_url }}"
-      >
-        {{- section.settings.button_label | escape }}
-        {% render 'icon', name: 'arrow-up-right' %}
-      </a>
+    <div class="lh-readout" data-animate="hero" aria-hidden="true">
+      <div class="lh-readout-label">{{ 'sections.home_hero.height_label' | t }}</div>
+      <div class="lh-readout-num"><span data-readout-value>72</span><small>CM</small></div>
+      <div class="lh-readout-track"><span class="lh-readout-dot" data-readout-dot></span></div>
+      <div class="lh-readout-hint">{{ 'sections.home_hero.scroll_hint' | t }}</div>
     </div>
-  {%- endif -%}
+  </section>
 </home-hero>
 
 {% schema %}
@@ -212,7 +175,12 @@
       "info": "One line per row",
       "default": "Your space.\nElevated."
     },
-    { "type": "text", "id": "text", "label": "Text", "default": "A desk built around the way you work: your size, your finish, your add-ons. Delivered to your door." },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "A desk built around the way you work: your size, your finish, your add-ons. Delivered to your door."
+    },
     { "type": "text", "id": "button_label", "label": "Button label", "default": "Build your desk" },
     { "type": "url", "id": "button_link", "label": "Button link", "info": "The desk builder page. The chosen finish is added to the link." },
     { "type": "text", "id": "second_label", "label": "Second link label", "default": "Explore accessories" },
@@ -253,7 +221,7 @@
           "type": "image_picker",
           "id": "poster",
           "label": "Poster",
-          "info": "Shown before the 3D desk loads. Leave empty for walnut / black, oak / white and charcoal linoleum / graphite, which have rendered posters."
+          "info": "Shown before the 3D desk loads, and on phones. Leave empty for walnut / black, oak / white and charcoal linoleum / graphite, which have rendered posters."
         }
       ]
     }

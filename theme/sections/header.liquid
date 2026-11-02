@@ -1,78 +1,65 @@
+{%- comment -%}
+  Header: a dark glass bar with the logo, the main menu as pills, search,
+  account, cart and the build button. On the home page it floats over the hero;
+  elsewhere it sticks to the top. Phones fold the menu under the bar
+  (assets/theme.js: menu toggle, darker bar once the page has scrolled).
+{%- endcomment -%}
 {%- liquid
   assign menu = section.settings.menu
+  assign cta_url = section.settings.cta_link | default: routes.all_products_collection_url
   assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio | round
 -%}
-<header class="site-header">
-  <div class="page-width site-header__inner">
-    <details class="menu-drawer" id="MenuDrawer">
-      <summary class="icon-button" aria-label="{{ 'accessibility.menu' | t }}">
-        {% render 'icon', name: 'menu' %}
-        {% render 'icon', name: 'close' %}
-      </summary>
-      <nav class="menu-drawer__panel" aria-label="{{ 'accessibility.menu' | t }}">
-        <ul class="menu-drawer__list">
-          {%- for link in menu.links -%}
-            <li>
-              <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
-              {%- if link.links.size > 0 -%}
-                <ul class="menu-drawer__sublist">
-                  {%- for child in link.links -%}
-                    <li><a href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>{{ child.title | escape }}</a></li>
-                  {%- endfor -%}
-                </ul>
-              {%- endif -%}
-            </li>
-          {%- endfor -%}
-        </ul>
-        {%- if section.settings.cta_label != blank -%}
-          <a class="button button--full" style="margin-top: var(--space-3);" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">
-            {{- section.settings.cta_label | escape -}}
-          </a>
-        {%- endif -%}
-      </nav>
-    </details>
+<header class="site-header" id="SiteHeader" data-site-header>
+  <div class="site-header__bar">
+    <button
+      class="site-header__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="SiteNav"
+      aria-label="{{ 'accessibility.menu' | t }}"
+      data-menu-toggle
+    >
+      <span></span><span></span><span></span>
+    </button>
 
-    <div class="site-header__logo">
-      <a href="{{ routes.root_url }}"{% if settings.logo == blank %} class="site-header__lockup" style="--logo-width: {{ settings.logo_width }}px;" data-logo-intro{% endif %}>
-        {%- if settings.logo == blank -%}
-          {% render 'logo' %}
-          <span class="visually-hidden">{{ shop.name }}</span>
-        {%- else -%}
-          {{
-            settings.logo
-            | image_url: width: 480
-            | image_tag:
-              width: settings.logo_width,
-              height: logo_height,
-              widths: '120, 180, 240, 360, 480',
-              sizes: '240px',
-              alt: shop.name,
-              preload: true
-          }}
-        {%- endif -%}
-      </a>
-    </div>
+    <a class="site-header__brand" href="{{ routes.root_url }}"{% if settings.logo == blank %} data-logo-intro{% endif %}>
+      {%- if settings.logo == blank -%}
+        {% render 'logo', wordmark: false, class: 'site-header__mark' %}
+        <span>{{ shop.name }}</span>
+      {%- else -%}
+        {{
+          settings.logo
+          | image_url: width: 480
+          | image_tag:
+            width: settings.logo_width,
+            height: logo_height,
+            widths: '120, 180, 240, 360, 480',
+            sizes: '240px',
+            alt: shop.name,
+            preload: true
+        }}
+      {%- endif -%}
+    </a>
 
-    <nav class="site-header__nav" aria-label="{{ 'accessibility.main_navigation' | t }}">
-      <ul class="site-header__menu">
-        {%- for link in menu.links -%}
-          <li>
-            <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
-          </li>
-        {%- endfor -%}
-      </ul>
+    <nav class="site-header__nav" id="SiteNav" aria-label="{{ 'accessibility.main_navigation' | t }}">
+      {%- for link in menu.links -%}
+        <a href="{{ link.url }}"{% if link.current %} aria-current="page"{% endif %}>{{ link.title | escape }}</a>
+      {%- endfor -%}
+      {%- if section.settings.cta_label != blank -%}
+        <a class="site-header__nav-cta" href="{{ cta_url }}">{{ section.settings.cta_label | escape }}</a>
+      {%- endif -%}
     </nav>
 
-    <div class="site-header__actions">
-      <a class="icon-button" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
+    <div class="site-header__tools">
+      <a class="site-header__icon" href="{{ routes.search_url }}" aria-label="{{ 'header.search' | t }}">
         {% render 'icon', name: 'search' %}
       </a>
       {%- if shop.customer_accounts_enabled -%}
-        <a class="icon-button" href="{{ routes.account_url }}" aria-label="{{ 'header.account' | t }}">
+        <a class="site-header__icon" href="{{ routes.account_url }}" aria-label="{{ 'header.account' | t }}">
           {% render 'icon', name: 'account' %}
         </a>
       {%- endif -%}
-      <a class="icon-button" href="{{ routes.cart_url }}" id="HeaderCart" data-cart-toggle>
+      <a class="site-header__icon" href="{{ routes.cart_url }}" id="HeaderCart" data-cart-toggle>
         {% render 'icon', name: 'cart' %}
         <span class="visually-hidden">{{ 'header.cart' | t }}</span>
         <span class="cart-count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>
@@ -81,7 +68,7 @@
         </span>
       </a>
       {%- if section.settings.cta_label != blank -%}
-        <a class="button site-header__cta" href="{{ section.settings.cta_link | default: routes.all_products_collection_url }}">
+        <a class="button button--glow site-header__cta" href="{{ cta_url }}">
           {{- section.settings.cta_label | escape }}
           {% render 'icon', name: 'arrow-up-right' %}
         </a>

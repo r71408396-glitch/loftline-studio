@@ -6,11 +6,22 @@
 {%- liquid
   assign font_syne = "'Syne', ui-sans-serif, system-ui, sans-serif"
   assign font_instrument = "'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+  assign font_inter = "'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif"
+  assign font_manrope = "'Manrope', 'Inter', ui-sans-serif, system-ui, sans-serif"
 
-  assign font_heading = font_syne
-  if settings.type_heading_font == 'instrument_sans'
-    assign font_heading = font_instrument
+  assign font_body = font_instrument
+  if settings.type_body_font == 'inter'
+    assign font_body = font_inter
   endif
+
+  case settings.type_heading_font
+    when 'instrument_sans'
+      assign font_heading = font_instrument
+    when 'manrope'
+      assign font_heading = font_manrope
+    else
+      assign font_heading = font_syne
+  endcase
 
   assign tracking = settings.type_heading_tracking | divided_by: 100.0
   assign body_size_mobile = settings.type_body_size | minus: 1
@@ -25,6 +36,25 @@
     font-display: swap;
   }
   {%- endif %}
+  {%- if settings.type_heading_font == 'manrope' %}
+  @font-face {
+    font-family: 'Manrope';
+    src: url('{{ 'manrope-latin-wght-normal.woff2' | asset_url }}') format('woff2');
+    font-weight: 600 800;
+    font-style: normal;
+    font-display: swap;
+  }
+  {%- endif %}
+  {%- if settings.type_body_font == 'inter' or settings.type_heading_font == 'manrope' %}
+  @font-face {
+    font-family: 'Inter';
+    src: url('{{ 'inter-latin-wght-normal.woff2' | asset_url }}') format('woff2');
+    font-weight: 400 600;
+    font-style: normal;
+    font-display: swap;
+  }
+  {%- endif %}
+  {%- if settings.type_body_font != 'inter' or settings.type_heading_font == 'instrument_sans' %}
   @font-face {
     font-family: 'Instrument Sans';
     src: url('{{ 'instrument-sans-latin-wght-normal.woff2' | asset_url }}') format('woff2');
@@ -32,6 +62,7 @@
     font-style: normal;
     font-display: swap;
   }
+  {%- endif %}
 
   :root {
     --color-accent: {{ settings.color_accent }};
@@ -53,7 +84,7 @@
     --color-ink-rgb: {{ settings.color_ink.red }}, {{ settings.color_ink.green }}, {{ settings.color_ink.blue }};
 
     --font-heading: {{ font_heading }};
-    --font-body: {{ font_instrument }};
+    --font-body: {{ font_body }};
     --heading-tracking: {{ tracking }}em;
 
     --text-h1: 3.6rem;
