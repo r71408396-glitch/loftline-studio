@@ -7,7 +7,7 @@
 // button link.
 import { gsap } from 'gsap';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
-import { afterLoad, canLoad3d, desktop, motionOn } from './shared.js';
+import { canLoad3d, desktop, motionOn } from './shared.js';
 
 gsap.registerPlugin(ScrambleTextPlugin);
 
@@ -58,7 +58,16 @@ class HomeHero extends HTMLElement {
     window.addEventListener('resize', this.onScroll);
     this.onScroll();
 
-    if (this.wants3d()) afterLoad(() => this.load());
+    // Screens that get the live desk show a short loading pulse (not the
+    // poster, which would swap out and look like lag) and start loading at
+    // once. Everything else shows the poster: phones, reduced motion, no WebGL.
+    if (this.wants3d()) {
+      this.load();
+      // Still nothing after a while (slow connection): show the poster.
+      this.fallback = setTimeout(() => this.noLive(), 9000);
+    } else {
+      this.noLive();
+    }
   }
 
   wants3d() {
@@ -151,11 +160,18 @@ class HomeHero extends HTMLElement {
       this.viewer.set({ ...SCENE, top, frame, height: (LOW + this.progress * (HIGH - LOW)) / 100 }, { instant: true });
       if (this.drift) this.viewer.setDrift(this.drift);
       await this.viewer.ready();
+      clearTimeout(this.fallback);
+      this.classList.remove('no-3d');
       this.classList.add('is-live');
     } catch (error) {
       this.loading = false;
+      this.noLive();
       console.error(error);
     }
+  }
+
+  noLive() {
+    if (!this.classList.contains('is-live')) this.classList.add('no-3d');
   }
 }
 

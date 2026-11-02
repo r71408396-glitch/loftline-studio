@@ -59,7 +59,8 @@
       "poster_alt": "Loftline standing desk, [finish], with a monitor arm, cable tray and felt desk pad",
       "stage_label": "3D view of the desk",
       "height_label": "Height",
-      "scroll_hint": "Scroll to raise the desk"
+      "scroll_hint": "Scroll to raise the desk",
+      "loading": "Loading"
     },
     "home_accessories": {
       "previous": "Previous",

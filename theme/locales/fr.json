@@ -59,7 +59,8 @@
       "poster_alt": "Bureau assis-debout Loftline, [finish], avec bras d’écran, goulotte et sous-main en feutre",
       "stage_label": "Vue 3D du bureau",
       "height_label": "Hauteur",
-      "scroll_hint": "Faites défiler pour lever le bureau"
+      "scroll_hint": "Faites défiler pour lever le bureau",
+      "loading": "Chargement"
     },
     "home_accessories": {
       "previous": "Précédent",

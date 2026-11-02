@@ -59,7 +59,9 @@ function heroEntrance() {
   if (link) timeline.from(link, { autoAlpha: 0, x: -16, duration: 0.6 }, 1.05);
   if (finish) {
     timeline
+      .from(finish.querySelector('.lh-swatches'), { autoAlpha: 0, y: 12, duration: 0.5 }, 1.0)
       .from(finish.querySelectorAll('.lh-swatch'), { autoAlpha: 0, scale: 0.6, duration: 0.6, stagger: 0.08, ease: 'back.out(2)' }, 1.1)
+      .from(finish.querySelector('.lh-swatch-thumb'), { autoAlpha: 0, duration: 0.4 }, 1.25)
       .from(finish.querySelector('.lh-finish-label'), { autoAlpha: 0, x: -10, duration: 0.5 }, 1.35);
   }
   if (readout) {

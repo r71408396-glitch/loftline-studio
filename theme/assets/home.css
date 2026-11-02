@@ -553,6 +553,60 @@ button.chip:hover { background: rgba(79, 70, 229, 0.7); }
   }
 }
 
+/* ---------- loading ---------- */
+
+/* Screens that get the live desk (wide, with a pointer) show a short loading
+   pulse where the desk will be instead of the poster; assets/home.js adds
+   no-3d to bring the poster back when the 3D view can't load. */
+.lh-hero-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 18vw;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.lh-hero-loader span {
+  color: rgba(255, 255, 255, 0.6);
+  font: 600 13px/1 var(--font-head);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  animation: lh-loadpulse 1.6s ease-in-out infinite;
+}
+
+@keyframes lh-loadpulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (min-width: 990px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .js .lh-hero-wrap:not(.no-3d) .lh-hero-still {
+    opacity: 0;
+  }
+
+  .js .lh-hero-wrap:not(.no-3d) .lh-hero-loader {
+    display: flex;
+  }
+
+  .lh-hero-wrap.is-live .lh-hero-loader {
+    opacity: 0;
+  }
+}
+
+/* The live desk eases in: a fade and a slight settle. */
+.lh-hero-canvas {
+  transform: scale(1.04);
+  transition: opacity 0.9s ease, transform 1.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.lh-hero-wrap.is-live .lh-hero-canvas {
+  transform: none;
+}
+
 /* ---------- motion ---------- */
 
 /* assets/home.js animates these in; they show after 2.5 s whatever happens. */
