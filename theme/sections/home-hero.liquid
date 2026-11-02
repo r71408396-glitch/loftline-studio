@@ -114,7 +114,7 @@
 
     <div class="lh-hero-copy">
       {%- if section.settings.eyebrow != blank -%}
-        <p class="lh-eyebrow-dark" data-animate="hero"><span class="lh-pulse" aria-hidden="true"></span>{{ section.settings.eyebrow | escape }}</p>
+        <p class="lh-eyebrow-dark" data-animate="hero" data-hero-eyebrow><span class="lh-pulse" aria-hidden="true"></span>{{ section.settings.eyebrow | escape }}</p>
       {%- endif -%}
       <h1 id="HeroHeading-{{ section.id }}" data-animate="split">
         {%- for line in heading_lines -%}
@@ -122,7 +122,7 @@
         {%- endfor -%}
       </h1>
       {%- if section.settings.text != blank -%}
-        <p class="lh-lede" data-animate="hero">{{ section.settings.text | escape }}</p>
+        <p class="lh-lede" data-animate="hero" data-hero-lede>{{ section.settings.text | escape }}</p>
       {%- endif -%}
       <div class="lh-hero-actions" data-animate="hero">
         {%- if section.settings.button_label != blank -%}
@@ -132,13 +132,15 @@
             data-build-link
             data-base="{{ build_url }}"
             data-magnetic
+            data-hero-button
           >
+            <span class="lh-shine" aria-hidden="true"></span>
             {{- section.settings.button_label | escape }}
             {% render 'icon', name: 'arrow-up-right' %}
           </a>
         {%- endif -%}
         {%- if section.settings.second_label != blank -%}
-          <a class="lh-link-arrow" href="{{ second_url }}">
+          <a class="lh-link-arrow" href="{{ second_url }}" data-hero-link>
             {{- section.settings.second_label | escape }}
             {% render 'icon', name: 'arrow-right' %}
           </a>
@@ -146,7 +148,10 @@
       </div>
       {%- if finishes.size > 0 -%}
         <div class="lh-hero-finish" data-animate="hero">
-          <div class="lh-swatches" role="group" aria-label="{{ 'sections.home_hero.finish_heading' | t }}">{{ swatches }}</div>
+          <div class="lh-swatches" role="group" aria-label="{{ 'sections.home_hero.finish_heading' | t }}">
+            <span class="lh-swatch-thumb" aria-hidden="true" data-swatch-thumb></span>
+            {{- swatches -}}
+          </div>
           <p class="lh-finish-label" aria-live="polite" data-finish-name>{{ first_label }}</p>
         </div>
       {%- endif -%}

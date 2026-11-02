@@ -5,7 +5,11 @@
 // after the page has loaded. Phones keep the posters (a swatch swaps them).
 // Either way the chosen finish travels into the desk builder through the
 // button link.
-import { afterLoad, canLoad3d, desktop } from './shared.js';
+import { gsap } from 'gsap';
+import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
+import { afterLoad, canLoad3d, desktop, motionOn } from './shared.js';
+
+gsap.registerPlugin(ScrambleTextPlugin);
 
 // The same camera as preview/renders.html, so the posters line up with the 3D
 // view: the desk right of the headline on wide screens, above it when tall.
@@ -40,6 +44,15 @@ class HomeHero extends HTMLElement {
     this.swatches.forEach((swatch, index) => swatch.addEventListener('click', () => this.select(index)));
     this.index = Math.max(0, this.swatches.findIndex((swatch) => swatch.getAttribute('aria-pressed') === 'true'));
 
+    // With motion on, a pill slides behind the chosen finish.
+    this.thumb = this.querySelector('[data-swatch-thumb]');
+    if (this.thumb && motionOn()) {
+      this.thumb.parentElement.classList.add('has-thumb');
+      this.placeThumb(false);
+      new ResizeObserver(() => this.placeThumb(false)).observe(this.thumb.parentElement);
+      document.fonts?.ready.then(() => this.placeThumb(false));
+    }
+
     this.onScroll = this.onScroll.bind(this);
     window.addEventListener('scroll', this.onScroll, { passive: true });
     window.addEventListener('resize', this.onScroll);
@@ -61,7 +74,15 @@ class HomeHero extends HTMLElement {
     const swatch = this.current;
     const { top, frame, code, label } = swatch.dataset;
     this.swatches.forEach((other) => other.setAttribute('aria-pressed', String(other === swatch)));
-    if (this.name) this.name.textContent = label;
+    if (this.name) {
+      if (motionOn()) gsap.to(this.name, { duration: 0.6, scrambleText: { text: label, chars: 'lowerCase', speed: 0.8 }, overwrite: true });
+      else this.name.textContent = label;
+    }
+    if (this.thumb && motionOn()) {
+      this.placeThumb(true);
+      const dot = swatch.querySelector('.lh-dot');
+      if (dot) gsap.fromTo(dot, { scale: 0.7 }, { scale: 1, duration: 0.5, ease: 'back.out(3)', clearProps: 'transform' });
+    }
     for (const link of this.links) link.href = `${link.dataset.base}#${code}`;
 
     if (this.viewer) {
@@ -73,6 +94,14 @@ class HomeHero extends HTMLElement {
       this.poster.alt = swatch.dataset.alt;
       if (this.wants3d()) this.load();
     }
+  }
+
+  placeThumb(animate) {
+    const swatch = this.current;
+    if (!swatch || !this.thumb) return;
+    const target = { x: swatch.offsetLeft, width: swatch.offsetWidth };
+    if (animate) gsap.to(this.thumb, { ...target, duration: 0.55, ease: 'power3.out', overwrite: true });
+    else gsap.set(this.thumb, target);
   }
 
   // How far the visitor has scrolled through the hero (0 to 1).

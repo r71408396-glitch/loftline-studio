@@ -32,7 +32,6 @@ home-builder {
 .lh-hero h1,
 .lh-section h2,
 .lh-section h3 {
-  margin: 0;
   color: var(--ink);
   font-family: var(--font-head);
   font-weight: 800;
@@ -40,11 +39,65 @@ home-builder {
   line-height: 1.15;
 }
 
-.lh-section p,
-.lh-hero p,
-.lh-steps,
-.lh-steps li {
+/* Reset with no weight (:where), so the design's own margins below win. */
+:where(.lh-hero, .lh-section) :where(h1, h2, h3, p, ol, li) {
   margin: 0;
+}
+
+/* ---------- Hero extras (assets/home.js) ---------- */
+
+/* A pill that slides behind the chosen finish (when motion is on). */
+.lh-swatches {
+  position: relative;
+}
+
+.lh-swatch {
+  position: relative;
+  z-index: 1;
+}
+
+.lh-swatch-thumb {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lh-swatches.has-thumb .lh-swatch[aria-pressed='true'] {
+  background: transparent;
+}
+
+.lh-swatches.has-thumb .lh-swatch-thumb {
+  opacity: 1;
+}
+
+/* A light sheen that sweeps across the main button now and then. */
+.lh-hero-actions .button {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lh-shine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  pointer-events: none;
+}
+
+/* Words of the intro line, split by assets/home.js. */
+.lh-lede .lh-word {
+  display: inline-block;
 }
 
 .lh-steps {
